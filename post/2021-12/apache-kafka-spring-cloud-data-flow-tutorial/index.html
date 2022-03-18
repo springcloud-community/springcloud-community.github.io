@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Getting Started with Spring Cloud Data Flow and Confluent Cloud - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="Data is the currency of competitive advantage in today’s digital age. All organizations struggle with their data due to the sheer variety of data types and ways that it can be shaped, packaged, and evaluated.
+Within organizations, teams use different tools, fragmented rule sets, and multiple sources to find value within the data. These operational differences lead to divergent definitions of data and a siloed understanding of the ecosystem.
+These challenges have led to the rise of several new technologies, including Apache Kafka® and Spring Cloud Data Flow." />
+<meta name="keywords" content="Spring Cloud Data Flow, Confluent Cloud" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2021-12/apache-kafka-spring-cloud-data-flow-tutorial/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Getting Started with Spring Cloud Data Flow and Confluent Cloud" />
+<meta property="og:description" content="Data is the currency of competitive advantage in today’s digital age. All organizations struggle with their data due to the sheer variety of data types and ways that it can be shaped, packaged, and evaluated.
+Within organizations, teams use different tools, fragmented rule sets, and multiple sources to find value within the data. These operational differences lead to divergent definitions of data and a siloed understanding of the ecosystem.
+These challenges have led to the rise of several new technologies, including Apache Kafka® and Spring Cloud Data Flow." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2021-12/apache-kafka-spring-cloud-data-flow-tutorial/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-12-11T16:02:47+08:00" />
+<meta property="article:modified_time" content="2021-12-11T16:02:47+08:00" />
+
+<meta itemprop="name" content="Getting Started with Spring Cloud Data Flow and Confluent Cloud">
+<meta itemprop="description" content="Data is the currency of competitive advantage in today’s digital age. All organizations struggle with their data due to the sheer variety of data types and ways that it can be shaped, packaged, and evaluated.
+Within organizations, teams use different tools, fragmented rule sets, and multiple sources to find value within the data. These operational differences lead to divergent definitions of data and a siloed understanding of the ecosystem.
+These challenges have led to the rise of several new technologies, including Apache Kafka® and Spring Cloud Data Flow."><meta itemprop="datePublished" content="2021-12-11T16:02:47+08:00" />
+<meta itemprop="dateModified" content="2021-12-11T16:02:47+08:00" />
+<meta itemprop="wordCount" content="3387">
+<meta itemprop="keywords" content="spring-cloud-dataflow," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Getting Started with Spring Cloud Data Flow and Confluent Cloud"/>
+<meta name="twitter:description" content="Data is the currency of competitive advantage in today’s digital age. All organizations struggle with their data due to the sheer variety of data types and ways that it can be shaped, packaged, and evaluated.
+Within organizations, teams use different tools, fragmented rule sets, and multiple sources to find value within the data. These operational differences lead to divergent definitions of data and a siloed understanding of the ecosystem.
+These challenges have led to the rise of several new technologies, including Apache Kafka® and Spring Cloud Data Flow."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Getting Started with Spring Cloud Data Flow and Confluent Cloud</h1>
+      
+      <div class="post-meta">
+        <time datetime="2021-12-11" class="post-time">
+          2021-12-11
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 3387 words </span>
+          <span class="more-meta"> 16 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#prerequisites">Prerequisites</a></li>
+    <li><a href="#spring-cloud-data-flow-and-confluent-cloud-architecture">Spring Cloud Data Flow and Confluent Cloud architecture</a></li>
+    <li><a href="#acquiring-the-docker-image-of-spring-cloud-data-flow">Acquiring the Docker Image of Spring Cloud Data Flow</a></li>
+    <li><a href="#starting-the-spring-cloud-data-flow-service">Starting the Spring Cloud Data Flow service</a></li>
+    <li><a href="#deploying-a-kafka-based-stream">Deploying a Kafka-based stream</a></li>
+    <li><a href="#connecting-to-confluent-cloud-setup-and-credentials">Connecting to Confluent Cloud: Setup and credentials</a></li>
+    <li><a href="#connecting-spring-cloud-data-flow-to-an-external-broker">Connecting Spring Cloud Data Flow to an external broker</a></li>
+    <li><a href="#congratulations">Congratulations!</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>Data is the currency of competitive advantage in today’s digital age. All organizations struggle with their data due to the sheer variety of data types and ways that it can be shaped, packaged, and evaluated.</p>
+<p>Within organizations, teams use different tools, fragmented rule sets, and multiple sources to find value within the data. These operational differences lead to divergent definitions of data and a siloed understanding of the ecosystem.</p>
+<p>These challenges have led to the rise of several new technologies, including Apache Kafka® and Spring Cloud Data Flow. These help transform data ownership responsibilities and, at the same time, prepare them for the transition from batch to real-time data processing. Drawing insights as data is created versus looking at it as a past event provides a critical view into the operation of your business at many levels. Event streaming enables you to perform everything from responding to inventory issues, to learning about business issues before they become issues.</p>
+<p>This blog post gives you the foundation for event streaming and designing and implementing real-time patterns. Using <a href="https://docs.confluent.io/current/schema-registry/index.html">Confluent Schema Registry</a>, <a href="https://ksqldb.io/">ksqlDB</a>, and <a href="http://confluent.io/confluent-cloud">fully managed Apache Kafka as a service</a>, you can experience clean, seamless integrations with your existing cloud provider.</p>
+<p>What follows is a step-by-step tutorial of how to use these tools and lessons learned along the way. Follow this walkthrough to configure Confluent Cloud and Spring Cloud Data Flow for development, implementation, and deployment of cloud-native data processing applications.</p>
+<p>By the end of this tutorial, you should have the knowledge and tools to set up Confluent Cloud and Spring Cloud Data Flow and understand the power of event-based processing in the enterprise landscape. The tutorial also reviews the basics of event stream development and breaks down monolithic data processing programs into bite-size components.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>An understanding of Java programming and Spring Boot application development</li>
+<li>Knowledge of Docker and Docker Compose</li>
+<li>An understanding of Kafka or publish/subscribe messaging applications</li>
+<li>Java 8 or 11 installed</li>
+<li>Docker installed with 8 GB memory to daemon</li>
+<li>An IDE or your favorite text editor (including Vim/Emacs)</li>
+</ul>
+<h2 id="spring-cloud-data-flow-and-confluent-cloud-architecture">Spring Cloud Data Flow and Confluent Cloud architecture</h2>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/spring-cloud-1-1024x393.png" alt="Confluent Cloud Fully Managed Apache Kafka|802x308"></p>
+<blockquote>
+<p>ℹ️ Note: All of the following instructions, screenshots, and command examples are based on a Mac Pro running macOS Catalina with 16 GB of RAM. It is not recommended to deploy Spring Cloud Data Flow locally with any less than 16 GB of RAM, as the setup takes a significant amount of resources.</p>
+</blockquote>
+<h2 id="acquiring-the-docker-image-of-spring-cloud-data-flow">Acquiring the Docker Image of Spring Cloud Data Flow</h2>
+<p>Cloud Data Flow and how easy it is to launch a stream that uses Kafka as its messaging broker. This walkthrough familiarizes you with the paradigms and patterns used in enterprise-ready event streaming and shows you the details for administering Data Flow and Confluent Cloud.</p>
+<p>Start by navigating to the Spring Cloud Data Flow microsite for instructions on <a href="https://dataflow.spring.io/docs/installation/local/docker/#downloading-the-docker-compose-file">local installation using Docker Compose</a>. Follow the instructions to download the Docker Compose file. Be sure to put this file in a location that you can remember.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/spring-cloud-data-flow-1.png" alt="|1976x1047"></p>
+<p>For example, you could use a workspace folder on your computer and navigate to that directory to make a new folder called <code>dataflow-docker</code>. Then navigate to that directory and download the <code>docker-compose.yml</code> file.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">cd</span> ~/workspace/
+mkdir dataflow-docker
+<span class="nb">cd</span> dataflow-docker
+wget -O docker-compose.yml https://raw.githubusercontent.com/spring-cloud/spring-cloud-dataflow/v2.6.3/spring-cloud-dataflow-server/docker-compose.yml
+</code></pre></td></tr></table>
+</div>
+</div><p>The Docker setup in this file allows for dynamic decisions as to which versions of the Data Flow server and the Skipper server are part of the deployment. The Data Flow server manages the UI, authentication, and auditing, while the Skipper server manages the deployment lifecycle of data processing jobs and the containers that they run in. The Data Flow site instructs you on what versions to use and how to set the variables. As of this writing, it is 2.6.3 for the Spring Cloud Data Flow server and 2.5.2. for the Skipper server.</p>
+<h2 id="starting-the-spring-cloud-data-flow-service">Starting the Spring Cloud Data Flow service</h2>
+<p>Now that you know what environment variables to set, you can launch the service. Start the service up with the detach flag <code>-d</code> and review the components that are created:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="nb">export</span> <span class="nv">DATAFLOW_VERSION</span><span class="o">=</span>2.6.3
+<span class="nb">export</span> <span class="nv">SKIPPER_VERSION</span><span class="o">=</span>2.5.2
+docker-compose up -d
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://cdn.confluent.io/wp-content/uploads/docker-compose-1.png" alt="workspace/dialogflow-docker|1200x286"></p>
+<p>Several services are created that work together to provide you with the Spring Cloud Data Flow experience. The key parts are as follows:</p>
+<ul>
+<li><strong>Skipper:</strong> The server that manages Spring Cloud Data Flow Stream lifecycles, messaging layer bindings, and container deployment</li>
+<li><strong><code>Dataflow-server</code>:</strong> The server that provides the UI, Spring Cloud Data Flow Stream Composer, and all user access controls</li>
+<li><strong><code>Dataflow-app-import</code>:</strong> This is a one-run process that imports the initial sample applications in bulk</li>
+<li><strong><code>Dataflow-mysql</code>:</strong> This is the application database</li>
+<li><strong><code>Dataflow-kafka[-zookeeper]</code>:</strong> These are the local implementations of Kafka and its authentication manager, which provide a quick start for exploration</li>
+</ul>
+<p>For this exercise, the local Kafka installation is used so that you can get familiar with how the Kafka binder works. Then migrate this to <a href="https://confluent.io/confluent-cloud">Confluent Cloud</a> to see how to migrate your own local workloads to the cloud.</p>
+<p>You can review the <a href="https://dataflow.spring.io/docs/concepts/architecture/">architecture of Spring Cloud Data Flow</a> to get a deeper understanding of how it all works together.<img src="https://cdn.confluent.io/wp-content/uploads/Screen-Shot-2020-12-03-at-5.20.30-PM-1024x543.png" alt="Web Dashboard | Shell | Data Flow Server|499x265">Source: <a href="https://dataflow.spring.io/">Spring Cloud Data Flow</a></p>
+<p>You can now launch the Spring Cloud Data Flow UI, which should be located at http://localhost:9393/dashboard. Spring Cloud Data Flow will successfully start with many applications automatically imported for you. These applications were downloaded during the Spring Cloud Data Flow startup and are all configured to use the <a href="https://cloud.spring.io/spring-cloud-stream-binder-kafka/spring-cloud-stream-binder-kafka.html">Spring for Apache Kafka connector</a>.</p>
+<p>This connector works with locally installed Kafka or Confluent Cloud.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/spring-data-add-application-1.png" alt="Spring Cloud Data Flow | Add Applications|1986x487"></p>
+<h2 id="deploying-a-kafka-based-stream">Deploying a Kafka-based stream</h2>
+<p>The following tests out the creation of a Data Flow Stream using the built-in applications. The applications that come preinstalled with Spring Cloud Data Flow are set up to utilize the <a href="https://cloud.spring.io/spring-cloud-stream-binder-kafka/spring-cloud-stream-binder-kafka.html">Apache Kafka binder</a> and work out of the box with the setup.</p>
+<p>Test your setup using an example stream called <code>ticktock</code>. This uses the preregistered <code>Time</code> and <code>Log</code> applications and results in a message of the current time being sent to the <code>stdout</code> of the <code>Log</code> application every second.</p>
+<p>To build this stream, navigate to the “Streams” definition page and click <strong>Create Stream(s)</strong>.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/data-flow-streams-1.png" alt="Data Flow Create streams | no stream registered|1999x713"></p>
+<p>Spring Cloud Data Flow provides a text-based stream definition language known as the <a href="https://dataflow.spring.io/docs/stream-developer-guides/getting-started/stream/#stream-dsl-overview">Stream DSL</a>. You can use either the Stream DSL window or the drag-and-drop visual editor below to design your stream definition. This exercise uses the visual editor. In this screen, you can also see a list of all registered applications grouped by type. From this section select <code>time</code> and <code>log</code> applications, dragging both onto the composition pane on the right. Your composition pane should look like the one below:</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/create-a-stream-1-e1607039869918.png" alt="Create a stream | log|1999x1139"></p>
+<p>You may have noticed that as you modified the contents of the visual editor pane, the Stream DSL text for the current definition updates. This works both ways—if you input the Stream DSL, you get a visual representation. The ability to reproduce stream definitions comes in handy in the future as you can develop it with the UI and copy the Stream DSL for later use.</p>
+<p>At this point, you have two applications that are going to be part of your stream, and the next step is to connect them via a messaging middleware. One of the key pieces of this solution is that the connection of applications, management of consumer groups, and creation/destruction of topics and queues is managed by the Data Flow application. Constructing your applications in this way allows you to think logically about your flow of messages and not worry so much about the amount of topics you need, partitions, or anything else.</p>
+<p>Source applications that generate data have an output port:<img src="https://cdn.confluent.io/wp-content/uploads/time-output-port.png" alt="time | Output Port|330x142">Sink applications that consume data have an input port:<img src="https://cdn.confluent.io/wp-content/uploads/log-input-port.png" alt="Input Port log|329x140">Processor applications have both an input and an output port.</p>
+<p>You connect applications in Spring Cloud Data Flow by dragging a line between their ports or by adding the pipe character “|” to the Stream DSL definition. Remember that the changes between the text and visual editor are synced.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/time-log-layout-1-e1607041416995.png" alt="time | log|1353x361"></p>
+<p>Finish creating this stream by clicking the <strong>Create Stream</strong> button at the bottom and give it a name in the dialog that shows. This example uses <code>ticktock</code>.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/create-stream-ticktock-1.png" alt="Create Stream | ticktock|1960x912"></p>
+<p>This creates the stream definition and registers it with Spring Cloud Data Flow. Returning to the stream list page, you can see the stream definition.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/data-flow-grafana-dashboard-1.png" alt="Spring Cloud Data Flow | Streams | Grafana Dashboard|1982x503">
+Now you can deploy the stream to your local environment using the application. Click the play button labeled <strong>Deploy</strong> to show the deployment properties page.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/deploy-stream-definition-ticktock-1.png" alt="Data Flow | Deploy Stream Definition ticktock|1978x1098"></p>
+<p>This page allows you to select your deployment platform, generic selections like RAM and CPU limits, as well as application properties. Use the default deployer (local), and because you’re deploying locally, set the port. Because streams are composed of several different applications working together to complete their goal, running them in the same environment requires different ports to be used for each application.</p>
+<p>This is accomplished by setting an application property in the deployment window. Enter a key of <code>server.port</code> and a value of any open port on your computer, and deploy the stream by clicking the <strong>Deploy</strong> button.<img src="https://cdn.confluent.io/wp-content/uploads/applications-properties.png" alt="Applications Properties | server.port|1906x463"></p>
+<p>You may need to refresh the page several times while the stream deploys. Once it’s deployed, you will see the status change from <code>DEPLOYING</code> to <code>DEPLOYED</code>.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/ticktock.png" alt="ticktock|1999x225"></p>
+<p>If you click on the name of the stream, you can see detailed information, such as its deployment properties, definition, and the application logs from the runtime. This page also gives you a detailed history of the flags generated at runtime for the topics/queues, consumer groups, any standard connection details (like how to connect to Kafka), and gives you a history of changes for that particular stream.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/ticktock-stream.png" alt="Data Flow Stream ticktock | Summary|2784x1242"></p>
+<p>The dropdown for the logs allows you to view logs from any app in the stream. If you select the log application, you can see that the messages were received from Kafka for the time application. You’ve now completed a stream processing deployment! These two applications work together by generating messages in the form of timestamps, sending them to the next application through the Kafka connection, and then the log application receives those messages and outputs them to the log.<img src="https://cdn.confluent.io/wp-content/uploads/logs-ticktock-v1.png" alt="Logs: ticktock.log-v1|1388x310"></p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/log-sink-container-code.png" alt="INFO 382 | Container-0-C-1|1999x422"></p>
+<p>You can stop this stream by going back to the stream page and clicking either <strong>Undeploy</strong> or <strong>Destroy</strong> stream. Undeploying stops all the resources that the stream uses, allowing you to make changes and reuse the stream. Selecting <strong>Destroy</strong> removes its definition entirely.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/destroy-stream-e1607042954625.png" alt="Destroy stream|1974x469"></p>
+<p>If you’d like to shut down your local Spring Cloud Data Flow instance, you can do so by running the following command in the bash window that you start it from:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$: docker-compose down
+</code></pre></td></tr></table>
+</div>
+</div><p>Now you’ve got a basic understanding of stream deployment and management. The next section discusses how to prepare for a cloud-native deployment of Spring Cloud Data Flow.</p>
+<h2 id="connecting-to-confluent-cloud-setup-and-credentials">Connecting to Confluent Cloud: Setup and credentials</h2>
+<p>When evaluating deployments of Data Flow to a cloud-native platform, one factor to consider is which messaging platform to use and how to manage its deployment. After evaluating heavy and complex systems like Google Cloud Pub/Sub and Amazon Kinesis, we ultimately decided on fully managed Apache Kafka as a service with <a href="https://confluent.io/confluent-cloud">Confluent Cloud</a>. We chose Confluent Cloud due to total cost of operation comparisons and ease of use. Confluent Cloud delivered consistent value for the price and provided crucial business features such as Schema Registry.</p>
+<p>Getting started with Confluent Cloud has become easier than ever before. Confluent now provides marketplace integrations for <a href="https://www.confluent.io/blog/confluent-cloud-managed-kafka-service-aws-marketplace/">Amazon Web Services (AWS)</a>, <a href="https://www.confluent.io/blog/confluent-cloud-managed-kafka-service-azure-marketplace/">Microsoft Azure</a>, and <a href="https://www.confluent.io/blog/confluent-cloud-managed-kafka-service-gcp-marketplace/">Google Cloud</a>. These integrations allow for centralized billing and one-click installation. For this exercise, we use Google Cloud. If you don’t already have access to a billing account with one of these providers, you can also sign up directly with Confluent Cloud. In-depth instructions for how to get set up with the Marketplace can be found in this <a href="https://www.confluent.io/blog/confluent-cloud-managed-kafka-service-gcp-marketplace/">blog post</a>.</p>
+<p>To begin, navigate to the <a href="https://console.cloud.google.com/marketplace">Google Cloud Platform Marketplace</a> and search for “Confluent.” You’ll see “Apache Kafka® on Confluent Cloud.” Click through the tile and click <strong>Purchase</strong>. Then click <strong>Enable</strong>.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/gcp-2.png" alt="Google Cloud Platform: Elastic Cloud|1999x1015"></p>
+<p>This brings you to the homepage for the Confluent installation.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/confluent-cloud-service-overview.png" alt="APIs & Services Confluent Cloud Services | Overview|2800x866"></p>
+<p>Click the link for <strong>MANAGE VIA CONFLUENT</strong>, and either create or sign in with your existing Confluent Cloud credentials. You need to use credentials that you’ve previously created with the marketplace or sign up for new credentials. If you do not initiate this process from the marketplace, you won’t be able to link your billing.</p>
+<p>You can now begin to create your managed Kafka cluster by clicking on <strong>Create Cluster</strong>.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/kafka-cloud-cluster.png" alt="Kafka clusters made to order!|1999x994"></p>
+<p>For this exercise, the final deployment platform for Data Flow is Google Cloud Platform; therefore, you want to deploy your Kafka cluster to Google Cloud to ensure the lowest latency and highest resilience. For guidance on creating a cluster, view the <a href="https://docs.confluent.io/current/cloud/quickstart/index.html#step-1-create-a-ak-cluster-in-ccloud">documentation</a>. After you click <strong>Continue</strong>, Confluent will provision a cluster in seconds.</p>
+<p>The next page is the management homepage for your Kafka cluster. You need the connection information for your cluster. On the left, select the <strong>Cluster Settings</strong> menu and select <strong>API Access</strong>. On this page, you’ll create an API key to use for your authentication.</p>
+<p>You may also create API keys when you’re viewing client configurations directly (as shown below), which allows you to copy them directly into your application setup.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/kafka-cloud-api-keys-e1607043350413.png" alt="Kafka API keys | Create key|1984x934"></p>
+<p>After clicking <strong>Create Key</strong>, you will be given the key and secret to use; be sure to copy these down since you won’t be able to open the key again. There are two types of keys to use: one attached to your account for development and one you can link to a service account for monitoring and rate control. At this point, use the one attached to your account.<img src="https://cdn.confluent.io/wp-content/uploads/kafka-api-keys-2-e1607043387108.png" alt="Kafka API keys | Secret|450x483"></p>
+<blockquote>
+<p>ℹ️ Note: These credentials are not valid. Please do not attempt to use them.</p>
+</blockquote>
+<p>Once you have created your key, you can evaluate the connection details. Navigate back to the “Cluster” homepage to find the menu entry for “Tools &amp; Client Configuration,” which hosts a multitude of sample entries for connection to the cluster that you have configured. Select Java given that the applications are written in Spring Boot.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/java-confluent-e1607043632997.png" alt="Tools & client config|1989x774"></p>
+<p>These connection settings are less straightforward than when using Data Flow. These settings propagate to Spring through the binder configurations. To dive deeper into the connection settings, see the <a href="https://cloud.spring.io/spring-cloud-stream-binder-kafka/">documentation</a>. We are not using Kerberos for authentication, so your properties go into <code>spring.cloud.kafka.binder.configuration.&lt;properties&gt;</code> as opposed to the <code>jaas.options</code> section.</p>
+<p>This is different from self-managed Kafka installations that use standard Kerberos for authentication.</p>
+<p>If you drop in the API key and secret from above, the following properties will result. There are several options that were not directly set; these are the reasonable defaults that Spring Cloud Data Flow provides, such as timeout and backup. You can update these or override them if you desire.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">// Cluster Broker Address</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.stream.kafka.binder.brokers</span><span class="p">:</span><span class="w"> </span><span class="l">pkc-43n10.us-central1.gcp.confluent.cloud:9092</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">//This property is not given in the java connection. Confluent requires a RF of 3 and spring by default only requests a RF of 1.</span><span class="w">
+</span><span class="w"></span><span class="nt">NOTE</span><span class="p">:</span><span class="w"> </span><span class="l">The newest versions of spring kafka do not require the replication factor as they now default to -1 which uses the server’s specific default.</span><span class="w">
+</span><span class="w"></span><span class="l">spring.cloud.stream.kafka.binder.replication-factor:3</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">//The SSL and SASL Configuration</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.stream.kafka.binder.configuration.ssl.endpoint.identification.algorithm</span><span class="p">:</span><span class="w"> </span><span class="l">https</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.stream.kafka.binder.configuration.sasl.mechanism</span><span class="p">:</span><span class="w"> </span><span class="l">PLAIN</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.stream.kafka.binder.configuration.request.timeout.ms</span><span class="p">:</span><span class="w"> </span><span class="m">20000</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.stream.kafka.binder.configuration.retry.backoff.ms</span><span class="p">:</span><span class="w"> </span><span class="m">500</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">// The SASL Jaas options (as opposed to Kerberos JAAS) note this should ALL be on one line</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.stream.kafka.binder.configuration.sasl.jaas.config</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.security.plain.PlainLoginModule required username=&#34;KWUIHDJ4CWYTUUZ2&#34; password=&#34;woa0osn+AkzkfgCDDJ3mg5VPW0YVvdSsMGz20iDK0rNYuulxbgkAP8WWp02KOrYy&#34;;</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.stream.kafka.binder.configuration.security.protocol</span><span class="p">:</span><span class="w"> </span><span class="l">SASL_SSL</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>The details include a property that isn’t included in the connection details. The <code>replication-factor</code> is a setting that controls the amount of redundancy for messages that the broker maintains. This isn’t necessary in the newest versions of Kafka Connect.</p>
+<p>In order to test this configuration and your cluster’s connection, you can write a quick stream application. Let’s jump directly to adding these settings to the deployment.</p>
+<h2 id="connecting-spring-cloud-data-flow-to-an-external-broker">Connecting Spring Cloud Data Flow to an external broker</h2>
+<p>Before enabling Confluent Cloud to Data Flow, let’s discuss the way that settings are applied. Spring Cloud Data Flow uses two services to manage and deploy applications:</p>
+<ol>
+<li>The Spring Cloud Data Flow server is responsible for global properties that are applied to all streams regardless of the platform that they are deployed to. This is typically where you would apply aspects like your monitoring system parameters. The Data Flow server is also responsible for maintaining application versioning and stream definitions. The Skipper server is responsible for application deployments.</li>
+<li>The properties in the Skipper server are collated into platform-specific properties, such as properties specific to local deployment, Kafka deployments, Cloud Foundry, or Kubernetes. You can explore the <a href="https://dataflow.spring.io/">Spring Cloud Data Flow microsite</a> for further details on exactly how the architecture is outlined.</li>
+</ol>
+<p>This exercise works on a Kafka-only environment that will be separated by environment through different deployments. Thus, add your connection details from above to the Data Flow server directly. This is done by editing the <code>environment</code> properties for the server in the <code>docker-compose.yml</code> file.</p>
+<p>Look for the service <code>dataflow-server</code> and, under that, the <code>environment</code> properties. You can see several defaults that are set already for the default connections with Kafka and ZooKeeper. Next, replace these with your connections to Confluent Cloud.</p>
+<p>Begin by removing the following lines:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml">- <span class="l">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.brokers=PLAINTEXT://kafka:9092</span><span class="w">
+</span><span class="w"></span>- <span class="l">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.streams.binder.brokers=PLAINTEXT://kafka:9092</span><span class="w">
+</span><span class="w"></span>- <span class="l">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.zkNodes=zookeeper:2181</span><span class="w">
+</span><span class="w"></span>- <span class="l">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.streams.binder.zkNodes=zookeeper:2181</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Notice that all of these properties are standard Spring properties prepended with <code>spring.cloud.dataflow.applicationProperties</code> —that’s because Data Flow is a Spring Boot app! All you need to do is add in the properties from above with the same prefix. There are, however, a few intricacies. The way that the deployer converts and maps these properties is via a tree structure. The <code>spring.cloud.dataflow.applicationProperties</code> is the base node for all default application properties that are mapped with Data Flow. An indicator following it signals whether those properties apply to stream, batch, or task applications. Stream processing apps will look like the following:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">// Cluster Broker Address</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.brokers</span><span class="p">:</span><span class="w"> </span><span class="l">pkc-43n10.us-central1.gcp.confluent.cloud:9092</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">//This property is not given in the java connection. Confluent requires a RF of 3 and spring by default only requests a RF of 1.</span><span class="w">
+</span><span class="w"></span><span class="l">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.replication-factor:3</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">//The SSL and SASL Configuration</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.configuration.ssl.endpoint.identification.algorithm</span><span class="p">:</span><span class="w"> </span><span class="l">https</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.configuration.sasl.mechanism</span><span class="p">:</span><span class="w"> </span><span class="l">PLAIN</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.configuration.request.timeout.ms</span><span class="p">:</span><span class="w"> </span><span class="m">20000</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.configuration.retry.backoff.ms</span><span class="p">:</span><span class="w"> </span><span class="m">500</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">// The SASL Jaas options (as opposed to Kerberos JAAS) note this should ALL be on one line</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.configuration.sasl.jaas.config</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.security.plain.PlainLoginModule required username=&#34;R6JGMNN7AMGVPBG7&#34; password=&#34;Q4W0t/u8NIFqnaaXYNqkvp8fYwQ3kQlZPdctQbxQGx6u7nHLZvHTpo0VPZWzEOA1&#34;;</span><span class="w">
+</span><span class="w"></span><span class="nt">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.configuration.security.protocol</span><span class="p">:</span><span class="w"> </span><span class="l">SASL_SSL</span><span class="w">
+</span><span class="w">  </span><span class="nt">dataflow-server</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">springcloud/spring-cloud-dataflow-server:${DATAFLOW_VERSION:?DATAFLOW_VERSION is not set!}</span><span class="w">
+</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">dataflow-server</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;9393:9393&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="l">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.brokers=pkc-4yyd6.us-east1.gcp.confluent.$</span><span class="w">
+</span><span class="w">      </span><span class="c">#- spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.streams.binder.brokers=pkc-4yyd6.us-east1.gcp.c$</span><span class="w">
+</span><span class="w">      </span>- <span class="l">spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.replication-factor=3</span><span class="w">
+</span><span class="w">      </span>- <span class="l">spring.cloud.stream.kafka.binder.configuration.ssl.endpoint.identification.algorithm=https</span><span class="w">
+</span><span class="w">      </span>- <span class="l">spring.cloud.stream.kafka.binder.configuration.sasl.mechanism=PLAIN</span><span class="w">
+</span><span class="w">      </span>- <span class="l">spring.cloud.stream.kafka.binder.configuration.request.timeout.ms=20000</span><span class="w">
+</span><span class="w">      </span>- <span class="l">spring.cloud.stream.kafka.binder.configuration.retry.backoff.ms=500</span><span class="w">
+</span><span class="w">      </span>- <span class="l">spring.cloud.stream.kafka.binder.configuration.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule requi$</span><span class="w">
+</span><span class="w">      </span>- <span class="l">spring.cloud.stream.kafka.binder.configuration.security.protocol=SASL_SSL</span><span class="w">
+</span><span class="w">      </span><span class="c">#- spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.binder.zkNodes=zookeeper:2181</span><span class="w">
+</span><span class="w">      </span><span class="c">#- spring.cloud.dataflow.applicationProperties.stream.spring.cloud.stream.kafka.streams.binder.zkNodes=zookeeper:2181</span><span class="w">
+</span><span class="w">      </span>- <span class="l">spring.cloud.skipper.client.serverUri=http://skipper-server:7577/api</span><span class="w">
+</span><span class="w">      </span>- <span class="l">SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dataflow</span><span class="w">
+</span><span class="w">      </span>- <span class="l">SPRING_DATASOURCE_USERNAME=root</span><span class="w">
+</span><span class="w">      </span>- <span class="l">SPRING_DATASOURCE_PASSWORD=rootpw</span><span class="w">
+</span><span class="w">      </span>- <span class="l">SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.mariadb.jdbc.Driver</span><span class="w">
+</span><span class="w">    </span><span class="c">#depends_on:</span><span class="w">
+</span><span class="w">      </span><span class="c">#- kafka-broker</span><span class="w">
+</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>After editing your <code>docker-compose.yaml</code> file, it should look like this:</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/spring-cloud-dataflow-code.png" alt="DATAFLOW_VERSION|1999x1000">
+Notice that this setup still stands up Kafka and ZooKeeper. You can skip deployment of these services by commenting out the ZooKeeper and Kafka services and removing the <code>depends_on: -kafka</code> lines from the <code>dataflow-server</code> service.</p>
+<p>You can now start your Docker Compose again using the same commands as earlier, and you will see that no ZooKeeper or Kafka services are started this time.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/docker-compose-2.png" alt="workspace/dataflow-docker|1200x286"></p>
+<p>If you navigate back to the application dashboard, you can repeat the steps to deploy the <code>ticktock</code> application stream. You may need to provide a new name for the stream because names cannot be duplicated. Once it is deployed, navigate to the deployment details, where you’ll see that the application properties applied now reflect your remote Confluent Cluster configuration settings.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/stream-ticktock_.png" alt="Stream ticktock | Summary|1999x917"></p>
+<p>Like earlier, you can review the application logs, see the remote connection created, and observe the messages as they begin to flow. To view these messages on Confluent Cloud, log in to the <a href="https://login.confluent.io/login?state=g6Fo2SBaM0xUQjFzcy1XbktBSTVGd2VxOVhlSTNsTVNfMWdQRKN0aWTZIGtxS1JSaFNic3UxVlduVjBJWXdmUXhsQ3RNVkpwelU4o2NpZNkgbDJoT3AwUzB0a1NCMFRGdHZJWWZaWjlFYUtGdnJTYzY&amp;client=l2hOp0S0tkSB0TFtvIYfZZ9EaKFvrSc6&amp;protocol=oauth2&amp;response_type=id_token&amp;redirect_uri=https%3A%2F%2Fconfluent.cloud%2Fauth_callback&amp;nonce=2RPhQFqMIoSQKzzpjCR2vVbguqa43HDa&amp;scope=openid%20profile%20email&amp;auth0Client=eyJuYW1lIjoiYXV0aDAuanMiLCJ2ZXJzaW9uIjoiOS4xNC4wIn0%3D">web portal</a> and click on your topics on the left.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/cloud-overview.png" alt="Cluster overview | Throughput|1498x598"></p>
+<p>On the topic page, you’ll see the topic created by your <code>ticktok</code> Spring Cloud Dataflow pipeline. These are labeled in the form of <code>&lt;streamName&gt;.&lt;applicationName&gt;</code>. For our stream, it was <code>tiktok.time</code>. You can click the topic name to view messages within the topic.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/topics-11.png" alt="Topics|1000x221"></p>
+<p>This page shows you messages as they are delivered to the Kafka broker and allows you to insert your own if you need to.</p>
+<p><img src="https://cdn.confluent.io/wp-content/uploads/ticktock-time-messages-1.png" alt="ticktok.time | Messages|1000x380"></p>
+<h2 id="congratulations">Congratulations!</h2>
+<p>You’ve just provisioned a Kafka cluster in the cloud, deployed Spring Cloud Data Flow in a local environment, and wrote a test application to validate your connection details. Don’t forget to spin down all your resources used in the demonstration, such as any Google Cloud project, Confluent Cloud cluster, or Google Cloud Platform Marketplace integrations that you’ve allotted.</p>
+<p>The next step is to deploy Spring Cloud Data Flow in the cloud and begin using it daily. If you haven’t already, you can <a href="https://www.confluent.io/download/">sign up for Confluent Cloud</a> and get started with a fully managed event streaming platform powered by Apache Kafka. Use the promo code <strong>SPRING200</strong> to get an additional $200 of free Confluent Cloud usage!</p>
+<blockquote>
+<p>Reference <a href="https://www.confluent.io/blog/apache-kafka-spring-cloud-data-flow-tutorial/">https://www.confluent.io/blog/apache-kafka-spring-cloud-data-flow-tutorial/</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-cloud-dataflow/">spring-cloud-dataflow</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2021-12/spring-cloud-stream-binder-rabbit/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Integrating Spring Cloud Stream Binder with RabbitMQ for message sending and receiving</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2021-12/log4j2-vulnerability-and-spring-boot/">
+            <span class="next-text nav-default">Log4J2 Vulnerability and Spring Boot</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

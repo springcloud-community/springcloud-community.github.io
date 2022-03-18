@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>SpringMVC exception handling system in-depth analysis - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="SpringMVC has a complete system for handling exceptions, and it works very well. This article talks about the exception handling system in SpringMVC. We will sort out the exception system in SpringMVC from beginning to end.
+1. Exception Resolver Overview In SpringMVC&amp;rsquo;s exception system, the big boss at the top is the HandlerExceptionResolver, an interface with a single method.
+1 2 3 4 5  public interface HandlerExceptionResolver { @Nullable ModelAndView resolveException( HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex); }   The resolveException method is used to resolve the exceptions generated during the request processing and eventually return a ModelAndView." />
+<meta name="keywords" content="spring-mvc, Exception exception handling system" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-02/springmvc-exception/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="SpringMVC exception handling system in-depth analysis" />
+<meta property="og:description" content="SpringMVC has a complete system for handling exceptions, and it works very well. This article talks about the exception handling system in SpringMVC. We will sort out the exception system in SpringMVC from beginning to end.
+1. Exception Resolver Overview In SpringMVC&rsquo;s exception system, the big boss at the top is the HandlerExceptionResolver, an interface with a single method.
+1 2 3 4 5  public interface HandlerExceptionResolver { @Nullable ModelAndView resolveException( HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex); }   The resolveException method is used to resolve the exceptions generated during the request processing and eventually return a ModelAndView." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-02/springmvc-exception/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-02-08T13:17:03+08:00" />
+<meta property="article:modified_time" content="2022-02-08T13:17:03+08:00" />
+
+<meta itemprop="name" content="SpringMVC exception handling system in-depth analysis">
+<meta itemprop="description" content="SpringMVC has a complete system for handling exceptions, and it works very well. This article talks about the exception handling system in SpringMVC. We will sort out the exception system in SpringMVC from beginning to end.
+1. Exception Resolver Overview In SpringMVC&rsquo;s exception system, the big boss at the top is the HandlerExceptionResolver, an interface with a single method.
+1 2 3 4 5  public interface HandlerExceptionResolver { @Nullable ModelAndView resolveException( HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex); }   The resolveException method is used to resolve the exceptions generated during the request processing and eventually return a ModelAndView."><meta itemprop="datePublished" content="2022-02-08T13:17:03+08:00" />
+<meta itemprop="dateModified" content="2022-02-08T13:17:03+08:00" />
+<meta itemprop="wordCount" content="2575">
+<meta itemprop="keywords" content="spring-mvc," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SpringMVC exception handling system in-depth analysis"/>
+<meta name="twitter:description" content="SpringMVC has a complete system for handling exceptions, and it works very well. This article talks about the exception handling system in SpringMVC. We will sort out the exception system in SpringMVC from beginning to end.
+1. Exception Resolver Overview In SpringMVC&rsquo;s exception system, the big boss at the top is the HandlerExceptionResolver, an interface with a single method.
+1 2 3 4 5  public interface HandlerExceptionResolver { @Nullable ModelAndView resolveException( HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex); }   The resolveException method is used to resolve the exceptions generated during the request processing and eventually return a ModelAndView."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">SpringMVC exception handling system in-depth analysis</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-02-08" class="post-time">
+          2022-02-08
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 2575 words </span>
+          <span class="more-meta"> 13 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-exception-resolver-overview">1. Exception Resolver Overview</a></li>
+    <li><a href="#2-abstracthandlerexceptionresolver">2. AbstractHandlerExceptionResolver</a>
+      <ul>
+        <li><a href="#shouldapplyto">shouldApplyTo</a></li>
+        <li><a href="#prepareresponse">prepareResponse</a></li>
+        <li><a href="#21-abstracthandlermethodexceptionresolver">2.1 AbstractHandlerMethodExceptionResolver</a></li>
+        <li><a href="#22-defaulthandlerexceptionresolver">2.2 DefaultHandlerExceptionResolver</a></li>
+        <li><a href="#23-responsestatusexceptionresolver">2.3 ResponseStatusExceptionResolver</a></li>
+        <li><a href="#24-simplemappingexceptionresolver">2.4 SimpleMappingExceptionResolver</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-handlerexceptionresolvercomposite">3. HandlerExceptionResolverComposite</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>SpringMVC has a complete system for handling exceptions, and it works very well. This article talks about the exception handling system in SpringMVC. We will sort out the exception system in SpringMVC from beginning to end.</p>
+<h2 id="1-exception-resolver-overview">1. Exception Resolver Overview</h2>
+<p>In SpringMVC&rsquo;s exception system, the big boss at the top is the HandlerExceptionResolver, an interface with a single method.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">HandlerExceptionResolver</span> <span class="o">{</span>
+    <span class="nd">@Nullable</span>
+    <span class="n">ModelAndView</span> <span class="nf">resolveException</span><span class="o">(</span>
+        <span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">ex</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The resolveException method is used to resolve the exceptions generated during the request processing and eventually return a ModelAndView.</p>
+<p>Let&rsquo;s look at the HandlerExceptionResolver implementation class.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/08/438c2291278c40e3aae81cf11ff31d0c.png" alt="spring mvc"></p>
+<p>There are three classes that directly implement the HandlerExceptionResolver interface.</p>
+<ul>
+<li>HandlerExceptionResolverComposite: This class looks like another combination, so I won&rsquo;t go over it here.</li>
+<li>DefaultErrorAttributes: This is used to save the exception attributes.</li>
+<li>AbstractHandlerExceptionResolver: This has more subclasses.
+<ul>
+<li>SimpleMappingExceptionResolver: Resolves exceptions through the correspondence between the exception class and View configured in advance.</li>
+<li>AbstractHandlerMethodExceptionResolver: Handles exception types customized using the <code>@ExceptionHandler</code> annotation.</li>
+<li>DefaultHandlerExceptionResolver: Handles exceptions by different types.</li>
+<li>ResponseStatusExceptionResolver: Handles exceptions with the <code>@ResponseStatus</code> annotation.</li>
+</ul>
+</li>
+</ul>
+<p>In SpringMVC, these are the general exception resolvers, so let&rsquo;s learn them one by one.</p>
+<h2 id="2-abstracthandlerexceptionresolver">2. AbstractHandlerExceptionResolver</h2>
+<p>AbstractHandlerExceptionResolver is the parent class of the real working exception resolver, so let&rsquo;s start with its resolveException method.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
+<span class="nd">@Nullable</span>
+<span class="kd">public</span> <span class="n">ModelAndView</span> <span class="nf">resolveException</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">shouldApplyTo</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">handler</span><span class="o">))</span> <span class="o">{</span>
+		<span class="n">prepareResponse</span><span class="o">(</span><span class="n">ex</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+		<span class="n">ModelAndView</span> <span class="n">result</span> <span class="o">=</span> <span class="n">doResolveException</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">logException</span><span class="o">(</span><span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>first call shouldApplyTo method to determine whether the current parser can handle the exception thrown by the incoming processor, if not, then directly return null, the exception will be given to the next HandlerExceptionResolver to handle.</li>
+<li>Call the prepareResponse method to process the response.</li>
+<li>call the doResolveException method to actually handle the exception, this is a template method, the specific implementation is in the subclass.</li>
+<li>call the logException method to record the exception log information.</li>
+</ol>
+<p>There is nothing to say about logging exceptions, doResolveException is an empty template method, so there are two main methods for us here: shouldApplyTo and prepareResponse, let&rsquo;s look at them separately.</p>
+<h3 id="shouldapplyto">shouldApplyTo</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kt">boolean</span> <span class="nf">shouldApplyTo</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">handler</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mappedHandlers</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">mappedHandlers</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">handler</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">mappedHandlerClasses</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">for</span> <span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">handlerClass</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">mappedHandlerClasses</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">handlerClass</span><span class="o">.</span><span class="na">isInstance</span><span class="o">(</span><span class="n">handler</span><span class="o">))</span> <span class="o">{</span>
+					<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="o">!</span><span class="n">hasHandlerMappings</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>There are two objects involved here: mappedHandlers and mappedHandlerClasses.</p>
+<ul>
+<li>mappedHandlers: stores the handler object (Controller or method in Controller)</li>
+<li>mappedHandlerClasses: stores the handler&rsquo;s Class.</li>
+</ul>
+<p>We can configure these two objects when configuring the exception resolver to achieve the exception handler only for a certain processor, but in general there is no such need, so you can just do to understand.</p>
+<p>If the developer configured mappedHandlers or mappedHandlerClasses at the beginning, then use these two and the processor to compare, otherwise it will return true directly, indicating that the exception handling is supported.</p>
+<h3 id="prepareresponse">prepareResponse</h3>
+<p>The prepareResponse method is relatively simple and mainly deals with the cached fields in the response header.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">prepareResponse</span><span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">preventResponseCaching</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">preventCaching</span><span class="o">(</span><span class="n">response</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">preventCaching</span><span class="o">(</span><span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">response</span><span class="o">.</span><span class="na">addHeader</span><span class="o">(</span><span class="n">HEADER_CACHE_CONTROL</span><span class="o">,</span> <span class="s">&#34;no-store&#34;</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This is the general content of AbstractHandlerExceptionResolver, you can see that it is still very easy, next we look at its implementation class.</p>
+<h3 id="21-abstracthandlermethodexceptionresolver">2.1 AbstractHandlerMethodExceptionResolver</h3>
+<p>AbstractHandlerMethodExceptionResolver mainly overrides the shouldApplyTo method and the doResolveException method, so let&rsquo;s look at them one by one.</p>
+<h4 id="shouldapplyto-1">shouldApplyTo</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
+<span class="kd">protected</span> <span class="kt">boolean</span> <span class="nf">shouldApplyTo</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">handler</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">shouldApplyTo</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">handler</span> <span class="k">instanceof</span> <span class="n">HandlerMethod</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">HandlerMethod</span> <span class="n">handlerMethod</span> <span class="o">=</span> <span class="o">(</span><span class="n">HandlerMethod</span><span class="o">)</span> <span class="n">handler</span><span class="o">;</span>
+		<span class="n">handler</span> <span class="o">=</span> <span class="n">handlerMethod</span><span class="o">.</span><span class="na">getBean</span><span class="o">();</span>
+		<span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">shouldApplyTo</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">hasGlobalExceptionHandlers</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="n">hasHandlerMappings</span><span class="o">())</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">shouldApplyTo</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></td></tr></table>
+</div>
+</div><p>This piece of logic does not feel like much to say, the judgment logic is basically still calling the parent class shouldApplyTo method to handle.</p>
+<h4 id="doresolveexception">doResolveException</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
+<span class="nd">@Nullable</span>
+<span class="kd">protected</span> <span class="kd">final</span> <span class="n">ModelAndView</span> <span class="nf">doResolveException</span><span class="o">(</span>
+		<span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">HandlerMethod</span> <span class="n">handlerMethod</span> <span class="o">=</span> <span class="o">(</span><span class="n">handler</span> <span class="k">instanceof</span> <span class="n">HandlerMethod</span> <span class="o">?</span> <span class="o">(</span><span class="n">HandlerMethod</span><span class="o">)</span> <span class="n">handler</span> <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
+	<span class="k">return</span> <span class="n">doResolveHandlerMethodException</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handlerMethod</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="nd">@Nullable</span>
+<span class="kd">protected</span> <span class="kd">abstract</span> <span class="n">ModelAndView</span> <span class="nf">doResolveHandlerMethodException</span><span class="o">(</span>
+		<span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">HandlerMethod</span> <span class="n">handlerMethod</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">ex</span><span class="o">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>doResolveException is a concrete exception handling method, but it has no substantive operations in it. The concrete things are left to the doResolveHandlerMethodException method, which is an abstract method, and the concrete implementation is in the subclass.</p>
+<h4 id="211-exceptionhandlerexceptionresolver">2.1.1 ExceptionHandlerExceptionResolver</h4>
+<p>AbstractHandlerMethodExceptionResolver has only one subclass which is ExceptionHandlerExceptionResolver, take a look at its doResolveHandlerMethodException method.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
+<span class="nd">@Nullable</span>
+<span class="kd">protected</span> <span class="n">ModelAndView</span> <span class="nf">doResolveHandlerMethodException</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span>
+		<span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">HandlerMethod</span> <span class="n">handlerMethod</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">exception</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">ServletInvocableHandlerMethod</span> <span class="n">exceptionHandlerMethod</span> <span class="o">=</span> <span class="n">getExceptionHandlerMethod</span><span class="o">(</span><span class="n">handlerMethod</span><span class="o">,</span> <span class="n">exception</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">exceptionHandlerMethod</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">argumentResolvers</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">exceptionHandlerMethod</span><span class="o">.</span><span class="na">setHandlerMethodArgumentResolvers</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">argumentResolvers</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">returnValueHandlers</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">exceptionHandlerMethod</span><span class="o">.</span><span class="na">setHandlerMethodReturnValueHandlers</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">returnValueHandlers</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="n">ServletWebRequest</span> <span class="n">webRequest</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServletWebRequest</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+	<span class="n">ModelAndViewContainer</span> <span class="n">mavContainer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ModelAndViewContainer</span><span class="o">();</span>
+	<span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Throwable</span><span class="o">&gt;</span> <span class="n">exceptions</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+	<span class="k">try</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&#34;Using @ExceptionHandler &#34;</span> <span class="o">+</span> <span class="n">exceptionHandlerMethod</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="c1">// Expose causes as provided arguments as well
+</span><span class="c1"></span>		<span class="n">Throwable</span> <span class="n">exToExpose</span> <span class="o">=</span> <span class="n">exception</span><span class="o">;</span>
+		<span class="k">while</span> <span class="o">(</span><span class="n">exToExpose</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">exceptions</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">exToExpose</span><span class="o">);</span>
+			<span class="n">Throwable</span> <span class="n">cause</span> <span class="o">=</span> <span class="n">exToExpose</span><span class="o">.</span><span class="na">getCause</span><span class="o">();</span>
+			<span class="n">exToExpose</span> <span class="o">=</span> <span class="o">(</span><span class="n">cause</span> <span class="o">!=</span> <span class="n">exToExpose</span> <span class="o">?</span> <span class="n">cause</span> <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="n">Object</span><span class="o">[]</span> <span class="n">arguments</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="n">exceptions</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">+</span> <span class="n">1</span><span class="o">];</span>
+		<span class="n">exceptions</span><span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="n">arguments</span><span class="o">);</span>  <span class="c1">// efficient arraycopy call in ArrayList
+</span><span class="c1"></span>		<span class="n">arguments</span><span class="o">[</span><span class="n">arguments</span><span class="o">.</span><span class="na">length</span> <span class="o">-</span> <span class="n">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">handlerMethod</span><span class="o">;</span>
+		<span class="n">exceptionHandlerMethod</span><span class="o">.</span><span class="na">invokeAndHandle</span><span class="o">(</span><span class="n">webRequest</span><span class="o">,</span> <span class="n">mavContainer</span><span class="o">,</span> <span class="n">arguments</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">invocationEx</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// Any other than the original exception (or a cause) is unintended here,
+</span><span class="c1"></span>		<span class="c1">// probably an accident (e.g. failed assertion or the like).
+</span><span class="c1"></span>		<span class="k">if</span> <span class="o">(!</span><span class="n">exceptions</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">invocationEx</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">logger</span><span class="o">.</span><span class="na">isWarnEnabled</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">logger</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;Failure in @ExceptionHandler &#34;</span> <span class="o">+</span> <span class="n">exceptionHandlerMethod</span><span class="o">,</span> <span class="n">invocationEx</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="c1">// Continue with default processing of the original exception...
+</span><span class="c1"></span>		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">mavContainer</span><span class="o">.</span><span class="na">isRequestHandled</span><span class="o">())</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="n">ModelAndView</span><span class="o">();</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="o">{</span>
+		<span class="n">ModelMap</span> <span class="n">model</span> <span class="o">=</span> <span class="n">mavContainer</span><span class="o">.</span><span class="na">getModel</span><span class="o">();</span>
+		<span class="n">HttpStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="n">mavContainer</span><span class="o">.</span><span class="na">getStatus</span><span class="o">();</span>
+		<span class="n">ModelAndView</span> <span class="n">mav</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ModelAndView</span><span class="o">(</span><span class="n">mavContainer</span><span class="o">.</span><span class="na">getViewName</span><span class="o">(),</span> <span class="n">model</span><span class="o">,</span> <span class="n">status</span><span class="o">);</span>
+		<span class="n">mav</span><span class="o">.</span><span class="na">setViewName</span><span class="o">(</span><span class="n">mavContainer</span><span class="o">.</span><span class="na">getViewName</span><span class="o">());</span>
+		<span class="k">if</span> <span class="o">(!</span><span class="n">mavContainer</span><span class="o">.</span><span class="na">isViewReference</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">mav</span><span class="o">.</span><span class="na">setView</span><span class="o">((</span><span class="n">View</span><span class="o">)</span> <span class="n">mavContainer</span><span class="o">.</span><span class="na">getView</span><span class="o">());</span>
+		<span class="o">}</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">model</span> <span class="k">instanceof</span> <span class="n">RedirectAttributes</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="o">?&gt;</span> <span class="n">flashAttributes</span> <span class="o">=</span> <span class="o">((</span><span class="n">RedirectAttributes</span><span class="o">)</span> <span class="n">model</span><span class="o">).</span><span class="na">getFlashAttributes</span><span class="o">();</span>
+			<span class="n">RequestContextUtils</span><span class="o">.</span><span class="na">getOutputFlashMap</span><span class="o">(</span><span class="n">request</span><span class="o">).</span><span class="na">putAll</span><span class="o">(</span><span class="n">flashAttributes</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">mav</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This method is rather long, but well understood:</p>
+<ol>
+<li>First find the method with the <code>@ExceptionHandler</code> annotation and wrap it in a ServletInvocableHandlerMethod object.</li>
+<li>If the corresponding method is found, configure a parameter parser, view parser, etc. for the exceptionHandlerMethod.</li>
+<li>Next, define an exceptions array, and if an exception chain exists, store the entire exception chain in the exceptions array.</li>
+<li>The exceptions array plus handlerMethod, together with the method parameters, call <code>exceptionHandlerMethod.invokeAndHandle</code> to complete the execution of the custom exception method, and the execution result is saved in mavContainer.</li>
+<li>If the request ends here, a ModelAndView is constructed and returned directly.</li>
+<li>Otherwise, the information is retrieved from the mavContainer and a new ModelAndView is constructed and returned. Also, if there are redirect parameters, they are saved.</li>
+</ol>
+<p>This is the general workflow of ExceptionHandlerExceptionResolver, as you can see, it&rsquo;s still very easy.</p>
+<h3 id="22-defaulthandlerexceptionresolver">2.2 DefaultHandlerExceptionResolver</h3>
+<p>This is a default exception handler that handles some common exception types, as you can see by its name. Let&rsquo;s look at its doResolveException method.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
+<span class="nd">@Nullable</span>
+<span class="kd">protected</span> <span class="n">ModelAndView</span> <span class="nf">doResolveException</span><span class="o">(</span>
+		<span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">try</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">HttpRequestMethodNotSupportedException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleHttpRequestMethodNotSupported</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">HttpRequestMethodNotSupportedException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">HttpMediaTypeNotSupportedException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleHttpMediaTypeNotSupported</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">HttpMediaTypeNotSupportedException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">HttpMediaTypeNotAcceptableException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleHttpMediaTypeNotAcceptable</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">HttpMediaTypeNotAcceptableException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">MissingPathVariableException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleMissingPathVariable</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">MissingPathVariableException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">MissingServletRequestParameterException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleMissingServletRequestParameter</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">MissingServletRequestParameterException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">ServletRequestBindingException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleServletRequestBindingException</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">ServletRequestBindingException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">ConversionNotSupportedException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleConversionNotSupported</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">ConversionNotSupportedException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">TypeMismatchException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleTypeMismatch</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">TypeMismatchException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">HttpMessageNotReadableException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleHttpMessageNotReadable</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">HttpMessageNotReadableException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">HttpMessageNotWritableException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleHttpMessageNotWritable</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">HttpMessageNotWritableException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">MethodArgumentNotValidException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleMethodArgumentNotValidException</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">MethodArgumentNotValidException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">MissingServletRequestPartException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleMissingServletRequestPartException</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">MissingServletRequestPartException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">BindException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleBindException</span><span class="o">((</span><span class="n">BindException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">NoHandlerFoundException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleNoHandlerFoundException</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">NoHandlerFoundException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">AsyncRequestTimeoutException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">handleAsyncRequestTimeoutException</span><span class="o">(</span>
+					<span class="o">(</span><span class="n">AsyncRequestTimeoutException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">handlerEx</span><span class="o">)</span> <span class="o">{</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>As you can see, this is actually based on different exception types, and then call different classes to handle the exception. Here the relevant processing is relatively easy, to <code>HttpRequestMethodNotSupportedException</code> for example, exception handling is to do some configuration of the response object, as follows.</p>
+<p>Configure the response header, then sendError, and finally return an empty ModelAndView object.</p>
+<p>In fact, here brother exception handling methods are more or less the same, Song will not repeat it.</p>
+<h3 id="23-responsestatusexceptionresolver">2.3 ResponseStatusExceptionResolver</h3>
+<p>This is used to handle exceptions of ResponseStatusException type, or ordinary exception classes marked with the <code>@ResponseStatus</code> annotation. Let&rsquo;s look at its doResolveException method.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
+<span class="nd">@Nullable</span>
+<span class="kd">protected</span> <span class="n">ModelAndView</span> <span class="nf">doResolveException</span><span class="o">(</span>
+		<span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">try</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">ResponseStatusException</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">resolveResponseStatusException</span><span class="o">((</span><span class="n">ResponseStatusException</span><span class="o">)</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="n">ResponseStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="n">AnnotatedElementUtils</span><span class="o">.</span><span class="na">findMergedAnnotation</span><span class="o">(</span><span class="n">ex</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="n">ResponseStatus</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">status</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">resolveResponseStatus</span><span class="o">(</span><span class="n">status</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">ex</span><span class="o">.</span><span class="na">getCause</span><span class="o">()</span> <span class="k">instanceof</span> <span class="n">Exception</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">doResolveException</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">,</span> <span class="o">(</span><span class="n">Exception</span><span class="o">)</span> <span class="n">ex</span><span class="o">.</span><span class="na">getCause</span><span class="o">());</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">resolveEx</span><span class="o">)</span> <span class="o">{</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>If it is, it will call the resolveResponseStatusException method directly to handle the exception information, if not, it will find the <code>@ResponseStatus</code> annotation on the exception class and find the relevant exception information from it, then call the resolveResponseStatus method to handle it.</p>
+<p>As you can see, there are two types of exceptions handled by ResponseStatusExceptionResolver.</p>
+<ul>
+<li>Exception classes that inherit directly from ResponseStatusException, which can extract the desired information directly from it.</li>
+<li>A normal exception class annotated with <code>@ResponseStatus</code>, in which case the exception information is extracted from the <code>@ResponseStatus</code> annotation.</li>
+</ul>
+<p>This is relatively simple, nothing more.</p>
+<h3 id="24-simplemappingexceptionresolver">2.4 SimpleMappingExceptionResolver</h3>
+<p>SimpleMappingExceptionResolver displays different error pages for different exceptions. Some of you may not have used SimpleMappingExceptionResolver, so here&rsquo;s a brief explanation of its use.</p>
+<p>SimpleMappingExceptionResolver configuration is very simple, directly provide an instance of SimpleMappingExceptionResolver can be, as follows.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
+<span class="n">SimpleMappingExceptionResolver</span> <span class="nf">simpleMappingExceptionResolver</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">SimpleMappingExceptionResolver</span> <span class="n">resolver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleMappingExceptionResolver</span><span class="o">();</span>
+    <span class="n">Properties</span> <span class="n">mappings</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Properties</span><span class="o">();</span>
+    <span class="n">mappings</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;java.lang.ArithmeticException&#34;</span><span class="o">,</span> <span class="s">&#34;11&#34;</span><span class="o">);</span>
+    <span class="n">mappings</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;java.lang.NullPointerException&#34;</span><span class="o">,</span> <span class="s">&#34;22&#34;</span><span class="o">);</span>
+    <span class="n">resolver</span><span class="o">.</span><span class="na">setExceptionMappings</span><span class="o">(</span><span class="n">mappings</span><span class="o">);</span>
+    <span class="n">Properties</span> <span class="n">statusCodes</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Properties</span><span class="o">();</span>
+    <span class="n">statusCodes</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;11&#34;</span><span class="o">,</span> <span class="s">&#34;500&#34;</span><span class="o">);</span>
+    <span class="n">statusCodes</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;22&#34;</span><span class="o">,</span> <span class="s">&#34;500&#34;</span><span class="o">);</span>
+    <span class="n">resolver</span><span class="o">.</span><span class="na">setStatusCodes</span><span class="o">(</span><span class="n">statusCodes</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">resolver</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>In mappings, we configure the correspondence between exceptions and view, and write the full path of the exception class, followed by 11 and 22 for the view name; statusCodes configures the mapping between view and response status code. After the configuration, if our project throws an ArithmeticException exception at runtime, the 11 view will be shown, and if our project throws a NullPointerException exception at runtime, the 22 view will be shown.</p>
+<p>This is the usage, after understanding the usage it is easy to understand when we look at the source code, let&rsquo;s look at the doResolveException method directly.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
+<span class="nd">@Nullable</span>
+<span class="kd">protected</span> <span class="n">ModelAndView</span> <span class="nf">doResolveException</span><span class="o">(</span>
+		<span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">String</span> <span class="n">viewName</span> <span class="o">=</span> <span class="n">determineViewName</span><span class="o">(</span><span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">viewName</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">Integer</span> <span class="n">statusCode</span> <span class="o">=</span> <span class="n">determineStatusCode</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">viewName</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">statusCode</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">applyStatusCodeIfPossible</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">statusCode</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">getModelAndView</span><span class="o">(</span><span class="n">viewName</span><span class="o">,</span> <span class="n">ex</span><span class="o">,</span> <span class="n">request</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>First call the determineViewName method to determine the name of the view.</li>
+<li>Next, call determineStatusCode to see if the view has a corresponding statusCode.</li>
+<li>Call the applyStatusCodeIfPossible method to set the statusCode to the response, this method is very simple, not much to say.</li>
+<li>call getModelAndView method to construct a ModelAndView object to return, in the construction, while setting the exception parameter, the key of the exception information is exception by default.</li>
+</ol>
+<p>In the above process, there are two relatively long methods, here we need to talk to you two extra words.</p>
+<h4 id="determineviewname">determineViewName</h4>
+<p>This is based on the exception type to find the view name, we look at the specific way to find.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Nullable</span>
+<span class="kd">protected</span> <span class="n">String</span> <span class="nf">determineViewName</span><span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">,</span> <span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">String</span> <span class="n">viewName</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">excludedExceptions</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">for</span> <span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">excludedEx</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">excludedExceptions</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">excludedEx</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">ex</span><span class="o">.</span><span class="na">getClass</span><span class="o">()))</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">exceptionMappings</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">viewName</span> <span class="o">=</span> <span class="n">findMatchingViewName</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">exceptionMappings</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">viewName</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultErrorView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">viewName</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultErrorView</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="n">viewName</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>if the current exception is contained in excludedExceptions, then return null directly (meaning that the current exception is ignored and handled directly by default).</li>
+<li>if exceptionMappings is not null, then directly call findMatchingViewName method to find the view name corresponding to the exception (exceptionMappings variable is the mapping relationship we configured earlier), the specific way to find is to iterate through the mapping table we configured earlier.</li>
+<li>If the corresponding viewName is not found and the user has configured defaultErrorView, the defaultErrorView will be assigned to viewName and viewName will be returned.</li>
+</ol>
+<h4 id="determinestatuscode">determineStatusCode</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Nullable</span>
+<span class="kd">protected</span> <span class="n">Integer</span> <span class="nf">determineStatusCode</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">String</span> <span class="n">viewName</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">statusCodes</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">viewName</span><span class="o">))</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">statusCodes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">viewName</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">defaultStatusCode</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This one is easier, go directly to statusCodes to see if there is a status code corresponding to the view, and if so, return it directly, if not, return a default one.</p>
+<h2 id="3-handlerexceptionresolvercomposite">3. HandlerExceptionResolverComposite</h2>
+<p>Finally, there is a HandlerExceptionResolverComposite that needs to be introduced to you, which is a combination of exception handlers to proxy for the exception handlers that actually do the work.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
+<span class="nd">@Nullable</span>
+<span class="kd">public</span> <span class="n">ModelAndView</span> <span class="nf">resolveException</span><span class="o">(</span>
+		<span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="n">Object</span> <span class="n">handler</span><span class="o">,</span> <span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">resolvers</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">for</span> <span class="o">(</span><span class="n">HandlerExceptionResolver</span> <span class="n">handlerExceptionResolver</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">resolvers</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">ModelAndView</span> <span class="n">mav</span> <span class="o">=</span> <span class="n">handlerExceptionResolver</span><span class="o">.</span><span class="na">resolveException</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">handler</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">mav</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="n">mav</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Its resolveException method is relatively simple, and we&rsquo;ve seen this written many times, so we won&rsquo;t go over it again.</p>
+<blockquote>
+<p>Reference <a href="https://juejin.cn/post/6951317320845230116">https://juejin.cn/post/6951317320845230116</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-mvc/">spring-mvc</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2022-02/springframework-6/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Spring 6 And Spring Boot 3</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2022-02/jwt-cookie/">
+            <span class="next-text nav-default">Jwt should be present in the cookie</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

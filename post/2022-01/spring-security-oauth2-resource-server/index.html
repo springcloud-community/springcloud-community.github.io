@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Protecting Resources with Resource Server in OAuth 2.0 - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="Initial understanding of the resource server in OAuth 2.0 Resource Server is exactly what and how to use few tutorials to talk specifically about this stuff, today we will talk about the concept first, to lay a foundation for subsequent use. The shortcomings of the traditional security approach The traditional way to protect an application is to get the credentials (JWT is one of them) given by the server through" />
+<meta name="keywords" content="spring-security, spring-security-oauth2-resource-server, oauth2" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-01/spring-security-oauth2-resource-server/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Protecting Resources with Resource Server in OAuth 2.0" />
+<meta property="og:description" content="Initial understanding of the resource server in OAuth 2.0 Resource Server is exactly what and how to use few tutorials to talk specifically about this stuff, today we will talk about the concept first, to lay a foundation for subsequent use. The shortcomings of the traditional security approach The traditional way to protect an application is to get the credentials (JWT is one of them) given by the server through" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-01/spring-security-oauth2-resource-server/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-01-15T17:09:53+08:00" />
+<meta property="article:modified_time" content="2022-01-15T17:09:53+08:00" />
+
+<meta itemprop="name" content="Protecting Resources with Resource Server in OAuth 2.0">
+<meta itemprop="description" content="Initial understanding of the resource server in OAuth 2.0 Resource Server is exactly what and how to use few tutorials to talk specifically about this stuff, today we will talk about the concept first, to lay a foundation for subsequent use. The shortcomings of the traditional security approach The traditional way to protect an application is to get the credentials (JWT is one of them) given by the server through"><meta itemprop="datePublished" content="2022-01-15T17:09:53+08:00" />
+<meta itemprop="dateModified" content="2022-01-15T17:09:53+08:00" />
+<meta itemprop="wordCount" content="1930">
+<meta itemprop="keywords" content="spring-security,oauth2," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Protecting Resources with Resource Server in OAuth 2.0"/>
+<meta name="twitter:description" content="Initial understanding of the resource server in OAuth 2.0 Resource Server is exactly what and how to use few tutorials to talk specifically about this stuff, today we will talk about the concept first, to lay a foundation for subsequent use. The shortcomings of the traditional security approach The traditional way to protect an application is to get the credentials (JWT is one of them) given by the server through"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Protecting Resources with Resource Server in OAuth 2.0</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-01-15" class="post-time">
+          2022-01-15
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 1930 words </span>
+          <span class="more-meta"> 4 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#initial-understanding-of-the-resource-server-in-oauth-20">Initial understanding of the resource server in OAuth 2.0</a>
+      <ul>
+        <li><a href="#the-shortcomings-of-the-traditional-security-approach">The shortcomings of the traditional security approach</a></li>
+        <li><a href="#resource-server">Resource Server</a></li>
+      </ul>
+    </li>
+    <li><a href="#resource-server-transformation">Resource server transformation</a></li>
+    <li><a href="#required-dependencies">Required dependencies</a></li>
+    <li><a href="#jwt-decoding">JWT decoding</a>
+      <ul>
+        <li><a href="#separate-public-and-private-keys">Separate public and private keys</a></li>
+        <li><a href="#custom-jwt-decoder">Custom jwt decoder</a></li>
+      </ul>
+    </li>
+    <li><a href="#custom-resource-server-configuration">Custom resource server configuration</a>
+      <ul>
+        <li><a href="#core-processes-and-concepts">Core processes and concepts</a></li>
+        <li><a href="#resource-manager-configuration">Resource manager configuration</a></li>
+        <li><a href="#jwt-personalization-parsing">JWT personalization parsing</a></li>
+      </ul>
+    </li>
+    <li><a href="#additional-notes">Additional Notes</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="initial-understanding-of-the-resource-server-in-oauth-20">Initial understanding of the resource server in OAuth 2.0</h2>
+<p>Resource Server is exactly what and how to use few tutorials to talk specifically about this stuff, today we will talk about the concept first, to lay a foundation for subsequent use.</p>
+<h3 id="the-shortcomings-of-the-traditional-security-approach">The shortcomings of the traditional security approach</h3>
+<p>The traditional way to protect an application is to get the credentials (JWT is one of them) given by the server through a username and password (also can be an authentication code), and then carry the credentials to request the interface to get the corresponding resources (Resource). Most of the standalone applications use this model is very convenient and simple.</p>
+<p>But once your project gets bigger and needs to be transformed into a microservice, using this approach becomes a bit unwieldy, as each service&rsquo;s resources need to be authenticated and authorized, so a paradigm is needed to simplify the process.</p>
+<h4 id="authentication-and-authorization-can-be-loosely-coupled">Authentication and authorization can be loosely coupled</h4>
+<p>Authentication of users and access control of resources can actually be separated. Let&rsquo;s say you buy a plane ticket, now you can not only get your ticket from the airline ticketing department, but also from a third party ticketing center offline or online, eventually each flight will verify your ticket to determine if you are eligible for registration and will not care about the channel you purchased your ticket from. This is a real-life example.</p>
+<p>If in microservices, each of our services only needs to verify that the request has the permission to access the resource, we can abstract the logic of resource access verification to a common model and implement it with code, very much in line with the idea of decentralization of microservices. This is the fundamental meaning of resource server.</p>
+<h3 id="resource-server">Resource Server</h3>
+<p>The full name of the resource server is <strong>OAuth2 Resource Server</strong>, which is actually part of the OAuth 2.0 protocol and is usually implemented with the help of Json Web Token (there is actually another one called Opaque Tokens that can also be used). OAuth 2.0 Authorization Server sends the client a <strong>Json Web Token</strong> , which is used to verify that the client has permission to access a resource.</p>
+<p>When a single application is transformed into a microservice, the authorization service is actually better centralized, unified management of user authentication authorization and issued to the client Token. each specific service is also a resource server, we only need to abstract the access control interface can be. Here follow a principle: <strong>common encapsulation into a class library (jar), personalized abstraction for configuration.</strong> The general flow chart is as follows.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/01/15/8b46dd960a7045eab917d0b3f559e2cd.png" alt="image"></p>
+<p>This way the authorization server only cares about issuing Token function, and the resource server is only responsible for verifying Token. Whenever a new service is accessed we only need to add the supporting resource service dependency and configuration, which is very simple to transform.</p>
+<blockquote>
+<p>There is also a way to centralize the resource server on the Internet, which is to centralize the authentication process at the gateway. Personally, I don&rsquo;t think it is easy to accept unless you have had similar experience, and there are some security context cross-service issues to deal with. The above model is highly recommended for beginners.</p>
+</blockquote>
+<p>I have actually done a preliminary implementation and transformation of the above model, and will then explain how to implement a resource server in microservices using Spring Security, and some of the key points related to transforming microservices in monolithic applications.</p>
+<h2 id="resource-server-transformation">Resource server transformation</h2>
+<p>This DEMO was originally a standalone application, where authentication and authorization were used in one application. After the transformation into a standalone service, the original authentication will be stripped out (more on how to implement this later) and the service will retain only the user credential (JWT) based access control functionality. We will then implement the capability step by step.</p>
+<h2 id="required-dependencies">Required dependencies</h2>
+<p>On top of Spring Security, we need to add new dependencies to support OAuth2 Resource Server and JWT. we need to add the following dependency libraries.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-security<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="c">&lt;!-- 资源服务器 --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-security-oauth2-resource-server<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="c">&lt;!-- jose --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.security<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-security-oauth2-jose<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>Spring Security 5.x removes the OAuth2.0 authorization server and retains the OAuth2.0 resource server.</p>
+</blockquote>
+<h2 id="jwt-decoding">JWT decoding</h2>
+<p>To validate JWT you must implement decoding functionality for JWT, in Spring Security OAuth2 Resource Server module, a decoder is provided by default, this decoder needs to be called based on.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.security.oauth2.resourceserver
+</code></pre></td></tr></table>
+</div>
+</div><p>The metadata under the configuration to generate the decoding configuration, where most of the configuration is to call the <code>well-known</code> endpoint opened by the authorization server, containing a series of parameters to parse and verify the JWT.</p>
+<ul>
+<li><code>jwkSetUri</code> is generally the <strong>well-known</strong> endpoint provided by the authorization server to obtain the JWK configuration to verify the JWT Token.</li>
+<li><code>jwsAlgorithm</code> Specifies the algorithm used by jwt, default <strong>RSA-256</strong> .</li>
+<li><code>issuerUri</code> Endpoint for getting OAuth2.0 authorization server metadata.</li>
+<li><code>publicKeyLocation</code> The path to the public key used for decoding, as the resource server will only hold the public key and should not hold the private key.</li>
+</ul>
+<p>In order to achieve a smooth transition, the default configuration will definitely not work, and a JWT decoder needs to be customized. Let&rsquo;s implement it step by step next.</p>
+<h3 id="separate-public-and-private-keys">Separate public and private keys</h3>
+<p>The resource server can only hold the public key, so it needs to export a public key from the previous <code>jks</code> file.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">keytool -export -alias felordcn -keystore &lt;jks证书全路径&gt;  -file &lt;导出cer的全路径&gt;
+</code></pre></td></tr></table>
+</div>
+</div><p>For example.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">keytool -export -alias felordcn -keystore D:<span class="se">\k</span>eystores<span class="se">\f</span>elordcn.jks  -file d:<span class="se">\k</span>eystores<span class="se">\p</span>ublickey.cer
+</code></pre></td></tr></table>
+</div>
+</div><p>Put the separated <code>cer</code> public key file under the path of the original <code>jks</code> file, and the resource server no longer keeps <code>jks</code>.</p>
+<h3 id="custom-jwt-decoder">Custom jwt decoder</h3>
+<p><code>spring-security-oauth2-jose</code> is the <strong>jose</strong> specification dependency of Spring Security. I will implement a custom JWT decoder based on this class library.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
+</span><span class="cm">    * 基于Nimbus的jwt解码器，并增加了一些自定义校验策略
+</span><span class="cm">    *
+</span><span class="cm">    * @param validator the validator
+</span><span class="cm">    * @return the jwt decoder
+</span><span class="cm">    */</span>
+<span class="nd">@SneakyThrows</span>
+<span class="nd">@Bean</span>
+<span class="kd">public</span> <span class="n">JwtDecoder</span> <span class="nf">jwtDecoder</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;delegatingTokenValidator&#34;</span><span class="o">)</span> <span class="n">DelegatingOAuth2TokenValidator</span><span class="o">&lt;</span><span class="n">Jwt</span><span class="o">&gt;</span> <span class="n">validator</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">CertificateFactory</span> <span class="n">certificateFactory</span> <span class="o">=</span> <span class="n">CertificateFactory</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="s">&#34;X.509&#34;</span><span class="o">);</span>
+    <span class="c1">// 从classpath路径读取cer公钥证书来配置解码器
+</span><span class="c1"></span>    <span class="n">ClassPathResource</span> <span class="n">resource</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassPathResource</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">jwtProperties</span><span class="o">.</span><span class="na">getCertInfo</span><span class="o">().</span><span class="na">getPublicKeyLocation</span><span class="o">());</span>
+    <span class="n">Certificate</span> <span class="n">certificate</span> <span class="o">=</span> <span class="n">certificateFactory</span><span class="o">.</span><span class="na">generateCertificate</span><span class="o">(</span><span class="n">resource</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">());</span>
+    <span class="n">PublicKey</span> <span class="n">publicKey</span> <span class="o">=</span> <span class="n">certificate</span><span class="o">.</span><span class="na">getPublicKey</span><span class="o">();</span>
+    <span class="n">NimbusJwtDecoder</span> <span class="n">nimbusJwtDecoder</span> <span class="o">=</span> <span class="n">NimbusJwtDecoder</span><span class="o">.</span><span class="na">withPublicKey</span><span class="o">((</span><span class="n">RSAPublicKey</span><span class="o">)</span> <span class="n">publicKey</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+    <span class="n">nimbusJwtDecoder</span><span class="o">.</span><span class="na">setJwtValidator</span><span class="o">(</span><span class="n">validator</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">nimbusJwtDecoder</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The above decoder is based on our public key certificate, and I also customized some checksum policies. I have to say that Nimbus' jwt class library is much better than jjwt.</p>
+<h2 id="custom-resource-server-configuration">Custom resource server configuration</h2>
+<p>Next, configure the resource server.</p>
+<h3 id="core-processes-and-concepts">Core processes and concepts</h3>
+<p>The resource server is actually configured with a filter <code>BearerTokenAuthenticationFilter</code> to intercept and authenticate Bearer Token, allowing the request if the authentication passes and the permission meets the requirements, and denying the request if it does not.</p>
+<p>The difference is that after successful authentication, the credentials are no longer <code>UsernamePasswordAuthenticationToken</code> but <code>JwtAuthenticationToken</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Transient</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JwtAuthenticationToken</span> <span class="kd">extends</span> <span class="n">AbstractOAuth2TokenAuthenticationToken</span><span class="o">&lt;</span><span class="n">Jwt</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="n">SpringSecurityCoreVersion</span><span class="o">.</span><span class="na">SERIAL_VERSION_UID</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="cm">/**
+</span><span class="cm">     * Constructs a {@code JwtAuthenticationToken} using the provided parameters.
+</span><span class="cm">     * @param jwt the JWT
+</span><span class="cm">     */</span>
+    <span class="kd">public</span> <span class="nf">JwtAuthenticationToken</span><span class="o">(</span><span class="n">Jwt</span> <span class="n">jwt</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">jwt</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="na">getSubject</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+</span><span class="cm">     * Constructs a {@code JwtAuthenticationToken} using the provided parameters.
+</span><span class="cm">     * @param jwt the JWT
+</span><span class="cm">     * @param authorities the authorities assigned to the JWT
+</span><span class="cm">     */</span>
+    <span class="kd">public</span> <span class="nf">JwtAuthenticationToken</span><span class="o">(</span><span class="n">Jwt</span> <span class="n">jwt</span><span class="o">,</span> <span class="n">Collection</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">GrantedAuthority</span><span class="o">&gt;</span> <span class="n">authorities</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">jwt</span><span class="o">,</span> <span class="n">authorities</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">setAuthenticated</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="na">getSubject</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+</span><span class="cm">     * Constructs a {@code JwtAuthenticationToken} using the provided parameters.
+</span><span class="cm">     * @param jwt the JWT
+</span><span class="cm">     * @param authorities the authorities assigned to the JWT
+</span><span class="cm">     * @param name the principal name
+</span><span class="cm">     */</span>
+    <span class="kd">public</span> <span class="nf">JwtAuthenticationToken</span><span class="o">(</span><span class="n">Jwt</span> <span class="n">jwt</span><span class="o">,</span> <span class="n">Collection</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">GrantedAuthority</span><span class="o">&gt;</span> <span class="n">authorities</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">jwt</span><span class="o">,</span> <span class="n">authorities</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">setAuthenticated</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">getTokenAttributes</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">getToken</span><span class="o">().</span><span class="na">getClaims</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+</span><span class="cm">     * jwt 中的sub 值  用户名比较合适
+</span><span class="cm">     */</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Special care should be taken when making changes, especially when user credential information is obtained from <code>SecurityContext</code>.</p>
+<h3 id="resource-manager-configuration">Resource manager configuration</h3>
+<p>Starting from a certain version of Spring Security 5 there is no need to integrate adapter classes anymore, you can configure Spring Security just like this, and the same for the resource manager.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
+<span class="n">SecurityFilterChain</span> <span class="nf">jwtSecurityFilterChain</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">http</span><span class="o">.</span><span class="na">authorizeRequests</span><span class="o">(</span><span class="n">request</span> <span class="o">-&gt;</span> <span class="n">request</span><span class="o">.</span><span class="na">anyRequest</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">access</span><span class="o">(</span><span class="s">&#34;@checker.check(authentication,request)&#34;</span><span class="o">))</span>
+            <span class="o">.</span><span class="na">exceptionHandling</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">accessDeniedHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">SimpleAccessDeniedHandler</span><span class="o">())</span>
+            <span class="o">.</span><span class="na">authenticationEntryPoint</span><span class="o">(</span><span class="k">new</span> <span class="n">SimpleAuthenticationEntryPoint</span><span class="o">())</span>
+            <span class="o">.</span><span class="na">and</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">oauth2ResourceServer</span><span class="o">(</span><span class="n">OAuth2ResourceServerConfigurer</span><span class="o">::</span><span class="n">jwt</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Here you just need to declare the resource server that uses JWT checksum, and configure the defined <code>401</code> endpoint and <code>403</code> processor. Here I added SpEL-based dynamic permission control, which has been covered in the past, so I won&rsquo;t go over it here.</p>
+<h3 id="jwt-personalization-parsing">JWT personalization parsing</h3>
+<p>Parsing data from JWT Token and generating <code>JwtAuthenticationToken</code> is done by <code>JwtAuthenticationConverter</code>. You can customize this converter to implement some personalized features. For example, if by default the parsed permissions are prefixed with <code>SCOPE_</code> and the project uses <code>ROLE_</code>, you can use this class to be compatible with the old project.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">     <span class="nd">@Bean</span>
+    <span class="n">JwtAuthenticationConverter</span> <span class="nf">jwtAuthenticationConverter</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">JwtAuthenticationConverter</span> <span class="n">jwtAuthenticationConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JwtAuthenticationConverter</span><span class="o">();</span>
+        <span class="n">JwtGrantedAuthoritiesConverter</span> <span class="n">jwtGrantedAuthoritiesConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JwtGrantedAuthoritiesConverter</span><span class="o">();</span>
+<span class="c1">//        如果不按照规范  解析权限集合Authorities 就需要自定义key
+</span><span class="c1">//        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName(&#34;scopes&#34;);
+</span><span class="c1">//        OAuth2 默认前缀是 SCOPE_     Spring Security 是 ROLE_
+</span><span class="c1"></span>        <span class="n">jwtGrantedAuthoritiesConverter</span><span class="o">.</span><span class="na">setAuthorityPrefix</span><span class="o">(</span><span class="s">&#34;&#34;</span><span class="o">);</span>
+        <span class="n">jwtAuthenticationConverter</span><span class="o">.</span><span class="na">setJwtGrantedAuthoritiesConverter</span><span class="o">(</span><span class="n">jwtGrantedAuthoritiesConverter</span><span class="o">);</span>
+        <span class="c1">// 设置jwt中用户名的key  默认就是sub  你可以自定义
+</span><span class="c1"></span>        <span class="n">jwtAuthenticationConverter</span><span class="o">.</span><span class="na">setPrincipalClaimName</span><span class="o">(</span><span class="n">JwtClaimNames</span><span class="o">.</span><span class="na">SUB</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">jwtAuthenticationConverter</span><span class="o">;</span>
+    <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Here the transformation is basically complete. Your protected resource API will be protected by Bearer Token.</p>
+<blockquote>
+<p>In practice, it is recommended to wrap the resource server as a dependency and integrate it into the service that needs to protect the resource.</p>
+</blockquote>
+<h2 id="additional-notes">Additional Notes</h2>
+<p>To test the resource server, assume we have an authorization server that issues tokens. Here we simply simulate a token issuing method to obtain a token:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
+</span><span class="cm">    * 资源服务器不应该生成JWT 但是为了测试 假设这是个认证服务器
+</span><span class="cm">    */</span>
+<span class="nd">@SneakyThrows</span>
+<span class="nd">@Test</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">imitateAuthServer</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="n">JwtEncoder</span> <span class="n">jwsEncoder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NimbusJwsEncoder</span><span class="o">(</span><span class="n">jwkSource</span><span class="o">());</span>
+
+    <span class="n">JwtTokenGenerator</span> <span class="n">jwtTokenGenerator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JwtTokenGenerator</span><span class="o">(</span><span class="n">jwsEncoder</span><span class="o">);</span>
+    <span class="n">OAuth2AccessTokenResponse</span> <span class="n">oAuth2AccessTokenResponse</span> <span class="o">=</span> <span class="n">jwtTokenGenerator</span><span class="o">.</span><span class="na">tokenResponse</span><span class="o">();</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;oAuth2AccessTokenResponse = &#34;</span> <span class="o">+</span> <span class="n">oAuth2AccessTokenResponse</span><span class="o">.</span><span class="na">getAccessToken</span><span class="o">().</span><span class="na">getTokenValue</span><span class="o">());</span>
+<span class="o">}</span>
+
+    <span class="nd">@SneakyThrows</span>
+<span class="kd">private</span> <span class="n">JWKSource</span><span class="o">&lt;</span><span class="n">SecurityContext</span><span class="o">&gt;</span> <span class="nf">jwkSource</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">ClassPathResource</span> <span class="n">resource</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassPathResource</span><span class="o">(</span><span class="s">&#34;felordcn.jks&#34;</span><span class="o">);</span>
+    <span class="n">KeyStore</span> <span class="n">jks</span> <span class="o">=</span> <span class="n">KeyStore</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="s">&#34;jks&#34;</span><span class="o">);</span>
+    <span class="n">String</span> <span class="n">pass</span> <span class="o">=</span> <span class="s">&#34;123456&#34;</span><span class="o">;</span>
+    <span class="kt">char</span><span class="o">[]</span> <span class="n">pem</span> <span class="o">=</span> <span class="n">pass</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">();</span>
+    <span class="n">jks</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">resource</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">(),</span> <span class="n">pem</span><span class="o">);</span>
+
+    <span class="n">RSAKey</span> <span class="n">rsaKey</span> <span class="o">=</span> <span class="n">RSAKey</span><span class="o">.</span><span class="na">load</span><span class="o">(</span><span class="n">jks</span><span class="o">,</span> <span class="s">&#34;felordcn&#34;</span><span class="o">,</span> <span class="n">pem</span><span class="o">);</span>
+
+    <span class="n">JWKSet</span> <span class="n">jwkSet</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JWKSet</span><span class="o">(</span><span class="n">rsaKey</span><span class="o">);</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="n">ImmutableJWKSet</span><span class="o">&lt;&gt;(</span><span class="n">jwkSet</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>Reference</p>
+<ul>
+<li><a href="https://felord.cn/spring-security-resource-server.html">https://felord.cn/spring-security-resource-server.html</a></li>
+<li><a href="https://felord.cn/resource-server.html">https://felord.cn/resource-server.html</a></li>
+</ul>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-security/">spring-security</a>
+          <a href="https://www.springcloud.io/tags/oauth2/">oauth2</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2022-01/content-negotiation-manager/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Content negotiation in Spring MVC</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2022-01/springboot-client-side-theme-switching/">
+            <span class="next-text nav-default">Spring Boot implements client-side theme switching</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

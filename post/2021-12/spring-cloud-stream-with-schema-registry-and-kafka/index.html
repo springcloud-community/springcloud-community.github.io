@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Spring Cloud Stream with Schema Registry and Kafka - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="In this article, you will learn how to use Confluent Schema Registry with Spring Cloud Stream and Kafka in a microservices architecture. We will use Apache Avro to serialize and deserialize events exchanged between our applications. Spring Cloud Stream provides a handy mechanism for integration with Kafka and schema registry.
+Ok, but before we start, let’s say some words about schema registry. What is this? And why we may use it in our event-driven architecture?" />
+<meta name="keywords" content="Kafka, Spring Cloud Stream, Spring Cloud Schema Registry Client" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2021-12/spring-cloud-stream-with-schema-registry-and-kafka/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Spring Cloud Stream with Schema Registry and Kafka" />
+<meta property="og:description" content="In this article, you will learn how to use Confluent Schema Registry with Spring Cloud Stream and Kafka in a microservices architecture. We will use Apache Avro to serialize and deserialize events exchanged between our applications. Spring Cloud Stream provides a handy mechanism for integration with Kafka and schema registry.
+Ok, but before we start, let’s say some words about schema registry. What is this? And why we may use it in our event-driven architecture?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2021-12/spring-cloud-stream-with-schema-registry-and-kafka/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-12-10T16:51:17+08:00" />
+<meta property="article:modified_time" content="2021-12-10T16:51:17+08:00" />
+
+<meta itemprop="name" content="Spring Cloud Stream with Schema Registry and Kafka">
+<meta itemprop="description" content="In this article, you will learn how to use Confluent Schema Registry with Spring Cloud Stream and Kafka in a microservices architecture. We will use Apache Avro to serialize and deserialize events exchanged between our applications. Spring Cloud Stream provides a handy mechanism for integration with Kafka and schema registry.
+Ok, but before we start, let’s say some words about schema registry. What is this? And why we may use it in our event-driven architecture?"><meta itemprop="datePublished" content="2021-12-10T16:51:17+08:00" />
+<meta itemprop="dateModified" content="2021-12-10T16:51:17+08:00" />
+<meta itemprop="wordCount" content="2146">
+<meta itemprop="keywords" content="kafka,spring-cloud-stream,spring-cloud-schema-registry-client," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Spring Cloud Stream with Schema Registry and Kafka"/>
+<meta name="twitter:description" content="In this article, you will learn how to use Confluent Schema Registry with Spring Cloud Stream and Kafka in a microservices architecture. We will use Apache Avro to serialize and deserialize events exchanged between our applications. Spring Cloud Stream provides a handy mechanism for integration with Kafka and schema registry.
+Ok, but before we start, let’s say some words about schema registry. What is this? And why we may use it in our event-driven architecture?"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Spring Cloud Stream with Schema Registry and Kafka</h1>
+      
+      <div class="post-meta">
+        <time datetime="2021-12-10" class="post-time">
+          2021-12-10
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 2146 words </span>
+          <span class="more-meta"> 11 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#event-driven-architecture-with-spring-cloud-and-schema-registry">Event-driven architecture with Spring Cloud and schema registry</a></li>
+    <li><a href="#source-code">Source Code</a></li>
+    <li><a href="#running-confluent-schema-registry-on-kubernetes">Running Confluent Schema Registry on Kubernetes</a></li>
+    <li><a href="#integrate-spring-cloud-stream-with-confluent-schema-registry">Integrate Spring Cloud Stream with Confluent Schema Registry</a></li>
+    <li><a href="#event-class-and-apache-avro-serialization">Event class and Apache Avro serialization</a></li>
+    <li><a href="#integrate-spring-cloud-stream-with-kafka">Integrate Spring Cloud Stream with Kafka</a></li>
+    <li><a href="#deploy-applications-on-kubernetes">Deploy applications on Kubernetes</a></li>
+    <li><a href="#testing-integration-between-spring-cloud-stream-and-schema-registry">Testing integration between Spring Cloud Stream and schema registry</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>In this article, you will learn how to use Confluent Schema Registry with Spring Cloud Stream and Kafka in a microservices architecture. We will use Apache Avro to serialize and deserialize events exchanged between our applications. Spring Cloud Stream provides a handy mechanism for integration with Kafka and schema registry.</p>
+<p><img src="https://i1.wp.com/piotrminkowski.com/wp-content/uploads/2021/07/Screenshot-2021-07-21-at-13.09.11.png?resize=2048%2C1151&amp;ssl=1" alt=""></p>
+<p>Ok, but before we start, let’s say some words about schema registry. What is this? And why we may use it in our event-driven architecture? Let’s imagine we change the message on the producer side, by adding or removing some fields. We sent that message to a Kafka topic, but we don’t have many subscribers is receiving such events. In a typical microservices architecture, we may have many producers and many subscribers. It is often necessary for all those microservices to agree on a contract that is based on a schema. If a schema is evolving, the existing microservices are still required to work. Here comes a schema registry server. It provides a RESTful interface for storing and retrieving schemas in different formats like JSON, Protobuf, or Avro. It also stores a versioned history of all schemas and provides schema compatibility checks.</p>
+<p>We may choose between several available products. Spring Cloud has its own implementation of a schema registry server. Although it can be easily integrated with Spring Cloud Stream, we won’t use it. Currently, it doesn’t allow verifying compatibility between different versions. There is also an Apicurio registry. On the other hand, it is not possible to easily integrate it with Spring Cloud Stream. Therefore our choice fell on the Confluent schema registry.</p>
+<h2 id="event-driven-architecture-with-spring-cloud-and-schema-registry">Event-driven architecture with Spring Cloud and schema registry</h2>
+<p>We are going to run three applications. One of them is sending events to the Kafka topic, while two others are receiving them. The integration with Kafka is built on top of Spring Cloud Stream. The consumer <code>Consumer-A</code> is expecting events compatible with the <code>v1</code> of schema, while the second subscriber is expecting events compatible with the <code>v2</code> of schema. Before sending a message to Kafka the producer application tries to load schema definition from a remote server. If there is no result, it submits the data to the server, which replies with versioning information. The following diagram illustrates our architecture.</p>
+<p><img src="https://i2.wp.com/piotrminkowski.com/wp-content/uploads/2021/07/spring-cloud-stream-kafka-schema-registry.png?resize=696%2C441&amp;ssl=1" alt="spring-cloud-schema-registry-arch|696x441"></p>
+<p>If a new schema is not compatible with the previous version, a schema registry rejects it. As a result, Spring Cloud Stream doesn’t allow to send a message to the Kafka topic. Otherwise, it serializes a message using Apache Avro. When a subscriber receives a message it first fetches schema from a remote registry. It gets a version of the schema from the header of a message. Finally, it deserializes it using the Avro format.</p>
+<h2 id="source-code">Source Code</h2>
+<p>If you would like to try it by yourself, you may always take a look at my source code. In order to do that you need to clone my GitHub <a href="https://github.com/piomin/course-spring-microservices.git">repository</a> and switch to the <strong>schema-registry</strong> branch. Then go to the <code>event-driven</code> directory. After that, you should just follow my instructions. Let’s begin.</p>
+<h2 id="running-confluent-schema-registry-on-kubernetes">Running Confluent Schema Registry on Kubernetes</h2>
+<p>It seems that the simplest way to run Confluent Schema Registry locally is on Kubernetes. Since we need to run at least Zookeeper and Kafka to be able to run schema registry we will use Helm for it. First, let’s add Confluent Helm repository.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ helm repo add confluentinc https://packages.confluent.io/helm
+$ helm repo update
+</code></pre></td></tr></table>
+</div>
+</div><p>Then we just need to install Confluent Platform using operator.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ kubectl create ns confluent
+$ helm upgrade --install confluent-operator confluentinc/confluent-for-kubernetes
+$ kubectl apply -f https://raw.githubusercontent.com/confluentinc/confluent-kubernetes-examples/master/quickstart-deploy/confluent-platform.yaml
+</code></pre></td></tr></table>
+</div>
+</div><p>Finally, let’s display a list of running pods in the <code>confluent</code> namespace.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ kubectl get pod -n confluent
+NAME                                                  READY   STATUS    RESTARTS   AGE
+kafka-confluent-cp-control-center-5ccb7479fd-hmpg6    1/1     Running   <span class="m">10</span>         2d17h
+kafka-confluent-cp-kafka-0                            2/2     Running   <span class="m">5</span>          2d17h
+kafka-confluent-cp-kafka-1                            2/2     Running   <span class="m">5</span>          2d17h
+kafka-confluent-cp-kafka-2                            2/2     Running   <span class="m">5</span>          2d17h
+kafka-confluent-cp-kafka-connect-797bd95655-kxnzm     2/2     Running   <span class="m">6</span>          2d17h
+kafka-confluent-cp-kafka-rest-69f49987bf-6nds7        2/2     Running   <span class="m">13</span>         2d17h
+kafka-confluent-cp-ksql-server-54675f9777-rbcb7       2/2     Running   <span class="m">9</span>          2d17h
+kafka-confluent-cp-schema-registry-7f6f6f9f8d-sh4b9   2/2     Running   <span class="m">11</span>         2d17h
+kafka-confluent-cp-zookeeper-0                        2/2     Running   <span class="m">4</span>          2d17h
+kafka-confluent-cp-zookeeper-1                        2/2     Running   <span class="m">4</span>          2d17h
+kafka-confluent-cp-zookeeper-2                        2/2     Running   <span class="m">4</span>          2d17h
+</code></pre></td></tr></table>
+</div>
+</div><p>After that, we may display a list of Kubernetes services. Our application we will connect to the Kafka cluster through the <code>kafka-confluent-cp-kafka</code> service.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ kubectl get svc -n confluent
+NAME                                    TYPE        CLUSTER-IP       EXTERNAL-IP   PORT<span class="o">(</span>S<span class="o">)</span>             AGE
+kafka-confluent-cp-control-center       ClusterIP   10.100.47.14     &lt;none&gt;        9021/TCP            2d17h
+kafka-confluent-cp-kafka                ClusterIP   10.102.129.194   &lt;none&gt;        9092/TCP,5556/TCP   2d17h
+kafka-confluent-cp-kafka-connect        ClusterIP   10.103.223.169   &lt;none&gt;        8083/TCP,5556/TCP   2d17h
+kafka-confluent-cp-kafka-headless       ClusterIP   None             &lt;none&gt;        9092/TCP            2d17h
+kafka-confluent-cp-kafka-rest           ClusterIP   10.102.7.98      &lt;none&gt;        8082/TCP,5556/TCP   2d17h
+kafka-confluent-cp-ksql-server          ClusterIP   10.108.116.196   &lt;none&gt;        8088/TCP,5556/TCP   2d17h
+kafka-confluent-cp-schema-registry      ClusterIP   10.102.169.4     &lt;none&gt;        8081/TCP,5556/TCP   2d17h
+kafka-confluent-cp-zookeeper            ClusterIP   10.99.33.73      &lt;none&gt;        2181/TCP,5556/TCP   2d17h
+kafka-confluent-cp-zookeeper-headless   ClusterIP   None             &lt;none&gt;        2888/TCP,3888/TCP   2d17h
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="integrate-spring-cloud-stream-with-confluent-schema-registry">Integrate Spring Cloud Stream with Confluent Schema Registry</h2>
+<p>In order to enable integration with Confluent Schema Registry we first need to include the <code>spring-cloud-schema-registry-client</code> dependency to the Maven <code>pom.xml</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-schema-registry-client<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>After that, we should enable <code>RegistryClient</code> through annotation. By default, the client uses a schema registry server provided by Spring Cloud. Therefore, we have registered the <code>ConfluentSchemaRegistryClient</code> bean as a default client implementation.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableSchemaRegistryClient</span>
+<span class="kd">class</span> <span class="nc">ProductionApplication</span> <span class="o">{</span>
+
+   <span class="nd">@Primary</span>
+   <span class="nd">@Bean</span>
+   <span class="n">fun</span> <span class="nf">schemaRegistryClient</span><span class="o">(</span><span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;\${spring.cloud.schemaRegistryClient.endpoint}&#34;</span><span class="o">)</span> <span class="n">endpoint</span><span class="o">:</span> <span class="n">String</span><span class="o">?):</span> <span class="n">SchemaRegistryClient</span> <span class="o">{</span>
+      <span class="n">val</span> <span class="n">client</span> <span class="o">=</span> <span class="n">ConfluentSchemaRegistryClient</span><span class="o">()</span>
+      <span class="n">client</span><span class="o">.</span><span class="na">setEndpoint</span><span class="o">(</span><span class="n">endpoint</span><span class="o">)</span>
+      <span class="k">return</span> <span class="n">client</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Since we run our schema registry on Kubernetes, its address is different the default one. Let’s override it in <code>application.properties</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.cloud.schemaRegistryClient.endpoint=http://kafka-confluent-cp-schema-registry:8081/
+</code></pre></td></tr></table>
+</div>
+</div><p>Because we are going to serialize messages using Apache Avro format, we need to change a default content type for all topics to <code>application/*-avro</code>. The message is sent with a <code>contentType</code> header by using the following scheme: <code>application/[prefix].[subject].v[version]+avro</code>, where <code>prefix</code> is configurable and <code>subject</code> is deduced from the payload type. The default prefix is <code>vnd</code>, and since the name of a message class is <code>CallmeEvent</code> the value of the header would be <code>application/vnd.callmeevent.v1+avro</code> for the <code>v1</code> version of schema or <code>application/vnd.callmeevent.v2+avro</code> for the <code>v2</code> version.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.cloud.stream.default.contentType=application/*+avro
+</code></pre></td></tr></table>
+</div>
+</div><p>Alternatively, we may set a content type just for a single destination. But more about it in the next sections.</p>
+<h2 id="event-class-and-apache-avro-serialization">Event class and Apache Avro serialization</h2>
+<p>We may choose between two types of approaches to the event class creation when working with Apache Avro. It is possible to generate Avro schema from a model class, or generate class from Avro schema using <code>avro-maven-plugin</code>. Assuming we use a second approach we first need to create Avro schema and place it in the source code as the <code>.avsc</code> file. Let’s say it is our Avro schema. It contains three fields <code>id</code>, <code>message</code> and <code>eventType</code>. The name of a generated class will be <code>CallmeEvent</code> and a package name will be the same as the <code>namespace</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;type&#34;</span><span class="p">:</span><span class="s2">&#34;record&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;CallmeEvent&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;namespace&#34;</span><span class="p">:</span><span class="s2">&#34;pl.piomin.samples.eventdriven.producer.message.avro&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;fields&#34;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;id&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;type&#34;</span><span class="p">:</span><span class="s2">&#34;int&#34;</span>
+    <span class="p">},{</span>
+      <span class="nt">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;message&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;type&#34;</span><span class="p">:</span><span class="s2">&#34;string&#34;</span>
+    <span class="p">},{</span>
+      <span class="nt">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;eventType&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;string&#34;</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>After that, we need to the following plugin to the Maven <code>pom.xml</code>. We just need to configure the input directory with Avro schema files, and the output directory for the generated classes. Once you run a build, using for example <code>mvn clean package</code> command it will generate a required class.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;plugin&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.apache.avro<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>avro-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.10.2<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;executions&gt;</span>
+    <span class="nt">&lt;execution&gt;</span>
+      <span class="nt">&lt;phase&gt;</span>generate-sources<span class="nt">&lt;/phase&gt;</span>
+      <span class="nt">&lt;goals&gt;</span>
+        <span class="nt">&lt;goal&gt;</span>schema<span class="nt">&lt;/goal&gt;</span>
+      <span class="nt">&lt;/goals&gt;</span>
+      <span class="nt">&lt;configuration&gt;</span>
+        <span class="nt">&lt;sourceDirectory&gt;</span>${project.basedir}/src/main/resources/schema/<span class="nt">&lt;/sourceDirectory&gt;</span>
+        <span class="nt">&lt;outputDirectory&gt;</span>${project.basedir}/target/generated-sources/avro/<span class="nt">&lt;/outputDirectory&gt;</span>
+      <span class="nt">&lt;/configuration&gt;</span>
+    <span class="nt">&lt;/execution&gt;</span>
+  <span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Just to simplify working with generated classes, let’s include the <code>target/generated-sources/avro</code> as a source directory.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;plugin&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.codehaus.mojo<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>build-helper-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>3.2.0<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;executions&gt;</span>
+    <span class="nt">&lt;execution&gt;</span>
+      <span class="nt">&lt;phase&gt;</span>generate-sources<span class="nt">&lt;/phase&gt;</span>
+      <span class="nt">&lt;goals&gt;</span>
+        <span class="nt">&lt;goal&gt;</span>add-source<span class="nt">&lt;/goal&gt;</span>
+      <span class="nt">&lt;/goals&gt;</span>
+      <span class="nt">&lt;configuration&gt;</span>
+        <span class="nt">&lt;sources&gt;</span>
+          <span class="nt">&lt;source&gt;</span>${project.build.directory}/generated-sources/avro<span class="nt">&lt;/source&gt;</span>
+        <span class="nt">&lt;/sources&gt;</span>
+      <span class="nt">&lt;/configuration&gt;</span>
+    <span class="nt">&lt;/execution&gt;</span>
+  <span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>However, the simplest approach, especially in development, is to generate Avro schema automatically from the source code. With this approach, we first need to create <code>CallmeEvent</code> class.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nf">CallmeEvent</span><span class="o">(</span><span class="n">val</span> <span class="n">id</span><span class="o">:</span> <span class="n">Int</span><span class="o">,</span>
+                  <span class="n">val</span> <span class="n">message</span><span class="o">:</span> <span class="n">String</span><span class="o">,</span>
+                  <span class="n">val</span> <span class="n">eventType</span><span class="o">:</span> <span class="n">String</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Then, we just need to enable dynamic Avro schema generation. Once you do it, Spring Cloud Stream automatically generates and sends schema to the schema registry before sending a message to a Kafka topic.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.cloud.schema.avro.dynamicSchemaGenerationEnabled=true
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="integrate-spring-cloud-stream-with-kafka">Integrate Spring Cloud Stream with Kafka</h2>
+<p>Spring Cloud Stream offers a broker agnostic programming model for sending and receiving messages. If you are looking for a quick introduction to that model and event-driven microservices read my article <a href="https://piotrminkowski.com/2020/06/05/introduction-to-event-driven-microservices-with-spring-cloud-stream/">Introduction to event-driven microservices with Spring Cloud Stream</a>. We use the same scenario as described in this article. However, we will add schema registry support and replace RabbitMQ with Kafka. In order to change the broker, we just need to replace a binder implementation as shown below.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-cloud-stream-binder-kafka<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Here’s the main class of the <code>producer-service</code> application. It uses the <code>Supplier</code> bean to generate events continuously after startup.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableSchemaRegistryClient</span>
+<span class="kd">class</span> <span class="nc">ProductionApplication</span> <span class="o">{</span>
+
+   <span class="n">var</span> <span class="n">id</span><span class="o">:</span> <span class="n">Int</span> <span class="o">=</span> <span class="n">0</span>
+
+   <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;\${callme.supplier.enabled}&#34;</span><span class="o">)</span>
+   <span class="n">val</span> <span class="n">supplierEnabled</span><span class="o">:</span> <span class="n">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
+
+   <span class="nd">@Bean</span>
+   <span class="n">fun</span> <span class="nf">callmeEventSupplier</span><span class="o">():</span> <span class="n">Supplier</span><span class="o">&lt;</span><span class="n">Message</span><span class="o">&lt;</span><span class="n">CallmeEvent</span><span class="o">&gt;?&gt;</span> <span class="o">=</span> <span class="n">Supplier</span> <span class="o">{</span> <span class="n">createEvent</span><span class="o">()</span> <span class="o">}</span>
+
+   <span class="nd">@Primary</span>
+   <span class="nd">@Bean</span>
+   <span class="n">fun</span> <span class="nf">schemaRegistryClient</span><span class="o">(</span><span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;\${spring.cloud.schemaRegistryClient.endpoint}&#34;</span><span class="o">)</span> <span class="n">endpoint</span><span class="o">:</span> <span class="n">String</span><span class="o">?):</span> <span class="n">SchemaRegistryClient</span> <span class="o">{</span>
+      <span class="n">val</span> <span class="n">client</span> <span class="o">=</span> <span class="n">ConfluentSchemaRegistryClient</span><span class="o">()</span>
+      <span class="n">client</span><span class="o">.</span><span class="na">setEndpoint</span><span class="o">(</span><span class="n">endpoint</span><span class="o">)</span>
+      <span class="k">return</span> <span class="n">client</span>
+   <span class="o">}</span>
+
+   <span class="kd">private</span> <span class="n">fun</span> <span class="nf">createEvent</span><span class="o">():</span> <span class="n">Message</span><span class="o">&lt;</span><span class="n">CallmeEvent</span><span class="o">&gt;?</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="k">if</span> <span class="o">(</span><span class="n">supplierEnabled</span><span class="o">)</span>
+         <span class="n">MessageBuilder</span><span class="o">.</span><span class="na">withPayload</span><span class="o">(</span><span class="n">CallmeEvent</span><span class="o">(++</span><span class="n">id</span><span class="o">,</span> <span class="s">&#34;I&#39;m callme event!&#34;</span><span class="o">,</span> <span class="s">&#34;ping&#34;</span><span class="o">))</span>
+                     <span class="o">.</span><span class="na">setHeader</span><span class="o">(</span><span class="s">&#34;to_process&#34;</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
+                     <span class="o">.</span><span class="na">build</span><span class="o">()</span>
+      <span class="k">else</span>
+         <span class="kc">null</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Here’s a Spring Cloud Stream configuration for <code>producer-service</code> and <code>Supplier</code> bean. It configures partitioning based on the value of the <code>id</code> field.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.cloud.stream.bindings.callmeEventSupplier-out-0.contentType=application/*+avro
+spring.cloud.stream.bindings.callmeEventSupplier-out-0.destination=callme-events
+spring.cloud.stream.bindings.callmeEventSupplier-out-0.producer.partitionKeyExpression=payload.id
+spring.cloud.stream.bindings.callmeEventSupplier-out-0.producer.partitionCount=2
+</code></pre></td></tr></table>
+</div>
+</div><p>Both consumers are receiving messages from the <code>callme-events</code> topic. The same as for producer-service we need to enable <code>RegistryClient</code> support.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableSchemaRegistryClient</span>
+<span class="kd">class</span> <span class="nc">ConsumerAApplication</span> <span class="o">{</span>
+
+   <span class="n">val</span> <span class="n">logger</span><span class="o">:</span> <span class="n">Logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">ConsumerAApplication</span><span class="o">::</span><span class="n">class</span><span class="o">.</span><span class="na">java</span><span class="o">)</span>
+
+   <span class="nd">@Bean</span>
+   <span class="n">fun</span> <span class="nf">callmeEventConsumer</span><span class="o">():</span> <span class="n">Consumer</span><span class="o">&lt;</span><span class="n">CallmeEvent</span><span class="o">&gt;</span> <span class="o">=</span> <span class="n">Consumer</span> <span class="o">{</span> 
+      <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Received: {}&#34;</span><span class="o">,</span> <span class="n">it</span><span class="o">)</span> 
+   <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>We also need to configure deserialization with Avro and partitioning on the consumer side.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.cloud.stream.default.contentType=application/*+avro
+spring.cloud.stream.bindings.callmeEventSupplier-in-0.contentType=application/*+avro
+spring.cloud.stream.bindings.callmeEventConsumer-in-0.destination=callme-events
+spring.cloud.stream.bindings.callmeEventConsumer-in-0.group=a
+spring.cloud.stream.bindings.callmeEventConsumer-in-0.consumer.partitioned=true
+spring.cloud.stream.instanceCount=2
+spring.cloud.stream.instanceIndex=${INSTANCE_INDEX}
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="deploy-applications-on-kubernetes">Deploy applications on Kubernetes</h2>
+<p>Firstly, let’s deploy our Spring Cloud Stream applications on Kubernetes. Here’s a <code>Deployment</code> manifest for <code>producer-service</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">producer</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">producer</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">producer</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">producer</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">piomin/producer-service</span><span class="w">
+</span><span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">8080</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>We also have similar manifests for consumer applications. We need to set the <code>INSTANCE_INDEX</code> environment variable, which is then responsible for partitioning configuration.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">consumer-a</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">consumer-a</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">consumer-a</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">consumer-a</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">piomin/consumer-a-service</span><span class="w">
+</span><span class="w">        </span><span class="nt">env</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">INSTANCE_INDEX</span><span class="w">
+</span><span class="w">            </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;0&#34;</span><span class="w">
+</span><span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">8080</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>The Deployment manifest for the <code>consumer-b</code> application is visible below.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">consumer-b</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">consumer-b</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">consumer-b</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">consumer-b</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">piomin/consumer-b-service</span><span class="w">
+</span><span class="w">        </span><span class="nt">env</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">INSTANCE_INDEX</span><span class="w">
+</span><span class="w">            </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1&#34;</span><span class="w">
+</span><span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">8080</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>All those applications may be deployed on Kubernetes with Skaffold. Each application directory contains a Skaffold configuration file <code>skaffold.yaml</code>, so you just need to execute the following command to run them on Kubernetes.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ skaffold run
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="testing-integration-between-spring-cloud-stream-and-schema-registry">Testing integration between Spring Cloud Stream and schema registry</h2>
+<p>In order to register the <code>v1</code> version of the schema, we should run the <code>producer-service</code> application with the following event class.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nf">CallmeEvent</span><span class="o">(</span><span class="n">val</span> <span class="n">id</span><span class="o">:</span> <span class="n">Int</span><span class="o">,</span>
+                  <span class="n">val</span> <span class="n">message</span><span class="o">:</span> <span class="n">String</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Then, we should restart it with the new version of the <code>CallmeEvent</code> class as shown below.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nf">CallmeEvent</span><span class="o">(</span><span class="n">val</span> <span class="n">id</span><span class="o">:</span> <span class="n">Int</span><span class="o">,</span>
+                  <span class="n">val</span> <span class="n">message</span><span class="o">:</span> <span class="n">String</span><span class="o">,</span>
+                  <span class="n">val</span> <span class="n">eventType</span><span class="o">:</span> <span class="n">String</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Now, we can verify a list of schemas registered on the server. First, let’s enable port forwarding for the Confluent Schema Registry service.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ kubectl port-forward svc/kafka-confluent-cp-schema-registry 8081:8081 -n confluent
+</code></pre></td></tr></table>
+</div>
+</div><p>Thanks to that, we may access schema registry REST API on the local port. Let’s display a list of registered subjects. As you see there is a single subject called <code>callmeevent</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ curl http://localhost:8081/subjects
+<span class="o">[</span><span class="s2">&#34;callmeevent&#34;</span><span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>In the next step, we may get a list of versions registered under the <code>callmeevent</code> subject. As we expect, there are two versions available in the schema registry.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ curl http://localhost:8081/subjects/callmeevent/versions
+<span class="o">[</span>1,2<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>We can display a full schema definition by calling the following endpoint using schema id.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ curl http://localhost:8081/schemas/ids/1
+<span class="o">{</span><span class="s2">&#34;schema&#34;</span>:<span class="s2">&#34;{\&#34;type\&#34;:\&#34;record\&#34;,\&#34;name\&#34;:\&#34;CallmeEvent\&#34;,\&#34;namespace\&#34;:\&#34;pl.piomin.samples.eventdriven.producer.message\&#34;,\&#34;fields\&#34;:[{\&#34;name\&#34;:\&#34;id\&#34;,\&#34;type\&#34;:\&#34;int\&#34;},{\&#34;name\&#34;:\&#34;message\&#34;,\&#34;type\&#34;:\&#34;string\&#34;}]}&#34;</span><span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Finally, we are going to change our schema once again. Until then, a new version of a schema was compatible with the previous one. Now, we create a schema, which is incompatible with the previous version. In particular, we change the <code>eventType</code> field into <code>eventTp</code>. That change is provided on the producer side.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nf">CallmeEvent</span><span class="o">(</span><span class="n">val</span> <span class="n">id</span><span class="o">:</span> <span class="n">Int</span><span class="o">,</span>
+                  <span class="n">val</span> <span class="n">message</span><span class="o">:</span> <span class="n">String</span><span class="o">,</span>
+                  <span class="n">val</span> <span class="n">eventTp</span><span class="o">:</span> <span class="n">String</span><span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>After restarting <code>producer-service</code> Spring Cloud Stream tries to register a new version of the schema. Let’s just take a look at application logs. As you see, a new schema has been rejected by the Confluent Schema Registry. Here’s a fragment of <code>producer-service</code> logs after a schema change.</p>
+<p><img src="https://i2.wp.com/piotrminkowski.com/wp-content/uploads/2021/07/Screenshot-2021-07-22-at-08.50.02.png?resize=696%2C317&amp;ssl=1" alt="|696x317"></p>
+<blockquote>
+<p>Reference <a href="https://piotrminkowski.com/2021/07/22/spring-cloud-stream-with-schema-registry-and-kafka/">https://piotrminkowski.com/2021/07/22/spring-cloud-stream-with-schema-registry-and-kafka/</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/kafka/">kafka</a>
+          <a href="https://www.springcloud.io/tags/spring-cloud-stream/">spring-cloud-stream</a>
+          <a href="https://www.springcloud.io/tags/spring-cloud-schema-registry-client/">spring-cloud-schema-registry-client</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2021-12/log4j2-vulnerability-and-spring-boot/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Log4J2 Vulnerability and Spring Boot</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2021-12/writing-into-dynamodb-in-a-spring-boot-app-using-aws-lambda/">
+            <span class="next-text nav-default">Writing into DynamoDB in a Spring Boot App using AWS Lambda</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

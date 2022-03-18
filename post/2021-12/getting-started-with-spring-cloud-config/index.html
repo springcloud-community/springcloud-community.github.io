@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Getting started with Spring Cloud Config - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="How configuration-related changes will be reflected without restart and redeploy your application using Spring Cloud Config" />
+<meta name="keywords" content="spring cloud config" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2021-12/getting-started-with-spring-cloud-config/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Getting started with Spring Cloud Config" />
+<meta property="og:description" content="How configuration-related changes will be reflected without restart and redeploy your application using Spring Cloud Config" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2021-12/getting-started-with-spring-cloud-config/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-12-09T16:33:11+08:00" />
+<meta property="article:modified_time" content="2021-12-09T16:33:11+08:00" />
+
+<meta itemprop="name" content="Getting started with Spring Cloud Config">
+<meta itemprop="description" content="How configuration-related changes will be reflected without restart and redeploy your application using Spring Cloud Config"><meta itemprop="datePublished" content="2021-12-09T16:33:11+08:00" />
+<meta itemprop="dateModified" content="2021-12-09T16:33:11+08:00" />
+<meta itemprop="wordCount" content="916">
+<meta itemprop="keywords" content="spring-cloud-config," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Getting started with Spring Cloud Config"/>
+<meta name="twitter:description" content="How configuration-related changes will be reflected without restart and redeploy your application using Spring Cloud Config"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Getting started with Spring Cloud Config</h1>
+      
+      <div class="post-meta">
+        <time datetime="2021-12-09" class="post-time">
+          2021-12-09
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 916 words </span>
+          <span class="more-meta"> 5 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#what-is-spring-cloud-config"><strong>What is Spring Cloud Config?</strong></a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>Spring Cloud provides tools for developers to quickly build some of the common patterns in distributed systems. Coordination of distributed systems leads to boilerplate patterns, and using Spring Cloud developers can quickly run services and applications that implement those patterns. They will work well in any distributed environment, including the developer’s laptop, bare metal data centers, and managed platforms such as Cloud Foundry.</p>
+<p>In this article, I would like to discuss Spring Cloud Config. Now, let us see a simple use case that doesn’t have Spring Cloud Config.</p>
+<p><img src="https://miro.medium.com/max/1400/1*QVVMojQn3D_drgoiWHr-LQ.png" alt="|700x325"></p>
+<p>Problem Statement</p>
+<p>The insurance provider is a microservice that contains rest endpoint i.e <em>/insurance-service/getPlans</em> . And there are many microservice clients such as insurance client 1, insurance client 2, insurance client 3 which are accessing insurance provider as shown above. All the clients are providing the same endpoints to access the insurance provider. Suppose insurance provider later changes its rest endpoint from <em>/insurance-service/getPlans</em> to <em>/insurance-service/getUpdatedPlans</em> . Since all the clients are tightly coupled with the insurance provider, they need to rewrite their endpoints as well and changed them to <em>/getUpdatePlans</em> .</p>
+<p>Hence, the changes in the insurance provider will impact directly to the dependent clients. Also, if the clients do the changes then they need to restart and redeploy their server which is a massive and tedious task. So, how can we optimize this and how can we declare the endpoint globally in the insurance provider so that if there are any changes then they will not affect the dependent microservices.</p>
+<p>So, let us discuss what is Spring Cloud Config and how can we solve the above problem using Spring Cloud Config.</p>
+<h2 id="what-is-spring-cloud-config"><strong>What is Spring Cloud Config?</strong></h2>
+<p>Spring Cloud Config provides server and client-side support for externalized configuration in a distributed system. With the config-server, we have a central place to manage external properties for applications across all environments.</p>
+<p><img src="https://miro.medium.com/max/1400/1*dc-EGEQQFidc5l5IYsaG4g.png" alt="|700x287"></p>
+<p>Here, the insurance provider contains the endpoint <em>/getAllPlans</em> . All the clients are interacting with the insurance provider via a config server. This config server is interacting with GitHub repository and the repository is directly interacting with the insurance provider. So, if the insurance provider changes its URL then the insurance provider just needs to update those URL changes in GitHub repository so that all the dependent clients can get the changed URL from the config server.</p>
+<p>Now, clients need not be bothered about the changes. With the help of a config server, clients are not as tightly coupled with the insurance provider as before. They are now loosely coupled. Now, we will develop the insurance provider, insurance config server, and insurance client. To reduce the complexity and to make you understand better, we are going to develop only one insurance client as a microservice here.</p>
+<blockquote>
+<p>Note : If you want then you can develop all three clients as microservices and test the solution.</p>
+</blockquote>
+<p>Let us create the insurance-provider using Spring Initializr with Spring Web and Spring Boot DevTools dependencies. Now, create a rest endpoint in the insurance-provider application.</p>
+<p>In insurance-provider, create a get method getPlans() which will return the list of plans as mentioned below. The insurance-provider will run on port 8080.</p>
+<p><img src="https://miro.medium.com/max/1400/1*9tOYmFRekwPNW27uGQaqvg.png" alt="|700x507"></p>
+<p>Now, create insurance-config-server using Spring Initializr with Spring Web, Spring Boot DevTools, Spring Boot Actuator, and Config Server dependencies. We added Spring Boot Actuator because the endpoint will redirect as we are not directly invoking the insurance provider from the insurance client. We will invoke the config server and the config server will invoke GitHub. So, default endpoint mapping will be done by the Spring Boot Actuator.</p>
+<p><img src="https://miro.medium.com/max/60/1*urhrScH7pd7xS2Nr7U-CBg.png?q=20" alt="|700x242"></p>
+<p><img src="https://miro.medium.com/max/700/1*urhrScH7pd7xS2Nr7U-CBg.png" alt="|700x242"></p>
+<p>In the application.properties file, we can point to the GitHub URL to fetch the link. The insurance-config-server application will run on port 8888.</p>
+<blockquote>
+<p>Note : You need to specifically provide the git.default-label as main otherwise config server will not be able to find the repository. Git has recently changed its master branch name from master to main but in Spring Cloud Config git.default-label is still master. Hence, it will not be able to fetch the details unless you specify the default-label as main.</p>
+</blockquote>
+<p><img src="https://miro.medium.com/max/60/1*FQm05o0v2XB9dOyId4DebQ.png?q=20" alt="|700x96"></p>
+<p><img src="https://miro.medium.com/max/700/1*FQm05o0v2XB9dOyId4DebQ.png" alt="|700x96"></p>
+<p>I have created a new GitHub repository insurance-config-server and added the application.properties file that contains the URL.</p>
+<p><img src="https://miro.medium.com/max/60/1*araiY338MzZF3-r0Mox25A.png?q=20" alt="|700x235"></p>
+<p><img src="https://miro.medium.com/max/700/1*araiY338MzZF3-r0Mox25A.png" alt="|700x235"></p>
+<p>Now, create an insurance-client using Spring Initializr with Spring Web, Spring Boot DevTools, and Config Client dependencies.</p>
+<p>In insurance-client, we will consume the insurance-provider using the RestTemplate. From the insurance-client, the request will go to the insurance-config-server. In insurance-config-server, application.properties file will fetch the key <em>${insurance.provider.url}</em> . Based on the key, it will find the appropriate endpoint URL which is mapped. This will invoke the service then we will get the required response.</p>
+<p><img src="https://miro.medium.com/max/1400/1*6FRCRMba1vBhX-2ZFGSAZw.png" alt="|700x547"></p>
+<p>We need to add the below properties in application.properties which mean that insurance-client will interact with insurance-config-server. The insurance-client will run on port 9090.</p>
+<p><img src="https://miro.medium.com/max/478/1*VLCBfLt4NWh-S_xEfbJvpQ.png" alt="|478x89"></p>
+<p>Let us start insurance-config-server, then insurance-provider, and finally insurance-client. Now, you will see that any changes done in URL in insurance-provider will reflect in insurance-client.</p>
+<p><img src="https://miro.medium.com/max/1400/1*41r6bkJVZRFmrzds7W63qw.png" alt="|700x320"></p>
+<p>You can find the complete project in the below GitHub :</p>
+<p><a href="https://github.com/ela4490/spring-boot/tree/main/spring-boot-cloud/spring-cloud-config">https://github.com/ela4490/spring-boot/tree/main/spring-boot-cloud/spring-cloud-config</a></p>
+<p><a href="https://github.com/ela4490/insurance-config-server">https://github.com/ela4490/insurance-config-server</a></p>
+<p>This is a very simple example to understand the nuances of Spring Cloud Config. Hope this will help anyone who wants to learn more about Spring Cloud Config. I am just trying to share my experiences during my learning on Spring Cloud. Please feel free to review or correct the details mentioned in this article which will help me to create more valuable content for other developers. I will be creating more articles in future on Spring Cloud and its features with sample applications. Stay Tuned. Happy Learning! :)</p>
+<p>Reference :</p>
+<p><a href="https://cloud.spring.io/spring-cloud-config/reference/html/">https://cloud.spring.io/spring-cloud-config/reference/html/</a></p>
+<blockquote>
+<p>Reference <a href="https://medium.com/geekculture/getting-started-with-spring-cloud-config-24b31977bc8">https://medium.com/geekculture/getting-started-with-spring-cloud-config-24b31977bc8</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-cloud-config/">spring-cloud-config</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2021-12/event-driven-microservices-with-spring-cloud-stream-and-rabbitmq/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Event Driven Microservices with Spring Cloud Stream and RabbitMQ</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2021-12/spring-cloud-config-server-encryption-and-decryption-2ejc/">
+            <span class="next-text nav-default">Spring Cloud Config Server - Encryption and Decryption</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Powerful Configuration Binding Classes in Spring Boot 2.0 - Bindable - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="1. Preface When developing Spring Boot applications, you can inject Bean into the Spring IoC container based on conditions. For example, if a configuration property exists in the configuration file, then the Bean is injected. The red part of the diagram means that the class tagged with @Configuration can only be injected into Spring IoC if ali.pay.v1.app-id is present in the environment configuration of Spring. The @ConditionalOnProperty in this case" />
+<meta name="keywords" content="spring-boot, Bindable" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-boot-bindable/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Powerful Configuration Binding Classes in Spring Boot 2.0 - Bindable" />
+<meta property="og:description" content="1. Preface When developing Spring Boot applications, you can inject Bean into the Spring IoC container based on conditions. For example, if a configuration property exists in the configuration file, then the Bean is injected. The red part of the diagram means that the class tagged with @Configuration can only be injected into Spring IoC if ali.pay.v1.app-id is present in the environment configuration of Spring. The @ConditionalOnProperty in this case" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-02/spring-boot-bindable/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-02-19T14:49:58+08:00" />
+<meta property="article:modified_time" content="2022-02-19T14:49:58+08:00" />
+
+<meta itemprop="name" content="Powerful Configuration Binding Classes in Spring Boot 2.0 - Bindable">
+<meta itemprop="description" content="1. Preface When developing Spring Boot applications, you can inject Bean into the Spring IoC container based on conditions. For example, if a configuration property exists in the configuration file, then the Bean is injected. The red part of the diagram means that the class tagged with @Configuration can only be injected into Spring IoC if ali.pay.v1.app-id is present in the environment configuration of Spring. The @ConditionalOnProperty in this case"><meta itemprop="datePublished" content="2022-02-19T14:49:58+08:00" />
+<meta itemprop="dateModified" content="2022-02-19T14:49:58+08:00" />
+<meta itemprop="wordCount" content="860">
+<meta itemprop="keywords" content="spring-boot," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Powerful Configuration Binding Classes in Spring Boot 2.0 - Bindable"/>
+<meta name="twitter:description" content="1. Preface When developing Spring Boot applications, you can inject Bean into the Spring IoC container based on conditions. For example, if a configuration property exists in the configuration file, then the Bean is injected. The red part of the diagram means that the class tagged with @Configuration can only be injected into Spring IoC if ali.pay.v1.app-id is present in the environment configuration of Spring. The @ConditionalOnProperty in this case"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Powerful Configuration Binding Classes in Spring Boot 2.0 - Bindable</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-02-19" class="post-time">
+          2022-02-19
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 860 words </span>
+          <span class="more-meta"> 2 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-preface">1. Preface</a></li>
+    <li><a href="#2-scenarios-where-the-configuration-file-has-a-map-structure">2. Scenarios where the configuration file has a Map structure</a></li>
+    <li><a href="#3-solution">3. Solution</a></li>
+    <li><a href="#4-summary">4. Summary</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="1-preface">1. Preface</h2>
+<p>When developing <strong>Spring Boot</strong> applications, you can inject <strong>Bean</strong> into the <strong>Spring IoC</strong> container based on conditions. For example, if a configuration property exists in the configuration file, then the <strong>Bean</strong> is injected.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/19/f80b3b60515a4a6a8d5a4eed9c71fe1f.png" alt="Spring Boot"></p>
+<p>The red part of the diagram means that the class tagged with <code>@Configuration</code> can only be injected into <strong>Spring IoC</strong> if <code>ali.pay.v1.app-id</code> is present in the environment configuration of <strong>Spring</strong>.</p>
+<p>The <code>@ConditionalOnProperty</code> in this case is one of the conditional annotation family. It has many more conditional annotations to meet various scenarios.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/19/6e10be394b1b4e82b9c5c05ba560db3d.png" alt="ConditionalOnProperty"></p>
+<blockquote>
+<p>There are actually a lot more than just the ones in the screenshot, they are also implemented in other frameworks in the Spring family.</p>
+</blockquote>
+<p>This is a bit off topic, today is not about the usage of these conditional control annotations, just that I found a problem that could not be solved using the conditional annotation <code>@ConditionalOnProperty</code>.</p>
+<h2 id="2-scenarios-where-the-configuration-file-has-a-map-structure">2. Scenarios where the configuration file has a Map structure</h2>
+<p>Here is a configuration file.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">app</span><span class="p">:</span><span class="w">
+</span><span class="w"> </span><span class="nt">v1</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">foo</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">felord.cn</span><span class="w">
+</span><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l">码农小胖哥</span><span class="w">
+</span><span class="w">  </span><span class="nt">bar</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ooxx.cn</span><span class="w">
+</span><span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l">xxxxxx</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Corresponding configuration classes.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Data</span>
+<span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="s">&#34;app&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AppProperties</span> <span class="o">{</span>
+    <span class="cm">/**
+</span><span class="cm">     *  
+</span><span class="cm">     */</span>
+    <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">V1</span><span class="o">&gt;</span> <span class="n">v1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+
+    <span class="cm">/**
+</span><span class="cm">     *  
+</span><span class="cm">     *
+</span><span class="cm">     * @author felord.cn
+</span><span class="cm">     * @since 1.0.0.RELEASE
+</span><span class="cm">     */</span>
+    <span class="nd">@Data</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">V1</span> <span class="o">{</span>
+        <span class="cm">/**
+</span><span class="cm">         * name
+</span><span class="cm">         */</span>
+        <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+        <span class="cm">/**
+</span><span class="cm">         * description
+</span><span class="cm">         */</span>
+        <span class="kd">private</span> <span class="n">String</span> <span class="n">description</span><span class="o">;</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Here comes the special feature. The <code>yml</code> configuration <code>foo</code> and <code>bar</code> are actually used as <code>key</code> in the <code>Map</code> to identify <code>V1</code>, unlike other configuration parameters this <code>key</code> can be defined by the user as a <code>String</code>, maybe <code>foo</code>, maybe <code>bar</code>, depending on the developer&rsquo;s preference.</p>
+<p>At this point you want to make a <code>@ConditionalOnProperty</code> determination based on <code>app.v1.*.name</code> (using the wildcard <code>*</code> for now), but it won&rsquo;t work because you&rsquo;re not sure of the value of <code>*</code>, so what do you do?</p>
+<h2 id="3-solution">3. Solution</h2>
+<p>I spent a day poking around here, at first I thought Spring provided wildcards (<code>app.v1.*.name</code>) or even <code>SpringEL</code> expressions to get them, but after half a day of messing with them I was left with no luck.</p>
+<p>Suddenly it occurred to me that I was looking at <strong>Spring Security OAuth2</strong> source code that had similar logic. Anyone who has used <strong>Spring Security OAuth2</strong> knows that <strong>Spring Security OAuth2</strong> also requires the user to customize a <code>key</code> to identify their <strong>OAuth2</strong> client. I use <strong>Gitee</strong> for example.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">security</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">oauth2</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">client</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">registration</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">gitee</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">client-id</span><span class="p">:</span><span class="w"> </span><span class="l">xxxxxx</span><span class="w">
+</span><span class="w">            </span><span class="nt">client-secret</span><span class="p">:</span><span class="w"> </span><span class="l">xxxxx</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>The <code>key</code> here is <code>gitee</code>, but of course it depends on your mood, even if you use <code>zhangshan</code> as the <code>key</code>.</p>
+</blockquote>
+<p><strong>Spring Security OAuth2</strong> provides the relevant conditional injection ideas, and here are the core classes for their conditional injection judgments.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ClientsConfiguredCondition</span> <span class="kd">extends</span> <span class="n">SpringBootCondition</span> <span class="o">{</span>
+
+   <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Bindable</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">OAuth2ClientProperties</span><span class="o">.</span><span class="na">Registration</span><span class="o">&gt;&gt;</span> <span class="n">STRING_REGISTRATION_MAP</span> <span class="o">=</span> <span class="n">Bindable</span>
+         <span class="o">.</span><span class="na">mapOf</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">OAuth2ClientProperties</span><span class="o">.</span><span class="na">Registration</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+   <span class="nd">@Override</span>
+   <span class="kd">public</span> <span class="n">ConditionOutcome</span> <span class="nf">getMatchOutcome</span><span class="o">(</span><span class="n">ConditionContext</span> <span class="n">context</span><span class="o">,</span> <span class="n">AnnotatedTypeMetadata</span> <span class="n">metadata</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">ConditionMessage</span><span class="o">.</span><span class="na">Builder</span> <span class="n">message</span> <span class="o">=</span> <span class="n">ConditionMessage</span><span class="o">.</span><span class="na">forCondition</span><span class="o">(</span><span class="s">&#34;OAuth2 Clients Configured Condition&#34;</span><span class="o">);</span>
+      <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">OAuth2ClientProperties</span><span class="o">.</span><span class="na">Registration</span><span class="o">&gt;</span> <span class="n">registrations</span> <span class="o">=</span> <span class="n">getRegistrations</span><span class="o">(</span><span class="n">context</span><span class="o">.</span><span class="na">getEnvironment</span><span class="o">());</span>
+      <span class="k">if</span> <span class="o">(!</span><span class="n">registrations</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+         <span class="k">return</span> <span class="n">ConditionOutcome</span><span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">message</span><span class="o">.</span><span class="na">foundExactly</span><span class="o">(</span><span class="s">&#34;registered clients &#34;</span> <span class="o">+</span> <span class="n">registrations</span><span class="o">.</span><span class="na">values</span><span class="o">().</span><span class="na">stream</span><span class="o">()</span>               
+                 <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">OAuth2ClientProperties</span><span class="o">.</span><span class="na">Registration</span><span class="o">::</span><span class="n">getClientId</span><span class="o">).</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">joining</span><span class="o">(</span><span class="s">&#34;, &#34;</span><span class="o">))));</span>
+      <span class="o">}</span>
+      <span class="k">return</span> <span class="n">ConditionOutcome</span><span class="o">.</span><span class="na">noMatch</span><span class="o">(</span><span class="n">message</span><span class="o">.</span><span class="na">notAvailable</span><span class="o">(</span><span class="s">&#34;registered clients&#34;</span><span class="o">));</span>
+   <span class="o">}</span>
+
+   <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">OAuth2ClientProperties</span><span class="o">.</span><span class="na">Registration</span><span class="o">&gt;</span> <span class="nf">getRegistrations</span><span class="o">(</span><span class="n">Environment</span> <span class="n">environment</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">Binder</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">environment</span><span class="o">).</span><span class="na">bind</span><span class="o">(</span><span class="s">&#34;spring.security.oauth2.client.registration&#34;</span><span class="o">,</span> <span class="n">STRING_REGISTRATION_MAP</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">orElse</span><span class="o">(</span><span class="n">Collections</span><span class="o">.</span><span class="na">emptyMap</span><span class="o">());</span>
+   <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Obviously the structure of <code>OAuth2ClientProperties</code> is the same as the structure of <code>AppProperties</code> that we want to verify. So the logic above can be copied to bind the environment configuration with the uncertain <code>key</code> to our configuration class <code>AppProperties</code>. The core binding logic is this paragraph.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Binder</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">environment</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="s">&#34;spring.security.oauth2.client.registration&#34;</span><span class="o">,</span> <span class="n">STRING_REGISTRATION_MAP</span><span class="o">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>First, a bindable data structure is declared via <code>Bindable</code>, where the <code>mapOf</code> method is called to declare a <code>Map</code> data binding structure. Then we extract the configuration properties starting with <code>spring.security.oauth2.client.registration</code> from the configuration environment interface <code>Environment</code> and inject them into <code>Map</code> through the binding specific object <code>Binder</code>. Now that we have access to the <code>Map</code>, it is entirely in our hands to determine what policy to use.</p>
+<blockquote>
+<p><code>Bindable</code> is a new data binding feature for Spring Boot 2.0, for those interested, you can get more information from <code>spring.io</code>.</p>
+</blockquote>
+<p>I don&rsquo;t need to tell you what to do next, so who doesn&rsquo;t know how to do it? With the <code>@Conditional</code> annotation, you can dynamically inject beans based on the actual parameters under <code>app.v1</code>.</p>
+<h2 id="4-summary">4. Summary</h2>
+<p>I spent a lot of time today solving a practical requirement using the data binding features of <strong>Spring Boot 2.0</strong>. When we get stuck in a problem, the first thing we need to do is think about whether there are similar scenarios and corresponding solutions. This also shows the importance of accumulation in general.</p>
+<blockquote>
+<p>Reference <a href="https://felord.cn/spring-boot-bindable.html">https://felord.cn/spring-boot-bindable.html</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2022-02/spring-cloud-2021-0-1-released/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Spring Cloud 2021.0.1 Released</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2022-02/spring-security-shared-object/">
+            <span class="next-text nav-default">Distributed Objects in Spring Security - SharedObject</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

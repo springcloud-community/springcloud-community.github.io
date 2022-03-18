@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Deep Dive Into Saga Transactions With Kafka Streams and Spring Boot - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="In this article, you will learn how to use Kafka Streams and Spring Boot to perform transactions according to the Saga pattern. To be honest, I was quite surprised by a great deal of attention to my last article about Kafka. I got some questions about streams, transactions, and support for Kafka in Spring Boot. In this article, I&amp;rsquo;ll try to answer a few of them. I will also show how you can easily set up a cloud-managed Kafka on the Upstash." />
+<meta name="keywords" content="pring-boot, kafka, Saga Transactions" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-03/deep-dive-into-saga-transactions-with-kafka-streams-and-spring-boot/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Deep Dive Into Saga Transactions With Kafka Streams and Spring Boot" />
+<meta property="og:description" content="In this article, you will learn how to use Kafka Streams and Spring Boot to perform transactions according to the Saga pattern. To be honest, I was quite surprised by a great deal of attention to my last article about Kafka. I got some questions about streams, transactions, and support for Kafka in Spring Boot. In this article, I&rsquo;ll try to answer a few of them. I will also show how you can easily set up a cloud-managed Kafka on the Upstash." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-03/deep-dive-into-saga-transactions-with-kafka-streams-and-spring-boot/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-03-11T16:50:47+08:00" />
+<meta property="article:modified_time" content="2022-03-11T16:50:47+08:00" />
+
+<meta itemprop="name" content="Deep Dive Into Saga Transactions With Kafka Streams and Spring Boot">
+<meta itemprop="description" content="In this article, you will learn how to use Kafka Streams and Spring Boot to perform transactions according to the Saga pattern. To be honest, I was quite surprised by a great deal of attention to my last article about Kafka. I got some questions about streams, transactions, and support for Kafka in Spring Boot. In this article, I&rsquo;ll try to answer a few of them. I will also show how you can easily set up a cloud-managed Kafka on the Upstash."><meta itemprop="datePublished" content="2022-03-11T16:50:47+08:00" />
+<meta itemprop="dateModified" content="2022-03-11T16:50:47+08:00" />
+<meta itemprop="wordCount" content="2424">
+<meta itemprop="keywords" content="spring-boot,kafka,spring-cloud-stream," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Deep Dive Into Saga Transactions With Kafka Streams and Spring Boot"/>
+<meta name="twitter:description" content="In this article, you will learn how to use Kafka Streams and Spring Boot to perform transactions according to the Saga pattern. To be honest, I was quite surprised by a great deal of attention to my last article about Kafka. I got some questions about streams, transactions, and support for Kafka in Spring Boot. In this article, I&rsquo;ll try to answer a few of them. I will also show how you can easily set up a cloud-managed Kafka on the Upstash."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Deep Dive Into Saga Transactions With Kafka Streams and Spring Boot</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-03-11" class="post-time">
+          2022-03-11
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 2424 words </span>
+          <span class="more-meta"> 12 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#architecture-with-kafka-streams">Architecture with Kafka Streams</a></li>
+    <li><a href="#source-code">Source Code</a></li>
+    <li><a href="#aggregation-with-kafka-streams">Aggregation with Kafka Streams</a></li>
+    <li><a href="#state-store-with-the-kafka-streams-table">State Store with the Kafka Streams Table</a></li>
+    <li><a href="#running-kafka-on-upstash">Running Kafka on Upstash</a></li>
+    <li><a href="#final-thoughts">Final Thoughts</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-08-at-09.11.22.png?resize=2048%2C1152&amp;ssl=1" alt="spring boot & kafka"></p>
+<p>In this article, you will learn how to use Kafka Streams and Spring Boot to perform transactions according to the Saga pattern. To be honest, I was quite surprised by a great deal of attention to my last <a href="https://piotrminkowski.com/2022/01/24/distributed-transactions-in-microservices-with-kafka-streams-and-spring-boot/">article</a> about Kafka. I got some questions about streams, transactions, and support for Kafka in Spring Boot. In this article, I&rsquo;ll try to answer a few of them. I will also show how you can easily set up a cloud-managed Kafka on the <a href="https://upstash.com/?utm_source=Piotr1">Upstash</a>.</p>
+<h2 id="introduction">Introduction</h2>
+<p>First of all, let&rsquo;s recap the approach described in the previous article. We used Kafka Streams to process order transactions on the <code>order-service</code> side. To handle orders coming to the <code>stock-service</code> and <code>payment-service</code> we used a standard Spring <code>@KafkaListener</code> . There are also two databases - a single database per every service. The <code>stock-service</code> stores data related to the number of available products and updates them after receiving an order. The same with the <code>payment-service</code> . It updates the customer&rsquo;s account on every single order. Both applications receive orders from Kafka topic. They send responses to other topics. But just to simplify, we will skip it as shown in the figure below. We treat the Kafka <code>orders</code> topic as a stream of events and also as a table with the latest order&rsquo;s status.</p>
+<p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-04-at-13.28.25.png?resize=768%2C377&amp;ssl=1" alt="kafka stream springboot"></p>
+<p>What may go wrong with that approach? In fact, we have two data sources here. We use Kafka as the order store. On the other hand, there are SQL databases (in my case H2, but you can use any other) that store stock and payment data. Once we send an order with a reservation to the Kafka topic, we need to update a database. Since Kafka does not support XA transactions, it may result in data inconsistency. Of course, Kafka doesn&rsquo;t support XA transactions the same as many other systems including e.g. RabbitMQ.</p>
+<p>The question is what can we do with that? One of the possible options you may use is an approach called Change Data Capture (CDC) with the outbox pattern. CDC identifies and tracks changes to data in a database. Then it may emit those changes as events and send them, for example to the Kafka topic. I won&rsquo;t go into the details of that process. If you are interested in you may read this <a href="https://debezium.io/blog/2019/02/19/reliable-microservices-data-exchange-with-the-outbox-pattern/">article</a> written by Gunnar Morling.</p>
+<h2 id="architecture-with-kafka-streams">Architecture with Kafka Streams</h2>
+<p>The approach I will describe today is fully based on the Kafka Streams. We won&rsquo;t use any SQL databases. When the <code>order-service</code> sends a new order its <code>id</code> is the message key. With Kafka Streams, we may change a message key in the stream. It results in creating new topics and repartitioning. With new message keys, we may perform calculations just for the specific <code>customerId</code> or <code>productId</code> . The result of such calculation may be saved in the persistent store. For example, Kafka automatically creates and manages such state stores when you are calling stateful operations like <code>count()</code> or <code>aggregate()</code> . We will aggregate the orders related to the particular customer or product. Here&rsquo;s the illustration of our architecture. Here&rsquo;s the visualization of our process.</p>
+<p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-04-at-13.28.58.png?resize=768%2C346&amp;ssl=1" alt="Architecture with Kafka Streams"></p>
+<p>Now, let&rsquo;s consider a scenario for the <code>payment-service</code> in details. In the incoming stream of orders the <code>payment-service</code> calls the <code>selectKey()</code> operation. It changes the key from the order&rsquo;s <code>id</code> into the order&rsquo;s <code>customerId</code> . Then it groups all the orders by the new key and invokes the <code>aggregate()</code> operation. In the <code>aggregate()</code> method it calculates the available amount and reserved amount based on the order&rsquo;s price and status (whether it is a new order or a confirmation order). If there are sufficient funds on the customer account it sends the <code>ACCEPT</code> order to the <code>payment-orders</code> topic. Otherwise, it sends the <code>REJECT</code> order. Then the <code>order-service</code> process responses by joining streams from <code>payment-orders</code> and <code>stock-orders</code> by the order&rsquo;s <code>id</code> . As the result, it sends a confirmation or a rollback order.</p>
+<p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-04-at-15.29.40.png?resize=768%2C329&amp;ssl=1" alt="Kafka Streams springboot"></p>
+<p>Finally, let&rsquo;s proceed to the implementation!</p>
+<h2 id="source-code">Source Code</h2>
+<p>If you would like to try it by yourself, you may always take a look at my source code. In order to do that you need to clone my GitHub <a href="https://github.com/piomin/sample-spring-kafka-microservices.git">repository</a>. Then switch to the <a href="https://github.com/piomin/sample-spring-kafka-microservices/tree/streams-full">streams-full</a> branch. After that, you should just follow my instructions.</p>
+<h2 id="aggregation-with-kafka-streams">Aggregation with Kafka Streams</h2>
+<p>Let&rsquo;s begin with the <code>payment-service</code> . The implementation of <code>KStream</code> in not complicated here. In the first step <strong>(1)</strong> , we invoke the <code>selectKey()</code> method and get the <code>customerId</code> value of the <code>Order</code> object as a new key. Then we call <code>groupByKey()</code> method <strong>(2)</strong> to receive <code>KGroupedStream</code> as a result. While we have <code>KGroupedStream</code> we may invoke one of the calculation methods. In that case, we need to use <code>aggregate()</code> , since we have a little bit more advanced calculation than just a simple count <strong>(3)</strong> . The last two steps are just for printing the value after calculation.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
+<span class="kd">public</span> <span class="n">KStream</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">Order</span><span class="o">&gt;</span> <span class="nf">stream</span><span class="o">(</span><span class="n">StreamsBuilder</span> <span class="n">builder</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">JsonSerde</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span> <span class="n">orderSerde</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JsonSerde</span><span class="o">&lt;&gt;(</span><span class="n">Order</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="n">JsonSerde</span><span class="o">&lt;</span><span class="n">Reservation</span><span class="o">&gt;</span> <span class="n">rsvSerde</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JsonSerde</span><span class="o">&lt;&gt;(</span><span class="n">Reservation</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="n">KStream</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">Order</span><span class="o">&gt;</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">builder</span>
+      <span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="s">&#34;orders&#34;</span><span class="o">,</span> <span class="n">Consumed</span><span class="o">.</span><span class="na">with</span><span class="o">(</span><span class="n">Serdes</span><span class="o">.</span><span class="na">Long</span><span class="o">(),</span> <span class="n">orderSerde</span><span class="o">))</span>
+      <span class="o">.</span><span class="na">peek</span><span class="o">((</span><span class="n">k</span><span class="o">,</span> <span class="n">order</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">LOG</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;New: {}&#34;</span><span class="o">,</span> <span class="n">order</span><span class="o">));</span>
+
+   <span class="n">KeyValueBytesStoreSupplier</span> <span class="n">customerOrderStoreSupplier</span> <span class="o">=</span>
+      <span class="n">Stores</span><span class="o">.</span><span class="na">persistentKeyValueStore</span><span class="o">(</span><span class="s">&#34;customer-orders&#34;</span><span class="o">);</span>
+
+   <span class="n">stream</span><span class="o">.</span><span class="na">selectKey</span><span class="o">((</span><span class="n">k</span><span class="o">,</span> <span class="n">v</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">v</span><span class="o">.</span><span class="na">getCustomerId</span><span class="o">())</span> <span class="c1">// (1)
+</span><span class="c1"></span>      <span class="o">.</span><span class="na">groupByKey</span><span class="o">(</span><span class="n">Grouped</span><span class="o">.</span><span class="na">with</span><span class="o">(</span><span class="n">Serdes</span><span class="o">.</span><span class="na">Long</span><span class="o">(),</span> <span class="n">orderSerde</span><span class="o">))</span> <span class="c1">// (2)
+</span><span class="c1"></span>      <span class="o">.</span><span class="na">aggregate</span><span class="o">(</span>
+         <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">Reservation</span><span class="o">(</span><span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="n">1000</span><span class="o">)),</span>
+         <span class="n">aggregatorService</span><span class="o">,</span>
+         <span class="n">Materialized</span><span class="o">.&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">Reservation</span><span class="o">&gt;</span><span class="n">as</span><span class="o">(</span><span class="n">customerOrderStoreSupplier</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">withKeySerde</span><span class="o">(</span><span class="n">Serdes</span><span class="o">.</span><span class="na">Long</span><span class="o">())</span>
+            <span class="o">.</span><span class="na">withValueSerde</span><span class="o">(</span><span class="n">rsvSerde</span><span class="o">))</span> <span class="c1">// (3)
+</span><span class="c1"></span>      <span class="o">.</span><span class="na">toStream</span><span class="o">()</span>
+      <span class="o">.</span><span class="na">peek</span><span class="o">((</span><span class="n">k</span><span class="o">,</span> <span class="n">trx</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">LOG</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Commit: {}&#34;</span><span class="o">,</span> <span class="n">trx</span><span class="o">));</span>
+
+   <span class="k">return</span> <span class="n">stream</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>However, the most important step in the fragment of code visible above is the class called inside the <code>aggregate()</code> method. The <code>aggregate()</code> method takes three input arguments. The first of them indicates the starting value of our compute object. That object represents the current state of the customer&rsquo;s account. It has two fields: <code>amountAvailable</code> and <code>amountReserved</code> . To clarify, we use that object instead of the entity that stores available and reserved amounts on the customer account. Each customer is represented by the <code>customerId</code> (key) and the <code>Reservation</code> object (value) in Kafka <code>KTable</code> . Just for the test purpose, we are generating the starting value of <code>amountAvailable</code> as a random number between 0 and 1000.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Reservation</span> <span class="o">{</span>
+   <span class="kd">private</span> <span class="kt">int</span> <span class="n">amountAvailable</span><span class="o">;</span>
+   <span class="kd">private</span> <span class="kt">int</span> <span class="n">amountReserved</span><span class="o">;</span>
+
+   <span class="kd">public</span> <span class="nf">Reservation</span><span class="o">()</span> <span class="o">{</span>
+   
+   <span class="o">}</span>
+
+   <span class="kd">public</span> <span class="nf">Reservation</span><span class="o">(</span><span class="kt">int</span> <span class="n">amountAvailable</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">amountAvailable</span> <span class="o">=</span> <span class="n">amountAvailable</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="c1">// GETTERS AND SETTERS ...
+</span><span class="c1"></span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Ok, let&rsquo;s take a look at our aggregation method. It needs to implement the Kafka <code>Aggregate</code> interface and its method <code>apply()</code> . It may handle three types of orders. One of them is a confirmation of the order <strong>(1)</strong> . It confirms the distributed transaction, so we just need to cancel a reservation by subtracting the order&rsquo;s price from the <code>amountReserved</code> field. On the other, in the case of rollback, we need to increase the value of <code>amountAvailable</code> by the order&rsquo;s price and decrease the value <code>amountRerserved</code> accordingly <strong>(2)</strong> . Finally, if we receive a new order we need to perform a reservation if there are sufficient funds on the customer account, or otherwise, reject an order.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Aggregator</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">Order</span><span class="o">,</span> <span class="n">Reservation</span><span class="o">&gt;</span> <span class="n">aggregatorService</span> <span class="o">=</span> <span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">order</span><span class="o">,</span> <span class="n">rsv</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+   <span class="k">switch</span> <span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getStatus</span><span class="o">())</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="s">&#34;CONFIRMED&#34;</span> <span class="o">-&gt;</span> <span class="c1">// (1)
+</span><span class="c1"></span>         <span class="n">rsv</span><span class="o">.</span><span class="na">setAmountReserved</span><span class="o">(</span><span class="n">rsv</span><span class="o">.</span><span class="na">getAmountReserved</span><span class="o">()</span> 
+               <span class="o">-</span> <span class="n">order</span><span class="o">.</span><span class="na">getPrice</span><span class="o">());</span>
+      <span class="k">case</span> <span class="s">&#34;ROLLBACK&#34;</span> <span class="o">-&gt;</span> <span class="o">{</span> <span class="c1">// (2)
+</span><span class="c1"></span>         <span class="k">if</span> <span class="o">(!</span><span class="n">order</span><span class="o">.</span><span class="na">getSource</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;PAYMENT&#34;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">rsv</span><span class="o">.</span><span class="na">setAmountAvailable</span><span class="o">(</span><span class="n">rsv</span><span class="o">.</span><span class="na">getAmountAvailable</span><span class="o">()</span> 
+                  <span class="o">+</span> <span class="n">order</span><span class="o">.</span><span class="na">getPrice</span><span class="o">());</span>
+            <span class="n">rsv</span><span class="o">.</span><span class="na">setAmountReserved</span><span class="o">(</span><span class="n">rsv</span><span class="o">.</span><span class="na">getAmountReserved</span><span class="o">()</span> 
+                  <span class="o">-</span> <span class="n">order</span><span class="o">.</span><span class="na">getPrice</span><span class="o">());</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+      <span class="k">case</span> <span class="s">&#34;NEW&#34;</span> <span class="o">-&gt;</span> <span class="o">{</span> <span class="c1">// (3)
+</span><span class="c1"></span>         <span class="k">if</span> <span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getPrice</span><span class="o">()</span> <span class="o">&lt;=</span> <span class="n">rsv</span><span class="o">.</span><span class="na">getAmountAvailable</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">rsv</span><span class="o">.</span><span class="na">setAmountAvailable</span><span class="o">(</span><span class="n">rsv</span><span class="o">.</span><span class="na">getAmountAvailable</span><span class="o">()</span> 
+                  <span class="o">-</span> <span class="n">order</span><span class="o">.</span><span class="na">getPrice</span><span class="o">());</span>
+            <span class="n">rsv</span><span class="o">.</span><span class="na">setAmountReserved</span><span class="o">(</span><span class="n">rsv</span><span class="o">.</span><span class="na">getAmountReserved</span><span class="o">()</span> 
+                  <span class="o">+</span> <span class="n">order</span><span class="o">.</span><span class="na">getPrice</span><span class="o">());</span>
+            <span class="n">order</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="s">&#34;ACCEPT&#34;</span><span class="o">);</span>
+         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">order</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="s">&#34;REJECT&#34;</span><span class="o">);</span>
+         <span class="o">}</span>
+         <span class="n">template</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="s">&#34;payment-orders&#34;</span><span class="o">,</span> <span class="n">order</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span> <span class="n">order</span><span class="o">);</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+   <span class="n">LOG</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;{}&#34;</span><span class="o">,</span> <span class="n">rsv</span><span class="o">);</span>
+   <span class="k">return</span> <span class="n">rsv</span><span class="o">;</span>
+<span class="o">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="state-store-with-the-kafka-streams-table">State Store with the Kafka Streams Table</h2>
+<p>The implementation of the <code>stock-service</code> is pretty similar to the <code>payment-service</code> . With the difference that we count a number of available products on stock instead of available funds on the customer account. Here&rsquo;s our <code>Reservation</code> object:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Reservation</span> <span class="o">{</span>
+   <span class="kd">private</span> <span class="kt">int</span> <span class="n">itemsAvailable</span><span class="o">;</span>
+   <span class="kd">private</span> <span class="kt">int</span> <span class="n">itemsReserved</span><span class="o">;</span>
+
+   <span class="kd">public</span> <span class="nf">Reservation</span><span class="o">()</span> <span class="o">{</span>
+    
+   <span class="o">}</span>
+
+   <span class="kd">public</span> <span class="nf">Reservation</span><span class="o">(</span><span class="kt">int</span> <span class="n">itemsAvailable</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">itemsAvailable</span> <span class="o">=</span> <span class="n">itemsAvailable</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="c1">// GETTERS AND SETTERS ...
+</span><span class="c1"></span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The implementation of the aggregation method is also very similar to the <code>payment-service</code> . However, this time, let&rsquo;s focus on another thing. Once we process a new order we need to send a response to the <code>stock-orders</code> topic. We use <code>KafkaTemplate</code> for that. In the case of payment-service we also send a response, but to the <code>payment-orders</code> topic. The send method from the <code>KafkaTemplate</code> does not block the thread. It returns the <code>ListenableFuture</code> objects. We may add a callback to the send method using it and the result after sending the message <strong>(1)</strong> . Finally, let&rsquo;s log the current state of the <code>Reservation</code> object <strong>(2)</strong> .</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Aggregator</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">Order</span><span class="o">,</span> <span class="n">Reservation</span><span class="o">&gt;</span> <span class="n">aggrSrv</span> <span class="o">=</span> <span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">order</span><span class="o">,</span> <span class="n">rsv</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+   <span class="k">switch</span> <span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getStatus</span><span class="o">())</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="s">&#34;CONFIRMED&#34;</span> <span class="o">-&gt;</span> <span class="n">rsv</span><span class="o">.</span><span class="na">setItemsReserved</span><span class="o">(</span><span class="n">rsv</span><span class="o">.</span><span class="na">getItemsReserved</span><span class="o">()</span> 
+            <span class="o">-</span> <span class="n">order</span><span class="o">.</span><span class="na">getProductCount</span><span class="o">());</span>
+      <span class="k">case</span> <span class="s">&#34;ROLLBACK&#34;</span> <span class="o">-&gt;</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(!</span><span class="n">order</span><span class="o">.</span><span class="na">getSource</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;STOCK&#34;</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">rsv</span><span class="o">.</span><span class="na">setItemsAvailable</span><span class="o">(</span><span class="n">rsv</span><span class="o">.</span><span class="na">getItemsAvailable</span><span class="o">()</span> 
+                  <span class="o">+</span> <span class="n">order</span><span class="o">.</span><span class="na">getProductCount</span><span class="o">());</span>
+            <span class="n">rsv</span><span class="o">.</span><span class="na">setItemsReserved</span><span class="o">(</span><span class="n">rsv</span><span class="o">.</span><span class="na">getItemsReserved</span><span class="o">()</span> 
+                  <span class="o">-</span> <span class="n">order</span><span class="o">.</span><span class="na">getProductCount</span><span class="o">());</span>
+         <span class="o">}</span>
+      <span class="o">}</span>
+      <span class="k">case</span> <span class="s">&#34;NEW&#34;</span> <span class="o">-&gt;</span> <span class="o">{</span>
+         <span class="k">if</span> <span class="o">(</span><span class="n">order</span><span class="o">.</span><span class="na">getProductCount</span><span class="o">()</span> <span class="o">&lt;=</span> <span class="n">rsv</span><span class="o">.</span><span class="na">getItemsAvailable</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">rsv</span><span class="o">.</span><span class="na">setItemsAvailable</span><span class="o">(</span><span class="n">rsv</span><span class="o">.</span><span class="na">getItemsAvailable</span><span class="o">()</span> 
+                  <span class="o">-</span> <span class="n">order</span><span class="o">.</span><span class="na">getProductCount</span><span class="o">());</span>
+            <span class="n">rsv</span><span class="o">.</span><span class="na">setItemsReserved</span><span class="o">(</span><span class="n">rsv</span><span class="o">.</span><span class="na">getItemsReserved</span><span class="o">()</span> 
+                  <span class="o">+</span> <span class="n">order</span><span class="o">.</span><span class="na">getProductCount</span><span class="o">());</span>
+            <span class="n">order</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="s">&#34;ACCEPT&#34;</span><span class="o">);</span>
+         <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">order</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="s">&#34;REJECT&#34;</span><span class="o">);</span>
+         <span class="o">}</span>
+         <span class="c1">// (1)
+</span><span class="c1"></span>         <span class="n">template</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="s">&#34;stock-orders&#34;</span><span class="o">,</span> <span class="n">order</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span> <span class="n">order</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">addCallback</span><span class="o">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">LOG</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Sent: {}&#34;</span><span class="o">,</span> 
+               <span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span> <span class="n">result</span><span class="o">.</span><span class="na">getProducerRecord</span><span class="o">().</span><span class="na">value</span><span class="o">()</span> <span class="o">:</span> <span class="kc">null</span><span class="o">),</span>
+               <span class="n">ex</span> <span class="o">-&gt;</span> <span class="o">{});</span>
+      <span class="o">}</span>
+   <span class="o">}</span>
+   <span class="n">LOG</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;{}&#34;</span><span class="o">,</span> <span class="n">rsv</span><span class="o">);</span> <span class="c1">// (2)
+</span><span class="c1"></span>   <span class="k">return</span> <span class="n">rsv</span><span class="o">;</span>
+<span class="o">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>After that, we are also logging the value of the <code>Reservation</code> object <strong>(1)</strong> . In order to do that we need to convert <code>KTable</code> into <code>KStream</code> and then call the <code>peek</code> method. This log is printed just after Kafka Streams commits the offset in the source topic.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
+<span class="kd">public</span> <span class="n">KStream</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">Order</span><span class="o">&gt;</span> <span class="nf">stream</span><span class="o">(</span><span class="n">StreamsBuilder</span> <span class="n">builder</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">JsonSerde</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span> <span class="n">orderSerde</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JsonSerde</span><span class="o">&lt;&gt;(</span><span class="n">Order</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="n">JsonSerde</span><span class="o">&lt;</span><span class="n">Reservation</span><span class="o">&gt;</span> <span class="n">rsvSerde</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JsonSerde</span><span class="o">&lt;&gt;(</span><span class="n">Reservation</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+   <span class="n">KStream</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">Order</span><span class="o">&gt;</span> <span class="n">stream</span> <span class="o">=</span> <span class="n">builder</span>
+      <span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="s">&#34;orders&#34;</span><span class="o">,</span> <span class="n">Consumed</span><span class="o">.</span><span class="na">with</span><span class="o">(</span><span class="n">Serdes</span><span class="o">.</span><span class="na">Long</span><span class="o">(),</span> <span class="n">orderSerde</span><span class="o">))</span>
+      <span class="o">.</span><span class="na">peek</span><span class="o">((</span><span class="n">k</span><span class="o">,</span> <span class="n">order</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">LOG</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;New: {}&#34;</span><span class="o">,</span> <span class="n">order</span><span class="o">));</span>
+
+   <span class="n">KeyValueBytesStoreSupplier</span> <span class="n">stockOrderStoreSupplier</span> <span class="o">=</span>
+      <span class="n">Stores</span><span class="o">.</span><span class="na">persistentKeyValueStore</span><span class="o">(</span><span class="s">&#34;stock-orders&#34;</span><span class="o">);</span>
+
+   <span class="n">stream</span><span class="o">.</span><span class="na">selectKey</span><span class="o">((</span><span class="n">k</span><span class="o">,</span> <span class="n">v</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">v</span><span class="o">.</span><span class="na">getProductId</span><span class="o">())</span>
+      <span class="o">.</span><span class="na">groupByKey</span><span class="o">(</span><span class="n">Grouped</span><span class="o">.</span><span class="na">with</span><span class="o">(</span><span class="n">Serdes</span><span class="o">.</span><span class="na">Long</span><span class="o">(),</span> <span class="n">orderSerde</span><span class="o">))</span>
+      <span class="o">.</span><span class="na">aggregate</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">Reservation</span><span class="o">(</span><span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="n">100</span><span class="o">)),</span> <span class="n">aggrSrv</span><span class="o">,</span>
+         <span class="n">Materialized</span><span class="o">.&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">Reservation</span><span class="o">&gt;</span><span class="n">as</span><span class="o">(</span><span class="n">stockOrderStoreSupplier</span><span class="o">)</span>
+            <span class="o">.</span><span class="na">withKeySerde</span><span class="o">(</span><span class="n">Serdes</span><span class="o">.</span><span class="na">Long</span><span class="o">())</span>
+            <span class="o">.</span><span class="na">withValueSerde</span><span class="o">(</span><span class="n">rsvSerde</span><span class="o">))</span>
+      <span class="o">.</span><span class="na">toStream</span><span class="o">()</span>
+      <span class="o">.</span><span class="na">peek</span><span class="o">((</span><span class="n">k</span><span class="o">,</span> <span class="n">trx</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">LOG</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Commit: {}&#34;</span><span class="o">,</span> <span class="n">trx</span><span class="o">));</span> <span class="c1">// (1)
+</span><span class="c1"></span>
+   <span class="k">return</span> <span class="n">stream</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>What will happen if you send the test order? Let&rsquo;s see the logs. You can see the difference in time between processing the message and offset commit. You won&rsquo;t have any problems with that until your application is running or it has been stopped gracefully. But if you, for example, kill the process using the <code>kill -9</code> command? After restart, our application will receive the same messages once again. Since we use <code>KafkaTemplate</code> to send the response to the <code>stock-orders</code> topic, we need to commit the offset as soon as possible.</p>
+<p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-07-at-11.55.24.png?resize=696%2C100&amp;ssl=1" alt="KafkaTemplate"></p>
+<p>What can we do to avoid such problems? We may override the default value ( <code>30000</code> ) of the <code>commit.interval.ms</code> Kafka Streams property. If you set it to 0, it commits immediately after processing finishes.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spring.kafka</span><span class="p">:</span><span class="w">  
+</span><span class="w">  </span><span class="nt">streams</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">properties</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">commit.interval.ms</span><span class="p">:</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>On the other hand, we can also set the property <code>processing.guarantee</code> to <code>exactly_once</code> . It also changes the default value of <code>commit.interval.ms</code> to 100ms and enables idempotence for a producer. You can read more about it <a href="https://kafka.apache.org/10/documentation/streams/developer-guide/config-streams.html#processing-guarantee">here</a> in Kafka documentation.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spring.kafka</span><span class="p">:</span><span class="w">  
+</span><span class="w">  </span><span class="nt">streams</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">properties</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">processing.guarantee</span><span class="p">:</span><span class="w"> </span><span class="l">exactly_once</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="running-kafka-on-upstash">Running Kafka on Upstash</h2>
+<p>For the purpose of today&rsquo;s exercise, we will use a serverless Kafka cluster on <a href="https://console.upstash.com/kafka?utm_source=Piotr1">Upstash</a>. You can create it with a single click. If you would like to test JAAS authentication for your application I&rsquo;ve got good news The authentication on that cluster is enabled by default. You can find and copy username and password from the cluster&rsquo;s main panel.</p>
+<p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-07-at-09.51.27.png?resize=695%2C139&amp;ssl=1" alt="kafka-streams-transactions-upstash"></p>
+<p>Now, let&rsquo;s configure Kafka connection settings and credentials for the Spring Boot application. There is a developer free tier on Upstash up to 10k messages per day. It will be enough for our tests.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spring.kafka</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">bootstrap-servers</span><span class="p">:</span><span class="w"> </span><span class="l">topical-gar-11460-us1-kafka.upstash.io:9092</span><span class="w">
+</span><span class="w">  </span><span class="nt">properties</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">security.protocol</span><span class="p">:</span><span class="w"> </span><span class="l">SASL_SSL</span><span class="w">
+</span><span class="w">    </span><span class="nt">sasl.mechanism</span><span class="p">:</span><span class="w"> </span><span class="l">SCRAM-SHA-256</span><span class="w">
+</span><span class="w">    </span><span class="nt">sasl.jaas.config</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.security.scram.ScramLoginModule required username=&#34;${USERNAME}&#34; password=&#34;${PASSWORD}&#34;;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>With Upstash you can easily display a list of topics. In total, there are 10 topics used in our sample system. Three of them are used directly by the Spring Boot applications, while the rest of them by the Kafka Streams in order to process stateful operations.</p>
+<p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-07-at-10.55.48.png?resize=674%2C459&amp;ssl=1" alt="spring cloud"></p>
+<p>After starting the <code>order-service</code> application we can call its REST endpoint to create and send an order to the Kafka topic.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOG</span> <span class="o">=</span> 
+   <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">OrderController</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="kd">private</span> <span class="n">AtomicLong</span> <span class="n">id</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicLong</span><span class="o">();</span>
+<span class="kd">private</span> <span class="n">KafkaTemplate</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">,</span> <span class="n">Order</span><span class="o">&gt;</span> <span class="n">template</span><span class="o">;</span>
+
+<span class="nd">@PostMapping</span>
+<span class="kd">public</span> <span class="n">Order</span> <span class="nf">create</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">Order</span> <span class="n">order</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">order</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">id</span><span class="o">.</span><span class="na">incrementAndGet</span><span class="o">());</span>
+   <span class="n">template</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="s">&#34;orders&#34;</span><span class="o">,</span> <span class="n">order</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span> <span class="n">order</span><span class="o">);</span>
+   <span class="n">LOG</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Sent: {}&#34;</span><span class="o">,</span> <span class="n">order</span><span class="o">);</span>
+   <span class="k">return</span> <span class="n">order</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s call the endpoint using the following <code>curl</code> command. You can use any <code>customerId</code> or <code>productId</code> you want.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ curl -X <span class="s1">&#39;POST&#39;</span> <span class="se">\
+</span><span class="se"></span>  <span class="s1">&#39;http://localhost:8080/orders&#39;</span> <span class="se">\
+</span><span class="se"></span>  -H <span class="s1">&#39;Content-Type: application/json&#39;</span> <span class="se">\
+</span><span class="se"></span>  -d <span class="s1">&#39;{
+</span><span class="s1">    &#34;customerId&#34;: 20,
+</span><span class="s1">    &#34;productId&#34;: 20,
+</span><span class="s1">    &#34;productCount&#34;: 2,
+</span><span class="s1">    &#34;price&#34;: 10,
+</span><span class="s1">    &#34;status&#34;: &#34;NEW&#34;
+</span><span class="s1">  }&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>All three sample applications use Kafka Streams to process distributed transactions. Once the order is accepted by both <code>stock-service</code> and <code>payment-service</code> you should see the following entry in the <code>order-service</code> logs.</p>
+<p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-07-at-13.09.20.png?resize=696%2C30&amp;ssl=1" alt="spring cloud"></p>
+<p>You can easily simulate rejection of transactions with Kafka Streams just by setting e.g. <code>productCount</code> higher than the value generated by the <code>product-service</code> as available items.</p>
+<p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-07-at-13.10.15.png?resize=696%2C37&amp;ssl=1" alt="spring cloud"></p>
+<p>With Upstash UI you can also easily verify the number of messages incoming to the topics. Let&rsquo;s see the current statistics for the <code>orders</code> topic.</p>
+<p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-07-at-13.23.18.png?resize=547%2C401&amp;ssl=1" alt="spring cloud"></p>
+<h2 id="final-thoughts">Final Thoughts</h2>
+<p>In order to fully understand what happens in this example, you should be also familiar with the Kafka Streams threading model. It is worth reading the following <a href="https://docs.confluent.io/platform/current/streams/architecture.html#parallelism-model">article</a>, which explains it in a clean manner. First of all, each stream partition is a totally ordered sequence of data records and maps to a Kafka topic partition. It means, that even if we have multiple orders at the same time related to e.g. same product, they are all processed sequentially since they have the same message key ( <code>productId</code> in that case).</p>
+<p>Moreover, by default, there is only a single stream thread that handles all the partitions. You can see this in the logs below. However, there are stream tasks that act as the lowest-level units of parallelism. As a result, stream tasks can be processed independently and in parallel without manual intervention.</p>
+<p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2022/02/Screenshot-2022-02-07-at-13.32.47.png?resize=696%2C205&amp;ssl=1" alt="spring cloud"></p>
+<p>I hope this article helps you to better understand Kafka Streams. I just wanted to give you a simple example of how you can use Kafka Streams with Saga transactions in order to simplify your current architecture.</p>
+<blockquote>
+<p>Reference <a href="https://piotrminkowski.com/2022/02/07/deep-dive-into-saga-transactions-with-kafka-streams-and-spring-boot/">https://piotrminkowski.com/2022/02/07/deep-dive-into-saga-transactions-with-kafka-streams-and-spring-boot/</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          <a href="https://www.springcloud.io/tags/kafka/">kafka</a>
+          <a href="https://www.springcloud.io/tags/spring-cloud-stream/">spring-cloud-stream</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2022-03/springboot-get-all-uploaded-files/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Get all uploaded files in SpringBoot application</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2022-03/a-guide-to-junit5-lifecycle-methods/">
+            <span class="next-text nav-default">A Guide to JUnit5 Lifecycle Methods</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

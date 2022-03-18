@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Solve the problem that RequestContextHolder.getRequestAttributes() returns null due to hystrix isolation policy - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="What is the Hystrix Isolation Policy? Official documentation: https://github.com/Netflix/Hystrix/wiki/Configuration#executionisolationstrategy
+Executing an isolation policy This property instructs HystrixCommand.run() which isolation policy to execute, being one of the following two options.
+ THREAD - it is executed on a separate thread, and concurrent requests are limited by the number of threads in the thread pool SEMAPHORE - it is executed on the calling thread, and concurrent requests are limited by the amount of semaphore  Problem When the isolation policy is THREAD, there is no way to get the value in ThreadLocal." />
+<meta name="keywords" content="hystrix, feign" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-01/hystrix/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Solve the problem that RequestContextHolder.getRequestAttributes() returns null due to hystrix isolation policy" />
+<meta property="og:description" content="What is the Hystrix Isolation Policy? Official documentation: https://github.com/Netflix/Hystrix/wiki/Configuration#executionisolationstrategy
+Executing an isolation policy This property instructs HystrixCommand.run() which isolation policy to execute, being one of the following two options.
+ THREAD - it is executed on a separate thread, and concurrent requests are limited by the number of threads in the thread pool SEMAPHORE - it is executed on the calling thread, and concurrent requests are limited by the amount of semaphore  Problem When the isolation policy is THREAD, there is no way to get the value in ThreadLocal." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-01/hystrix/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-01-10T17:11:47+08:00" />
+<meta property="article:modified_time" content="2022-01-10T17:11:47+08:00" />
+
+<meta itemprop="name" content="Solve the problem that RequestContextHolder.getRequestAttributes() returns null due to hystrix isolation policy">
+<meta itemprop="description" content="What is the Hystrix Isolation Policy? Official documentation: https://github.com/Netflix/Hystrix/wiki/Configuration#executionisolationstrategy
+Executing an isolation policy This property instructs HystrixCommand.run() which isolation policy to execute, being one of the following two options.
+ THREAD - it is executed on a separate thread, and concurrent requests are limited by the number of threads in the thread pool SEMAPHORE - it is executed on the calling thread, and concurrent requests are limited by the amount of semaphore  Problem When the isolation policy is THREAD, there is no way to get the value in ThreadLocal."><meta itemprop="datePublished" content="2022-01-10T17:11:47+08:00" />
+<meta itemprop="dateModified" content="2022-01-10T17:11:47+08:00" />
+<meta itemprop="wordCount" content="1636">
+<meta itemprop="keywords" content="hystrix,feign," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Solve the problem that RequestContextHolder.getRequestAttributes() returns null due to hystrix isolation policy"/>
+<meta name="twitter:description" content="What is the Hystrix Isolation Policy? Official documentation: https://github.com/Netflix/Hystrix/wiki/Configuration#executionisolationstrategy
+Executing an isolation policy This property instructs HystrixCommand.run() which isolation policy to execute, being one of the following two options.
+ THREAD - it is executed on a separate thread, and concurrent requests are limited by the number of threads in the thread pool SEMAPHORE - it is executed on the calling thread, and concurrent requests are limited by the amount of semaphore  Problem When the isolation policy is THREAD, there is no way to get the value in ThreadLocal."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Solve the problem that RequestContextHolder.getRequestAttributes() returns null due to hystrix isolation policy</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-01-10" class="post-time">
+          2022-01-10
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 1636 words </span>
+          <span class="more-meta"> 8 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#what-is-the-hystrix-isolation-policy">What is the Hystrix Isolation Policy?</a>
+      <ul>
+        <li><a href="#executing-an-isolation-policy">Executing an isolation policy</a></li>
+      </ul>
+    </li>
+    <li><a href="#problem">Problem</a>
+      <ul>
+        <li><a href="#solution-1---violently-modify-the-hystrix-isolation-policy">Solution 1 - Violently modify the Hystrix isolation policy</a></li>
+        <li><a href="#solution-2---custom-concurrency-policy">Solution 2 - Custom Concurrency Policy</a></li>
+      </ul>
+    </li>
+    <li><a href="#springcloud-integration-with-feign">SpringCloud integration with Feign</a>
+      <ul>
+        <li><a href="#configure-feign-request-interceptor-carry-token-in-request-header">Configure Feign request interceptor (carry token in request header)</a></li>
+        <li><a href="#configure-okhttp">Configure OkHttp</a></li>
+        <li><a href="#configure-resttemplate">Configure RestTemplate</a></li>
+        <li><a href="#log-interceptor">Log interceptor</a></li>
+        <li><a href="#auto-injection-configuration">Auto-injection configuration</a></li>
+        <li><a href="#--integrated-user-service-demo--">&ndash;Integrated user service demo&ndash;</a></li>
+        <li><a href="#configuration-file">Configuration file</a></li>
+        <li><a href="#user-service-client">User Service Client</a></li>
+        <li><a href="#log-breaker-feign-fallback-method">Log breaker, Feign fallback method</a></li>
+        <li><a href="#user-circuit-breaker-factory">User circuit breaker factory</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="what-is-the-hystrix-isolation-policy">What is the Hystrix Isolation Policy?</h2>
+<p>Official documentation: <a href="https://github.com/Netflix/Hystrix/wiki/Configuration#executionisolationstrategy">https://github.com/Netflix/Hystrix/wiki/Configuration#executionisolationstrategy</a></p>
+<h3 id="executing-an-isolation-policy">Executing an isolation policy</h3>
+<p>This property instructs <code>HystrixCommand.run()</code> which isolation policy to execute, being one of the following two options.</p>
+<ul>
+<li><code>THREAD</code> - it is executed on a separate thread, and concurrent requests are limited by the number of threads in the thread pool</li>
+<li><code>SEMAPHORE</code> - it is executed on the calling thread, and concurrent requests are limited by the amount of semaphore</li>
+</ul>
+<h2 id="problem">Problem</h2>
+<p>When the isolation policy is <code>THREAD</code>, there is no way to get the value in <code>ThreadLocal</code>.</p>
+<p>So, when a feign remote call is made between services, there is no way to get the request object from the request header and thus the token.</p>
+<h3 id="solution-1---violently-modify-the-hystrix-isolation-policy">Solution 1 - Violently modify the Hystrix isolation policy</h3>
+<p>Set the isolation policy to <code>SEMAPHORE</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">hystrix.command.default.execution.isolation.strategy</span><span class="p">:</span><span class="w"> </span><span class="l">SEMAPHORE</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>However, Hystrix officially does not recommend this practice and strongly recommends using <code>SEMAPHORE</code> as an isolation policy.</p>
+<blockquote>
+<p>Thread or Semaphore
+The default, and the recommended setting, is to run HystrixCommands using thread isolation (THREAD) and HystrixObservableCommands using semaphore isolation (SEMAPHORE).</p>
+<p>Commands executed in threads have an extra layer of protection against latencies beyond what network timeouts can offer.</p>
+<p>Generally the only time you should use semaphore isolation for HystrixCommands is when the call is so high volume (hundreds per second, per instance) that the overhead of separate threads is too high; this typically only applies to non-network calls.</p>
+</blockquote>
+<h3 id="solution-2---custom-concurrency-policy">Solution 2 - Custom Concurrency Policy</h3>
+<h4 id="custom-concurrency-strategy">Custom Concurrency Strategy</h4>
+<p>Just write a class that inherits from <code>HystrixConcurrencyStrategy</code> and override the <code>wrapCallable</code> method.</p>
+<p><code>CustomFeignHystrixConcurrencyStrategy</code> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.lzhpo.common.feign.strategy</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.HystrixThreadPoolKey</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.HystrixThreadPoolProperties</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.strategy.HystrixPlugins</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.strategy.concurrency.HystrixRequestVariable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.strategy.concurrency.HystrixRequestVariableLifecycle</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.strategy.eventnotifier.HystrixEventNotifier</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.strategy.executionhook.HystrixCommandExecutionHook</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisher</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.strategy.properties.HystrixPropertiesStrategy</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.netflix.hystrix.strategy.properties.HystrixProperty</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Primary</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.context.request.RequestAttributes</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.context.request.RequestContextHolder</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.concurrent.BlockingQueue</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.Callable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.ThreadPoolExecutor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.TimeUnit</span><span class="o">;</span>
+
+<span class="cm">/**
+</span><span class="cm"> * Custom isolation strategy to solve the problem that {@code RequestContextHolder.getRequestAttributes()} is empty
+</span><span class="cm"> *
+</span><span class="cm"> * @author Zhaopo Liu
+</span><span class="cm"> */</span>
+<span class="nd">@Slf4j</span>
+<span class="nd">@Primary</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomFeignHystrixConcurrencyStrategy</span> <span class="kd">extends</span> <span class="n">HystrixConcurrencyStrategy</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">HystrixConcurrencyStrategy</span> <span class="n">hystrixConcurrencyStrategy</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">CustomFeignHystrixConcurrencyStrategy</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">hystrixConcurrencyStrategy</span> <span class="o">=</span> <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getConcurrencyStrategy</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">hystrixConcurrencyStrategy</span> <span class="k">instanceof</span> <span class="n">CustomFeignHystrixConcurrencyStrategy</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// Welcome to singleton hell...
+</span><span class="c1"></span>                <span class="k">return</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">HystrixCommandExecutionHook</span> <span class="n">commandExecutionHook</span> <span class="o">=</span> <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getCommandExecutionHook</span><span class="o">();</span>
+            <span class="n">HystrixEventNotifier</span> <span class="n">eventNotifier</span> <span class="o">=</span> <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getEventNotifier</span><span class="o">();</span>
+            <span class="n">HystrixMetricsPublisher</span> <span class="n">metricsPublisher</span> <span class="o">=</span> <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getMetricsPublisher</span><span class="o">();</span>
+            <span class="n">HystrixPropertiesStrategy</span> <span class="n">propertiesStrategy</span> <span class="o">=</span> <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">getPropertiesStrategy</span><span class="o">();</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">logCurrentStateOfHystrixPlugins</span><span class="o">(</span><span class="n">eventNotifier</span><span class="o">,</span> <span class="n">metricsPublisher</span><span class="o">,</span> <span class="n">propertiesStrategy</span><span class="o">);</span>
+            <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">reset</span><span class="o">();</span>
+            <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">registerConcurrencyStrategy</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+            <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">registerCommandExecutionHook</span><span class="o">(</span><span class="n">commandExecutionHook</span><span class="o">);</span>
+            <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">registerEventNotifier</span><span class="o">(</span><span class="n">eventNotifier</span><span class="o">);</span>
+            <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">registerMetricsPublisher</span><span class="o">(</span><span class="n">metricsPublisher</span><span class="o">);</span>
+            <span class="n">HystrixPlugins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">().</span><span class="na">registerPropertiesStrategy</span><span class="o">(</span><span class="n">propertiesStrategy</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Failed to register Sleuth Hystrix Concurrency Strategy&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">logCurrentStateOfHystrixPlugins</span><span class="o">(</span><span class="n">HystrixEventNotifier</span> <span class="n">eventNotifier</span><span class="o">,</span>
+        <span class="n">HystrixMetricsPublisher</span> <span class="n">metricsPublisher</span><span class="o">,</span> <span class="n">HystrixPropertiesStrategy</span> <span class="n">propertiesStrategy</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">log</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span>
+                <span class="s">&#34;Current Hystrix plugins configuration is [&#34;</span> <span class="o">+</span> <span class="s">&#34;concurrencyStrategy [&#34;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">hystrixConcurrencyStrategy</span>
+                    <span class="o">+</span> <span class="s">&#34;],&#34;</span> <span class="o">+</span> <span class="s">&#34;eventNotifier [&#34;</span> <span class="o">+</span> <span class="n">eventNotifier</span> <span class="o">+</span> <span class="s">&#34;],&#34;</span> <span class="o">+</span> <span class="s">&#34;metricPublisher [&#34;</span> <span class="o">+</span> <span class="n">metricsPublisher</span> <span class="o">+</span> <span class="s">&#34;],&#34;</span>
+                    <span class="o">+</span> <span class="s">&#34;propertiesStrategy [&#34;</span> <span class="o">+</span> <span class="n">propertiesStrategy</span> <span class="o">+</span> <span class="s">&#34;],&#34;</span> <span class="o">+</span> <span class="s">&#34;]&#34;</span><span class="o">);</span>
+            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Registering Sleuth Hystrix Concurrency Strategy.&#34;</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">wrapCallable</span><span class="o">(</span><span class="n">Callable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">callable</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">RequestAttributes</span> <span class="n">requestAttributes</span> <span class="o">=</span> <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">getRequestAttributes</span><span class="o">();</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">WrappedCallable</span><span class="o">&lt;&gt;(</span><span class="n">callable</span><span class="o">,</span> <span class="n">requestAttributes</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">ThreadPoolExecutor</span> <span class="nf">getThreadPool</span><span class="o">(</span><span class="n">HystrixThreadPoolKey</span> <span class="n">threadPoolKey</span><span class="o">,</span> <span class="n">HystrixProperty</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">corePoolSize</span><span class="o">,</span>
+        <span class="n">HystrixProperty</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">maximumPoolSize</span><span class="o">,</span> <span class="n">HystrixProperty</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">keepAliveTime</span><span class="o">,</span> <span class="n">TimeUnit</span> <span class="n">unit</span><span class="o">,</span>
+        <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="n">workQueue</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">hystrixConcurrencyStrategy</span><span class="o">.</span><span class="na">getThreadPool</span><span class="o">(</span><span class="n">threadPoolKey</span><span class="o">,</span> <span class="n">corePoolSize</span><span class="o">,</span> <span class="n">maximumPoolSize</span><span class="o">,</span>
+            <span class="n">keepAliveTime</span><span class="o">,</span> <span class="n">unit</span><span class="o">,</span> <span class="n">workQueue</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">ThreadPoolExecutor</span> <span class="nf">getThreadPool</span><span class="o">(</span><span class="n">HystrixThreadPoolKey</span> <span class="n">threadPoolKey</span><span class="o">,</span>
+        <span class="n">HystrixThreadPoolProperties</span> <span class="n">threadPoolProperties</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">hystrixConcurrencyStrategy</span><span class="o">.</span><span class="na">getThreadPool</span><span class="o">(</span><span class="n">threadPoolKey</span><span class="o">,</span> <span class="n">threadPoolProperties</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">BlockingQueue</span><span class="o">&lt;</span><span class="n">Runnable</span><span class="o">&gt;</span> <span class="nf">getBlockingQueue</span><span class="o">(</span><span class="kt">int</span> <span class="n">maxQueueSize</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">hystrixConcurrencyStrategy</span><span class="o">.</span><span class="na">getBlockingQueue</span><span class="o">(</span><span class="n">maxQueueSize</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">HystrixRequestVariable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">getRequestVariable</span><span class="o">(</span><span class="n">HystrixRequestVariableLifecycle</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">rv</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">hystrixConcurrencyStrategy</span><span class="o">.</span><span class="na">getRequestVariable</span><span class="o">(</span><span class="n">rv</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">WrappedCallable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+        <span class="kd">private</span> <span class="kd">final</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">target</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="kd">final</span> <span class="n">RequestAttributes</span> <span class="n">requestAttributes</span><span class="o">;</span>
+
+        <span class="kd">public</span> <span class="nf">WrappedCallable</span><span class="o">(</span><span class="n">Callable</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">target</span><span class="o">,</span> <span class="n">RequestAttributes</span> <span class="n">requestAttributes</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">requestAttributes</span> <span class="o">=</span> <span class="n">requestAttributes</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="cm">/**
+</span><span class="cm">         * feign opens the fuse (hystrix): feign.hystrix.enabled=ture, and uses the default signal isolation level,
+</span><span class="cm">         * The HttpServletRequest object is independent of each other in the parent thread
+</span><span class="cm">         * and the child thread and is not shared.
+</span><span class="cm">         * So the HttpServletRequest data of the parent thread used in the child thread is null,
+</span><span class="cm">         * naturally it is impossible to obtain the token information of the request header
+</span><span class="cm">         * In a multithreaded environment, call before the request, set the context before the call
+</span><span class="cm">         *
+</span><span class="cm">         * @return T
+</span><span class="cm">         * @throws Exception Exception
+</span><span class="cm">         */</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="n">T</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="c1">// Set true to share the parent thread&#39;s HttpServletRequest object setting
+</span><span class="c1"></span>                <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">setRequestAttributes</span><span class="o">(</span><span class="n">requestAttributes</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+                <span class="k">return</span> <span class="n">target</span><span class="o">.</span><span class="na">call</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+                <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">resetRequestAttributes</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="springcloud-integration-with-feign">SpringCloud integration with Feign</h2>
+<h3 id="configure-feign-request-interceptor-carry-token-in-request-header">Configure Feign request interceptor (carry token in request header)</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.lzhpo.common.feign.starter.config</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">feign.RequestInterceptor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">feign.RequestTemplate</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Enumeration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.LinkedHashMap</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Optional</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.context.request.RequestContextHolder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.context.request.ServletRequestAttributes</span><span class="o">;</span>
+
+<span class="cm">/**
+</span><span class="cm"> * Feign interceptor config, set the request header.
+</span><span class="cm"> *
+</span><span class="cm"> * @author Zhaopo Liu
+</span><span class="cm"> */</span>
+<span class="nd">@Slf4j</span>
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomFeignConfig</span> <span class="kd">implements</span> <span class="n">RequestInterceptor</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">TOKEN_HEADER</span> <span class="o">=</span> <span class="s">&#34;Authorization&#34;</span><span class="o">;</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">RequestTemplate</span> <span class="n">requestTemplate</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Optional</span><span class="o">.</span><span class="na">ofNullable</span><span class="o">(</span><span class="n">getHttpServletRequest</span><span class="o">())</span>
+        <span class="o">.</span><span class="na">ifPresent</span><span class="o">(</span>
+            <span class="n">request</span> <span class="o">-&gt;</span> <span class="o">{</span>
+              <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">getHeaders</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+              <span class="n">String</span> <span class="n">token</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">TOKEN_HEADER</span><span class="o">);</span>
+              <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Feign request header: {}&#34;</span><span class="o">,</span> <span class="n">token</span><span class="o">);</span>
+              <span class="n">requestTemplate</span><span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="n">TOKEN_HEADER</span><span class="o">,</span> <span class="n">token</span><span class="o">);</span>
+            <span class="o">});</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="n">HttpServletRequest</span> <span class="nf">getHttpServletRequest</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">ofNullable</span><span class="o">(</span><span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">getRequestAttributes</span><span class="o">())</span>
+        <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">ServletRequestAttributes</span><span class="o">.</span><span class="na">class</span><span class="o">::</span><span class="n">cast</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">ServletRequestAttributes</span><span class="o">::</span><span class="n">getRequest</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">orElse</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="nf">getHeaders</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashMap</span><span class="o">&lt;&gt;();</span>
+    <span class="n">Enumeration</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">enumeration</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getHeaderNames</span><span class="o">();</span>
+    <span class="k">while</span> <span class="o">(</span><span class="n">enumeration</span><span class="o">.</span><span class="na">hasMoreElements</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">enumeration</span><span class="o">.</span><span class="na">nextElement</span><span class="o">();</span>
+      <span class="n">String</span> <span class="n">value</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getHeader</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+      <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Request header carried between services：{}&#34;</span><span class="o">,</span> <span class="n">map</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">map</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="configure-okhttp">Configure OkHttp</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.lzhpo.common.feign.config</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.lzhpo.common.feign.interceptor.LogInterceptor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">feign.Feign</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">okhttp3.ConnectionPool</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">okhttp3.OkHttpClient</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.autoconfigure.AutoConfigureBefore</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.autoconfigure.condition.ConditionalOnClass</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.openfeign.FeignAutoConfiguration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.concurrent.TimeUnit</span><span class="o">;</span>
+
+<span class="cm">/**
+</span><span class="cm"> * OkHttp config
+</span><span class="cm"> *
+</span><span class="cm"> * @author Zhaopo Liu
+</span><span class="cm"> */</span>
+<span class="nd">@Configuration</span>
+<span class="nd">@ConditionalOnClass</span><span class="o">(</span><span class="n">Feign</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="nd">@AutoConfigureBefore</span><span class="o">(</span><span class="n">FeignAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FeignOkHttpConfig</span> <span class="o">{</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">OkHttpClient</span> <span class="nf">okHttpClient</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">OkHttpClient</span><span class="o">.</span><span class="na">Builder</span><span class="o">()</span>
+                <span class="c1">// Connect timeout
+</span><span class="c1"></span>                <span class="o">.</span><span class="na">connectTimeout</span><span class="o">(</span><span class="n">60</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+                <span class="c1">// Read timeout
+</span><span class="c1"></span>                <span class="o">.</span><span class="na">readTimeout</span><span class="o">(</span><span class="n">60</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+                <span class="c1">// Write timeout
+</span><span class="c1"></span>                <span class="o">.</span><span class="na">writeTimeout</span><span class="o">(</span><span class="n">60</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">)</span>
+                <span class="c1">// Whether to reconnect automatically
+</span><span class="c1"></span>                <span class="o">.</span><span class="na">retryOnConnectionFailure</span><span class="o">(</span><span class="kc">true</span><span class="o">).</span><span class="na">connectionPool</span><span class="o">(</span><span class="k">new</span> <span class="n">ConnectionPool</span><span class="o">())</span>
+                <span class="c1">// Log interceptor
+</span><span class="c1"></span>                <span class="o">.</span><span class="na">addInterceptor</span><span class="o">(</span><span class="k">new</span> <span class="n">LogInterceptor</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="configure-resttemplate">Configure RestTemplate</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.lzhpo.common.feign.config</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.client.RestTemplate</span><span class="o">;</span>
+
+<span class="cm">/**
+</span><span class="cm"> * RestTemplateConfig
+</span><span class="cm"> *
+</span><span class="cm"> * @author Zhaopo Liu
+</span><span class="cm"> */</span>
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestTemplateConfig</span> <span class="o">{</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">RestTemplate</span> <span class="nf">restTemplate</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">RestTemplate</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="log-interceptor">Log interceptor</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.lzhpo.common.feign.interceptor</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">okhttp3.Interceptor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">okhttp3.Request</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">okhttp3.Response</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+
+<span class="cm">/**
+</span><span class="cm"> * Log interceptor
+</span><span class="cm"> *
+</span><span class="cm"> * @author Zhaopo Liu
+</span><span class="cm"> */</span>
+<span class="nd">@Slf4j</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogInterceptor</span> <span class="kd">implements</span> <span class="n">Interceptor</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">intercept</span><span class="o">(</span><span class="n">Chain</span> <span class="n">chain</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+        <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="na">request</span><span class="o">();</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;sending %s request %s%n%s&#34;</span><span class="o">,</span> <span class="n">request</span><span class="o">.</span><span class="na">method</span><span class="o">(),</span> <span class="n">request</span><span class="o">.</span><span class="na">url</span><span class="o">(),</span> <span class="n">request</span><span class="o">.</span><span class="na">headers</span><span class="o">()));</span>
+        <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="na">proceed</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+        <span class="kt">long</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;received response for %s in %.1fms%n%s&#34;</span><span class="o">,</span> <span class="n">response</span><span class="o">.</span><span class="na">request</span><span class="o">().</span><span class="na">url</span><span class="o">(),</span> <span class="o">(</span><span class="n">t2</span> <span class="o">-</span> <span class="n">t1</span><span class="o">)</span> <span class="o">/</span> <span class="n">1e6d</span><span class="o">,</span>
+            <span class="n">response</span><span class="o">.</span><span class="na">headers</span><span class="o">()));</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="auto-injection-configuration">Auto-injection configuration</h3>
+<p>I am a <code>common-feign</code> dependency and need to configure <code>spring.facts</code> for auto-injection.</p>
+<p>So, configure: <code>/resources/META-INF/spring.facts</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.lzhpo.common.feign.config.CustomFeignConfig,\
+  com.lzhpo.common.feign.config.FeignOkHttpConfig,\
+  com.lzhpo.common.feign.config.RestTemplateConfig,\
+  com.lzhpo.common.feign.strategy.CustomFeignHystrixConcurrencyStrategy
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="--integrated-user-service-demo--">&ndash;Integrated user service demo&ndash;</h3>
+<h3 id="configuration-file">Configuration file</h3>
+<p><code>application.yml</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># feign config</span><span class="w">
+</span><span class="w"></span><span class="nt">feign</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">httpclient</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w">  </span><span class="nt">okhttp</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">hystrix</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="c"># hystrix config</span><span class="w">
+</span><span class="w"></span><span class="nt">hystrix</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">shareSecurityContext</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">  </span><span class="nt">command</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">default</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">execution</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">isolation</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">thread</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">timeoutInMilliseconds</span><span class="p">:</span><span class="w"> </span><span class="m">60000</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="nt">management</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">web</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">exposure</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;*&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">endpoint</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">health</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">show-details</span><span class="p">:</span><span class="w"> </span><span class="l">ALWAYS</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h3 id="user-service-client">User Service Client</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.lzhpo.systemservice.api.feign</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.lzhpo.common.constant.SysConst</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.lzhpo.common.feign.config.CustomFeignConfig</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.lzhpo.common.response.ResultVo</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.lzhpo.common.entity.SecurityUser</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.lzhpo.systemservice.api.entity.SysRole</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.lzhpo.systemservice.api.feign.factory.UserServiceClientFallbackFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.openfeign.FeignClient</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestParam</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="cm">/** @author Zhaopo Liu */</span>
+<span class="nd">@FeignClient</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="n">SysConst</span><span class="o">.</span><span class="na">SYSTEM_SERVICE</span><span class="o">,</span> <span class="n">configuration</span> <span class="o">=</span> <span class="n">CustomFeignConfig</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+        <span class="n">fallbackFactory</span> <span class="o">=</span> <span class="n">UserServiceClientFallbackFactory</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserServiceClient</span> <span class="o">{</span>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/api/user/v1/user/findUserInfoByUsername&#34;</span><span class="o">)</span>
+    <span class="n">ResultVo</span><span class="o">&lt;</span><span class="n">SecurityUser</span><span class="o">&gt;</span> <span class="nf">findUserInfoByUsername</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;username&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">username</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="log-breaker-feign-fallback-method">Log breaker, Feign fallback method</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.lzhpo.systemservice.api.feign.fallback</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.lzhpo.common.response.ResultVo</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.lzhpo.common.entity.SecurityUser</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.lzhpo.systemservice.api.entity.SysRole</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.lzhpo.systemservice.api.feign.UserServiceClient</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="cm">/**
+</span><span class="cm"> * Log circuit breaker implementation, fallback method called by feign
+</span><span class="cm"> *
+</span><span class="cm"> * @author Zhaopo Liu
+</span><span class="cm"> */</span>
+<span class="nd">@Slf4j</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserServiceClientFallbackImpl</span> <span class="kd">implements</span> <span class="n">UserServiceClient</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">Throwable</span> <span class="n">throwable</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">Throwable</span> <span class="nf">getThrowable</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">throwable</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setThrowable</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">throwable</span> <span class="o">=</span> <span class="n">throwable</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">ResultVo</span><span class="o">&lt;</span><span class="n">SecurityUser</span><span class="o">&gt;</span> <span class="nf">findUserInfoByUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Query user information based on user name [{}] failed! Exception information: {}&#34;</span><span class="o">,</span> <span class="n">username</span><span class="o">,</span> <span class="n">throwable</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="user-circuit-breaker-factory">User circuit breaker factory</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.lzhpo.systemservice.api.feign.factory</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.lzhpo.systemservice.api.feign.UserServiceClient</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.lzhpo.systemservice.api.feign.fallback.UserServiceClientFallbackImpl</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">feign.hystrix.FallbackFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="cm">/**
+</span><span class="cm"> * User circuit breaker factory
+</span><span class="cm"> *
+</span><span class="cm"> * @author Zhaopo Liu
+</span><span class="cm"> */</span>
+<span class="nd">@Component</span>
+<span class="nd">@Slf4j</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserServiceClientFallbackFactory</span> <span class="kd">implements</span> <span class="n">FallbackFactory</span><span class="o">&lt;</span><span class="n">UserServiceClient</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">UserServiceClient</span> <span class="nf">create</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">UserServiceClientFallbackImpl</span> <span class="n">userServiceClientFallback</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UserServiceClientFallbackImpl</span><span class="o">();</span>
+        <span class="n">userServiceClientFallback</span><span class="o">.</span><span class="na">setThrowable</span><span class="o">(</span><span class="n">throwable</span><span class="o">);</span>
+        <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;The user circuit breaker detects the feign abnormality, the reason for the abnormality: {}&#34;</span><span class="o">,</span> <span class="n">throwable</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+        <span class="k">return</span> <span class="n">userServiceClientFallback</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Reference</p>
+<ul>
+<li><code>http://www.lzhpo.com/article/167</code></li>
+</ul>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/hystrix/">hystrix</a>
+          <a href="https://www.springcloud.io/tags/feign/">feign</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2022-01/spring-cloud-openfeign-timeout-and-retry/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Spring Cloud OpenFeign timeout and retry</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2022-01/remot-token-services/">
+            <span class="next-text nav-default">Take RemoteTokenServices as an example - analyze the entire process of obtaining OAuth2 access tokens from the authorization server and loading authentication objects into the SecurityContext from the source code</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

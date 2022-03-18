@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Unified authentication authorization platform keycloak first experience - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="This article will further experience Keycloak, give us an intuitive understanding of it, and then go deeper and deeper to break down its design concepts and ideas.
+General idea Since we already know beforehand that Keycloak provides an adapter for Spring Security. Let&amp;rsquo;s first get the core concepts of Keycloak clear independently and then work on how it incorporates Spring Security.
+Installing Keycloak  The Keycloak version for this article is 14." />
+<meta name="keywords" content="keycloak" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-02/keycloak-first-experience/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Unified authentication authorization platform keycloak first experience" />
+<meta property="og:description" content="This article will further experience Keycloak, give us an intuitive understanding of it, and then go deeper and deeper to break down its design concepts and ideas.
+General idea Since we already know beforehand that Keycloak provides an adapter for Spring Security. Let&rsquo;s first get the core concepts of Keycloak clear independently and then work on how it incorporates Spring Security.
+Installing Keycloak  The Keycloak version for this article is 14." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-02/keycloak-first-experience/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-02-09T13:48:29+08:00" />
+<meta property="article:modified_time" content="2022-02-09T13:48:29+08:00" />
+
+<meta itemprop="name" content="Unified authentication authorization platform keycloak first experience">
+<meta itemprop="description" content="This article will further experience Keycloak, give us an intuitive understanding of it, and then go deeper and deeper to break down its design concepts and ideas.
+General idea Since we already know beforehand that Keycloak provides an adapter for Spring Security. Let&rsquo;s first get the core concepts of Keycloak clear independently and then work on how it incorporates Spring Security.
+Installing Keycloak  The Keycloak version for this article is 14."><meta itemprop="datePublished" content="2022-02-09T13:48:29+08:00" />
+<meta itemprop="dateModified" content="2022-02-09T13:48:29+08:00" />
+<meta itemprop="wordCount" content="906">
+<meta itemprop="keywords" content="keycloak," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Unified authentication authorization platform keycloak first experience"/>
+<meta name="twitter:description" content="This article will further experience Keycloak, give us an intuitive understanding of it, and then go deeper and deeper to break down its design concepts and ideas.
+General idea Since we already know beforehand that Keycloak provides an adapter for Spring Security. Let&rsquo;s first get the core concepts of Keycloak clear independently and then work on how it incorporates Spring Security.
+Installing Keycloak  The Keycloak version for this article is 14."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Unified authentication authorization platform keycloak first experience</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-02-09" class="post-time">
+          2022-02-09
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 906 words </span>
+          <span class="more-meta"> 5 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#general-idea">General idea</a></li>
+    <li><a href="#installing-keycloak">Installing Keycloak</a></li>
+    <li><a href="#realm">Realm</a></li>
+    <li><a href="#user">User</a></li>
+    <li><a href="#keycloak-core-concepts">Keycloak core concepts</a>
+      <ul>
+        <li><a href="#authentication">authentication</a></li>
+        <li><a href="#authorization">authorization</a></li>
+        <li><a href="#credentials">credentials</a></li>
+        <li><a href="#roles">roles</a></li>
+        <li><a href="#user-role-mapping">user role mapping</a></li>
+        <li><a href="#composite-roles">composite roles</a></li>
+        <li><a href="#groups">groups</a></li>
+        <li><a href="#clients">clients</a></li>
+        <li><a href="#client-adapters">client adapters</a></li>
+        <li><a href="#identity-provider">identity provider</a></li>
+      </ul>
+    </li>
+    <li><a href="#summary">Summary</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>This article will further experience Keycloak, give us an intuitive understanding of it, and then go deeper and deeper to break down its design concepts and ideas.</p>
+<h2 id="general-idea">General idea</h2>
+<p>Since we already know beforehand that <strong>Keycloak</strong> provides an adapter for <strong>Spring Security</strong>. Let&rsquo;s first get the core concepts of <strong>Keycloak</strong> clear independently and then work on how it incorporates <strong>Spring Security</strong>.</p>
+<h2 id="installing-keycloak">Installing Keycloak</h2>
+<blockquote>
+<p>The <strong>Keycloak</strong> version for this article is <code>14.0.0</code>.</p>
+</blockquote>
+<p>I have never liked to waste time on installation, and it is most convenient to be able to use Docker for the research phase.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">docker run -d -p 8011:8080 --name keycloak-server  -e <span class="nv">KEYCLOAK_USER</span><span class="o">=</span>admin -e <span class="nv">KEYCLOAK_PASSWORD</span><span class="o">=</span>admin jboss/keycloak
+</code></pre></td></tr></table>
+</div>
+</div><p>Execute the above command to install <strong>Keycloak</strong> , after success open <code>http://localhost:8011/auth/admin</code> enter the account <code>admin</code> and password <code>admin</code> , you will enter the management console. If you feel uncomfortable with English, you can change it to Chinese according to the following chart.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/09/d5e256033f8c4e3db47275a9db9f1a01.png" alt="Keycloak"></p>
+<p>After the change you click on random columns to understand, imagine their respective functions and roles, this time you have to relax a little without thinking too deeply, just to understand the whole picture.</p>
+<h2 id="realm">Realm</h2>
+<p>If you&rsquo;ve come across the well-known security framework <strong>Shiro</strong> I&rsquo;m sure you&rsquo;re not unfamiliar with this concept. <code>realm</code> is a space to manage users and corresponding applications, a bit of a tenant flavor that allows the ability to maintain logical isolation between different <code>realm</code>.</p>
+<p>By default, <strong>Keycloack</strong> provides a <code>realm</code> called <code>Master</code> that does not take care of the management of specific applications and users, it is only used to manage the lifecycle of other <code>realm</code>s.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/09/a7c25078f580493b9fcd571deeac62bb.png" alt="Keycloack"></p>
+<p>Log in to <code>realm</code> of <code>Master</code> to create a custom domain <code>felord.cn</code>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/09/aa8672d6e6c6476f99bb9c4f971c1171.png" alt="Keycloack"></p>
+<h2 id="user">User</h2>
+<p>A <code>User</code> is an entity that can log in to the application and can actually be understood as an <strong>account</strong>. They can have attributes associated with themselves, such as email, username, address, phone number and birthday. They can be assigned group memberships and have specific roles assigned to them. The <code>Users</code> in <code>Keycloak</code> have their subordinate <code>realm</code>. Next, create a new user in my custom domain <code>felord.cn</code> above by</p>
+<ul>
+<li>Find <strong>Administration-&gt;Users</strong> in the menu bar, then open <strong>Add User</strong>.</li>
+<li>Type in the unique required field <code>username</code>.</li>
+<li>Turn on (<code>ON</code>) email authentication (<strong>Email Verified</strong>) and save.</li>
+<li>Click the <strong>Credentials</strong> tab to set a temporary password for the new user. This password is temporary and the user will need to change it the first time they log in. If you prefer to create a permanent password, toggle the <strong>Temporary</strong> switch to <strong>Close</strong> and click <strong>Set Password</strong> .</li>
+</ul>
+<p>Then log out of the current user <code>admin</code> and go to <code>http://localhost:8011/auth/realms/felord.cn/account</code> and log in to the <code>felord.cn</code> domain as the user <code>felord</code> you just created.</p>
+<blockquote>
+<p>Did you find the characteristics of the login link?</p>
+</blockquote>
+<p>Here the process of creating a <code>realm</code> and account is finished, but I believe most people are still confused when they see this. How to do it manually? Do not worry later will be combined with the code to achieve the above process and more in line with the application scenario process.</p>
+<h2 id="keycloak-core-concepts">Keycloak core concepts</h2>
+<p>Next are some concepts we need to master when using <strong>Keycloak</strong>, we have already mentioned <code>realm</code> and <code>user</code> above, so we won&rsquo;t go over them here</p>
+<h3 id="authentication">authentication</h3>
+<p>The process of identifying and authenticating users. Proves that &ldquo;you are who you say you are&rdquo;.</p>
+<h3 id="authorization">authorization</h3>
+<p>The process of granting access to a user. Indicates &ldquo;what you can and can&rsquo;t do&rdquo;.</p>
+<h3 id="credentials">credentials</h3>
+<p>Credentials that prove the user&rsquo;s identity. This may be a password, a one-time password, a digital certificate, or a fingerprint.</p>
+<h3 id="roles">roles</h3>
+<p>Roles are an important concept in RBAC and are used to indicate the type of identity of a user.</p>
+<h3 id="user-role-mapping">user role mapping</h3>
+<p>User role mapping relationships. Often a user may have multiple roles, and a role may correspond to different people.</p>
+<h3 id="composite-roles">composite roles</h3>
+<p>Composite roles, as arcane as it sounds, are actually subordination or inheritance relationships of roles. The <code>B</code> role is subordinate to the <code>A</code> role, so if you have the <code>A</code> role, you must have the privileges of the <code>B</code> role.</p>
+<h3 id="groups">groups</h3>
+<p>User groups, you can give a series of roles to a defined user group, once a user belongs to that user group, then that user will get all role permissions of the corresponding group.</p>
+<h3 id="clients">clients</h3>
+<p>clients. Usually refers to applications or services that need to request <strong>keycloak</strong> to authenticate a user, or even requesting entities that seek <strong>keycloak</strong> protection and are registered with <strong>keycloak</strong> are clients.</p>
+<h3 id="client-adapters">client adapters</h3>
+<p><strong>keycloak</strong> has adapters designed to support multiple languages and cross-platforms, such as those for <strong>Java</strong> and those for <strong>Python</strong>. Some of them are built-in implementations, others need to be implemented according to the abstract definition of <strong>keycloak</strong>. We&rsquo;ll be dealing mainly with <strong>Spring Boot Adapter</strong>.</p>
+<h3 id="identity-provider">identity provider</h3>
+<p>The service used to authenticate users, referred to as <code>IDP</code>. <strong>keycloak</strong> is itself an <code>IDP</code>. This is similar to the <code>AuthenticationProvider</code> interface in <strong>Spring Security</strong>.</p>
+<blockquote>
+<p>There are a few more concepts that I will add when I encounter them, a bit more to digest first.</p>
+</blockquote>
+<h2 id="summary">Summary</h2>
+<p>Today&rsquo;s article mainly provides a preliminary experience of <strong>keycloak</strong>, builds a development environment for subsequent learning, and summarizes some core concepts of <strong>keycloak</strong>. However, due to the limitation of space, we did not completely sort out some concepts, but learning is gradual and cannot be rushed. With the custom <code>realm</code> and users built, I will try to use <strong>keycloak</strong> to protect <strong>Spring Boot</strong> applications in the next article.</p>
+<blockquote>
+<p>Reference <code>https://felord.cn/keycloak-1.html</code></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/keycloak/">keycloak</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2022-02/keycloak-springboot/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Protecting Your Spring Boot Applications with the Keycloak Authentication Authorization Platform</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2022-02/intro-to-keycloak/">
+            <span class="next-text nav-default">Unified authentication authorization platform keycloak Introduction</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Monitoring Applications with Prometheus &#43; Grafana &#43; Spring Boot Actuator - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="Monitoring is often critical in enterprise-level applications. Monitoring can help us prevent failures, predict trends, alert when thresholds are reached, and provide more information to troubleshoot production problems. If we don&amp;rsquo;t know how our program is running, it will take more time to troubleshoot when there is an accident in the online system. If we can monitor in advance, we can prepare early so that we don&amp;rsquo;t get confused after" />
+<meta name="keywords" content="spring-boot, prometheus, grafana, spring-boot-actuator, Monitoring" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-02/monitoring-springboot-applications/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Monitoring Applications with Prometheus &#43; Grafana &#43; Spring Boot Actuator" />
+<meta property="og:description" content="Monitoring is often critical in enterprise-level applications. Monitoring can help us prevent failures, predict trends, alert when thresholds are reached, and provide more information to troubleshoot production problems. If we don&rsquo;t know how our program is running, it will take more time to troubleshoot when there is an accident in the online system. If we can monitor in advance, we can prepare early so that we don&rsquo;t get confused after" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-02/monitoring-springboot-applications/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-02-17T19:01:53+08:00" />
+<meta property="article:modified_time" content="2022-02-17T19:01:53+08:00" />
+
+<meta itemprop="name" content="Monitoring Applications with Prometheus &#43; Grafana &#43; Spring Boot Actuator">
+<meta itemprop="description" content="Monitoring is often critical in enterprise-level applications. Monitoring can help us prevent failures, predict trends, alert when thresholds are reached, and provide more information to troubleshoot production problems. If we don&rsquo;t know how our program is running, it will take more time to troubleshoot when there is an accident in the online system. If we can monitor in advance, we can prepare early so that we don&rsquo;t get confused after"><meta itemprop="datePublished" content="2022-02-17T19:01:53+08:00" />
+<meta itemprop="dateModified" content="2022-02-17T19:01:53+08:00" />
+<meta itemprop="wordCount" content="1530">
+<meta itemprop="keywords" content="spring-boot,prometheus,grafana,spring-boot-actuator," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Monitoring Applications with Prometheus &#43; Grafana &#43; Spring Boot Actuator"/>
+<meta name="twitter:description" content="Monitoring is often critical in enterprise-level applications. Monitoring can help us prevent failures, predict trends, alert when thresholds are reached, and provide more information to troubleshoot production problems. If we don&rsquo;t know how our program is running, it will take more time to troubleshoot when there is an accident in the online system. If we can monitor in advance, we can prepare early so that we don&rsquo;t get confused after"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Monitoring Applications with Prometheus &#43; Grafana &#43; Spring Boot Actuator</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-02-17" class="post-time">
+          2022-02-17
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 1530 words </span>
+          <span class="more-meta"> 4 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-spring-boot-actuator">1. Spring Boot Actuator</a>
+      <ul>
+        <li><a href="#11-adding-dependencies">1.1 Adding dependencies</a></li>
+        <li><a href="#12-enabling-endpoints">1.2 Enabling endpoints</a></li>
+        <li><a href="#13-exposing-endpoints">1.3 Exposing endpoints</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-prometheus">2. Prometheus</a></li>
+    <li><a href="#3-grafana">3. Grafana</a>
+      <ul>
+        <li><a href="#31-introduction">3.1 Introduction</a></li>
+        <li><a href="#32-installation">3.2 Installation</a></li>
+        <li><a href="#33-configuration">3.3 Configuration</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-summary">4. Summary</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/b28bc63364f348188ae15c474ce1cbb8.png" alt="Monitoring"></p>
+<p>Monitoring is often critical in enterprise-level applications. Monitoring can help us prevent failures, predict trends, alert when thresholds are reached, and provide more information to troubleshoot production problems. If we don&rsquo;t know how our program is running, it will take more time to troubleshoot when there is an accident in the online system. If we can monitor in advance, we can prepare early so that we don&rsquo;t get confused after an accident, but of course we can&rsquo;t avoid the system from not generating a little accident, but we can reduce the number of system accidents. At the same time can also see the system problems, early optimization, to avoid greater accidents.</p>
+<h2 id="1-spring-boot-actuator">1. Spring Boot Actuator</h2>
+<p>According to the <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html">official website</a>, Spring Boot includes a lot of additional features to help us monitor and manage our applications, either using HTTP or JMX, etc. to get the health status of the application and other metrics collected through the endpoint.</p>
+<p>The Spring Boot Actuator module is a Spring Boot integration that provides the monitoring and management features described above. It is easy to use out of the box like other Spring Boot modules and can be used to monitor our application using HTTP or JMX through the Actuator.</p>
+<blockquote>
+<p>JMX (Java Management Extensions): Management and monitoring interface for the Java platform, any program that accesses this interface according to the JMX specification can get all the management and monitoring information.</p>
+</blockquote>
+<p>Here is a brief description of how the Spring Boot Actuator is used, see <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html">official documentation</a> for details, the official documentation is always worth trusting.</p>
+<h3 id="11-adding-dependencies">1.1 Adding dependencies</h3>
+<p>Maven.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependencies&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-actuator<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;/dependencies&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Gradle.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="n">dependencies</span> <span class="o">{</span>
+    <span class="n">implementation</span> <span class="s1">&#39;org.springframework.boot:spring-boot-starter-actuator&#39;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="12-enabling-endpoints">1.2 Enabling endpoints</h3>
+<p>Spring Boot provides a number of native endpoints, such as <code>health</code>, to help us monitor the monitoring status (availability) of the application, and to add custom endpoints. Each endpoint can be individually set to be enabled or not and exposed to external systems via HTTP or JMX. If the HTTP method is chosen, the URL is typically prefixed with <code>/actuator</code>, for example the url address for <code>health</code> is <code>/actuator/health</code>.</p>
+<p>By default, all endpoints are turned on by default, except <code>shutdown</code> (which allows the system to shut down gracefully). We can set the state of a port with <code>management.endpoint.&lt;id&gt;.enabled</code>, for example to enable the shutdown port.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">management.endpoint.shutdown.enabled=true
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="13-exposing-endpoints">1.3 Exposing endpoints</h3>
+<p>After opening the endpoint you must also expose the endpoint to HTTP or JMX to use it properly, but the port may contain some sensitive data, so Spring Boot&rsquo;s native ports only support HTTP or JMX by default, for example, the <code>shutdown</code> port only supports JMX by default, and the <code>health</code> port supports JMX as well as HTTP.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>JMX</th>
+<th>Web</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auditevents</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>beans</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>caches</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>conditions</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>configprops</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>env</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>flyway</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>health</code></td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>heapdump</code></td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>httptrace</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>info</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>integrationgraph</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>jolokia</code></td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>logfile</code></td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>loggers</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>liquibase</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>metrics</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>mappings</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>prometheus</code></td>
+<td>N/A</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>quartz</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>scheduledtasks</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>sessions</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>shutdown</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>startup</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>threaddump</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>To change how the port is exposed, use the <code>include</code> or <code>exclude</code> attribute, for example.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">management.endpoints.jmx.exposure.include=*
+management.endpoints.web.exposure.include=health,info,prometheus
+</code></pre></td></tr></table>
+</div>
+</div><p>So far, Spring Boot Actuator is configured, in addition to the endpoints seen above to open and expose the way, there are HTTP, JMX, logging, metrics (Metrics), permissions, HTTP tracking, process monitoring and other features, if you want to know more, you can go to <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html">official website</a> for further study.</p>
+<h2 id="2-prometheus">2. Prometheus</h2>
+<p>Prometheus, Chinese name Prometheus, is a new generation of monitoring system, compared with other monitoring systems, has many features such as easy management, monitoring the internal operation status of services, powerful data model, powerful query language PromQL, efficient, scalable, easy integration, visualization, openness, etc. Details can be found on the <a href="https://prometheus.io/">official website</a> and will not be described in detail here.</p>
+<p>In Spring Boot, the prometheus port is natively supported, and it is only necessary to integrate Prometheus exposure to HTTP by the following configuration.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">management</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">web</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">exposure</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;prometheus&#34;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>In addition to the above configuration, you also need to configure metrics, because without this parameter, many reports cannot be displayed properly. (No in-depth study here, sorry&hellip;) .</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">management</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">endpoints</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">web</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">exposure</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">include</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;prometheus&#34;</span><span class="w">
+</span><span class="w">  </span><span class="nt">metrics</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">tags</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">application</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>This will configure the Prometheus client, in addition to the server side, where we use the docker method, first need the configuration file <code>prometheus.yml</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">scrape_configs</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># 任意写，建议英文，不要包含特殊字符</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;jobName&#39;</span><span class="w">
+</span><span class="w">    </span><span class="c"># 采集的间隔时间</span><span class="w">
+</span><span class="w">    </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l">15s</span><span class="w">
+</span><span class="w">    </span><span class="c"># 采集时的超时时间</span><span class="w">
+</span><span class="w">    </span><span class="nt">scrape_timeout</span><span class="p">:</span><span class="w"> </span><span class="l">10s</span><span class="w">
+</span><span class="w">    </span><span class="c"># 采集路径</span><span class="w">
+</span><span class="w">    </span><span class="nt">metrics_path</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;/actuator/prometheus&#39;</span><span class="w">
+</span><span class="w">    </span><span class="c"># 采集服务的地址，也就是我们应用的地址</span><span class="w">
+</span><span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;localhost:8080&#39;</span><span class="p">]</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Create <code>docker-compose.yml</code> and note the relative paths of <code>prometheus.yml</code> and <code>docker-compose.yml</code>, if they are in the same directory, the volumes are <code>- '. /prometheus.yml:/etc/prometheus/config.yml'</code> .</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3.3&#39;</span><span class="w">
+</span><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">prometheus</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;prom/prometheus:v2.14.0&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s1">&#39;9090:9090&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;--config.file=/etc/prometheus/config.yml&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s1">&#39;./prometheus.yml:/etc/prometheus/config.yml&#39;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Then you can start it directly with the command <code>docker-compose up -d</code>, and use docker compose separately, so I won&rsquo;t go into details here.</p>
+<p>Once started, visit <code>http://localhost:9090</code> in your browser.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/5bb79357ed464c56a1cafb16e331e514.png" alt="prometheus"></p>
+<p>Then, you can view the monitoring data for different metrics, such as <code>jvm_memory_used_bytes</code>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/907436f0b1084d138d4ddfa556457f80.png" alt="prometheus"></p>
+<p>In this way, we can already see the monitoring data of different metrics of Spring Boot through Prometheus, so why do we still need Grafana? It is possible not to integrate Grafana, but through Grafana, we can visualize the monitoring data more easily and quickly, and the final result is described in the figure below.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/2ef3ff5634b44bb5a039ba281814c10e.png" alt="Grafana"></p>
+<p>If interested, continue reading below.</p>
+<h2 id="3-grafana">3. Grafana</h2>
+<h3 id="31-introduction">3.1 Introduction</h3>
+<p>Grafana is a visual panel that displays very nice icons and layouts and supports Prometheus, SQL (MySQL, PostgreSQL), etc. as data sources.</p>
+<p>It has the following features.</p>
+<ol>
+<li>visualization: very nice variety of components to choose from, such as charts, text, reminders, and a flexible layout to freely configure your visualization panel.</li>
+<li>Data Sources: Currently supports various data sources such as Prometheus, Graphite, Loki, Elasticsearch, MySQL, PostgreSQL, Stackdriver and TestData DB.</li>
+<li>Notification Alert: Configure notification rules visually and send the configured message to the designated administrator when the data reaches the threshold value.</li>
+<li>Mixed Data Sources: Mix different data sources in the same graph and specify data sources based on each query.</li>
+</ol>
+<h3 id="32-installation">3.2 Installation</h3>
+<p>Still using docker compose, <code>docker-compose.yml</code> is as follows.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3.3&#39;</span><span class="w">
+</span><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">grafana</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;grafana/grafana:6.5.0&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s1">&#39;3000:3000&#39;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>This can be combined with Prometheus in a docker compose, configured as follows.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3.3&#39;</span><span class="w">
+</span><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">prometheus</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;prom/prometheus:v2.14.0&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s1">&#39;9090:9090&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;--config.file=/etc/prometheus/config.yml&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s1">&#39;./prometheus.yml:/etc/prometheus/config.yml&#39;</span><span class="w">
+</span><span class="w">
+</span><span class="w">  </span><span class="nt">grafana</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;grafana/grafana:6.5.0&#39;</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s1">&#39;3000:3000&#39;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Then start it again with the command <code>docker-compose up -d</code>, access <code>http://localhost:3000</code> in your browser and log in with the initial account <code>admin:admin</code>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/d7e3f37f5b0549579ceebed22d187ddb.png" alt="Grafana"></p>
+<h3 id="33-configuration">3.3 Configuration</h3>
+<h4 id="331-adding-a-data-source">3.3.1 Adding a data source</h4>
+<p>After logging in, select Add Data Source and choose Prometheus.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/2b7c64bdeb004a3b8938b4076094941a.png" alt="Grafana"></p>
+<p>Enter the name of the data source (any), the url address of Prometheus, and click Add to save.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/82be83afa76b41cd9261c2df7e29ec35.png" alt="Grafana"></p>
+<h4 id="332-creating-a-dashboard">3.3.2 Creating a dashboard</h4>
+<p>The next step is to create a dashboard, where there are two options, one is to create a new dashboard, choose different components and set the layout, and the other way is to choose a dashboard provided by <a href="https://grafana.com/grafana/dashboards">grafana</a> officially or by the community, and they are all very beautifully styled and can be directly imported. Here we choose to import the dashboard, because we are a Java application, the focus is definitely on JVM related metrics, so we search for JVM and sort by the installed base.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/6393fa09b1154bc49b08d6fe6669e2af.png" alt="grafana"></p>
+<p>Click on the first one, this dashboard contains JVM, threads, CPU and other metrics, we will import this one, of course you can also choose other dashboards or build your own.</p>
+<p>Enter 4701 in the <code>Grafana.com Dashboard</code>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/36a0ca1311d34f47a39ba0ad58ec3165.png" alt="grafana"></p>
+<p>Select the data source and click Import.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/0acf27597dc447af8181433eb104d081.png" alt="grafana"></p>
+<p>The final rendering of the dashboard is as follows.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/ee8e3e10477742f6a15b8dc80705a72d.png" alt="grafana"></p>
+<h2 id="4-summary">4. Summary</h2>
+<p>This article mainly starts with Spring Boot Actuator and introduces Spring Boot application monitoring endpoints and exposure methods, and then takes the endpoint Prometheus as an example and introduces the basic concept of Prometheus and how to use it, Spring Boot Actuator + Prometheus can already complete the visual monitoring application, but Prometheus visualization is still relatively rough, this time Grafana comes out, through Grafana and Prometheus you can achieve a perfect visual dashboard.</p>
+<p>In addition to monitoring applications, you can also monitor metrics related to database instances through Grafana and Prometheus.</p>
+<blockquote>
+<p>Reference <code>https://juejin.cn/post/7015949319425490952</code></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          <a href="https://www.springcloud.io/tags/prometheus/">prometheus</a>
+          <a href="https://www.springcloud.io/tags/grafana/">grafana</a>
+          <a href="https://www.springcloud.io/tags/spring-boot-actuator/">spring-boot-actuator</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2022-02/springboot-pid/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Get the process id of the SpringBoot application after it starts</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2022-02/spring-boot-graceful-shutdown/">
+            <span class="next-text nav-default">A Study of Graceful Shutdown for Spring Boot Applications</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

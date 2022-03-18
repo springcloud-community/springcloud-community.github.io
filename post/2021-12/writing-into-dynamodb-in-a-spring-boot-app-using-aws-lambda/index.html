@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Writing into DynamoDB in a Spring Boot App using AWS Lambda - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="In this tutorial, we are going to see how to insert records into a DynamoDB table using an AWS Lambda function written using Spring Boot Java. We are also going to add an AWS API Gateway trigger to the Lambda function and see how it works. To follow this tutorial, make sure that you have an active AWS account. If you don’t go ahead and create one.
+Database setup Before we begin with the Spring Boot application development, we need to create a DynamoDB table." />
+<meta name="keywords" content="spring-boot, aws" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2021-12/writing-into-dynamodb-in-a-spring-boot-app-using-aws-lambda/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Writing into DynamoDB in a Spring Boot App using AWS Lambda" />
+<meta property="og:description" content="In this tutorial, we are going to see how to insert records into a DynamoDB table using an AWS Lambda function written using Spring Boot Java. We are also going to add an AWS API Gateway trigger to the Lambda function and see how it works. To follow this tutorial, make sure that you have an active AWS account. If you don’t go ahead and create one.
+Database setup Before we begin with the Spring Boot application development, we need to create a DynamoDB table." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2021-12/writing-into-dynamodb-in-a-spring-boot-app-using-aws-lambda/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-12-10T16:39:14+08:00" />
+<meta property="article:modified_time" content="2021-12-10T16:39:14+08:00" />
+
+<meta itemprop="name" content="Writing into DynamoDB in a Spring Boot App using AWS Lambda">
+<meta itemprop="description" content="In this tutorial, we are going to see how to insert records into a DynamoDB table using an AWS Lambda function written using Spring Boot Java. We are also going to add an AWS API Gateway trigger to the Lambda function and see how it works. To follow this tutorial, make sure that you have an active AWS account. If you don’t go ahead and create one.
+Database setup Before we begin with the Spring Boot application development, we need to create a DynamoDB table."><meta itemprop="datePublished" content="2021-12-10T16:39:14+08:00" />
+<meta itemprop="dateModified" content="2021-12-10T16:39:14+08:00" />
+<meta itemprop="wordCount" content="1516">
+<meta itemprop="keywords" content="spring-boot,aws," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Writing into DynamoDB in a Spring Boot App using AWS Lambda"/>
+<meta name="twitter:description" content="In this tutorial, we are going to see how to insert records into a DynamoDB table using an AWS Lambda function written using Spring Boot Java. We are also going to add an AWS API Gateway trigger to the Lambda function and see how it works. To follow this tutorial, make sure that you have an active AWS account. If you don’t go ahead and create one.
+Database setup Before we begin with the Spring Boot application development, we need to create a DynamoDB table."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Writing into DynamoDB in a Spring Boot App using AWS Lambda</h1>
+      
+      <div class="post-meta">
+        <time datetime="2021-12-10" class="post-time">
+          2021-12-10
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 1516 words </span>
+          <span class="more-meta"> 8 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#database-setup">Database setup</a></li>
+    <li><a href="#creating-spring-boot-application">Creating Spring Boot Application</a></li>
+    <li><a href="#pomxml">Pom.xml</a></li>
+    <li><a href="#userentityjava">UserEntity.java</a></li>
+    <li><a href="#userrepositoryjava">UserRepository.java</a></li>
+    <li><a href="#dynamodbclientjava">DynamoDBClient.java</a></li>
+    <li><a href="#userrequestjava">UserRequest.java</a></li>
+    <li><a href="#apigatewayrequestjava">APIGatewayRequest.java</a></li>
+    <li><a href="#createuserfunctionjava">CreateUserFunction.java</a></li>
+    <li><a href="#mylambdafunctionhandlerjava">MyLambdaFunctionHandler.java</a></li>
+    <li><a href="#applicationproperties">application.properties</a></li>
+    <li><a href="#deploying-the-application-on-aws-lambda">Deploying the application on AWS Lambda</a></li>
+    <li><a href="#adding-api-gateway-trigger">Adding API Gateway Trigger</a></li>
+    <li><a href="#generate-template">Generate Template</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>In this tutorial, we are going to see how to insert records into a DynamoDB table using an AWS Lambda function written using Spring Boot Java. We are also going to add an AWS API Gateway trigger to the Lambda function and see how it works. To follow this tutorial, make sure that you have an active AWS account. If you don’t go ahead and create one.</p>
+<h2 id="database-setup">Database setup</h2>
+<p>Before we begin with the Spring Boot application development, we need to create a DynamoDB table. We will be creating a table with the name user-table and insert user details like id, first_name, last_name, and email in the following steps.</p>
+<p>Firstly, go to DynamoDB under the Database services in the AWS Management console. Click on <em>Create</em> table, give the name as <em>user-table</em> and <em>id</em> as the partition key with String data type. Click on <em>Create</em> table. The database is now ready to store records with id as the primary key. The second step is to create a Spring Boot application.</p>
+<p><img src="https://www.appsdeveloperblog.com/wp-content/uploads/2021/12/createTable-300x232.jpg" alt="|456x353"></p>
+<h2 id="creating-spring-boot-application">Creating Spring Boot Application</h2>
+<p>Secondly, <a href="https://www.appsdeveloperblog.com/create-web-service-project-with-spring-boot/">create a Spring boot project</a> and import the necessary maven dependencies into the <em>pom.xml</em> file.</p>
+<h2 id="pomxml">Pom.xml</h2>
+<p>The below maven dependencies are required to create a Lambda function that connects to the DynamoDB table.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.modelmapper<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>modelmapper<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.3.8<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.github.derjust<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-data-dynamodb<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>5.1.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.springframework.cloud<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>spring-cloud-function-adapter-aws<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.amazonaws<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>aws-lambda-java-events<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.0.2<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.amazonaws<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>aws-lambda-java-core<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.1.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.amazonaws<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>aws-java-sdk-dynamodb<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.11.163<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>After that, create a <em>UserEntity</em> class in the <em>com.appsdeveloperblog.awslambda.model package</em> . Annotate the class with <em>@DynamoDBTable</em> . Set the <em>tableName</em> value to the name of the DynamoDB table created in the first step i.e., <em>user-table</em> .</p>
+<h2 id="userentityjava">UserEntity.java</h2>
+<p>In this class, define all the attributes – <em>id, first_name, last_name</em>, and <em>email</em>. Since <em>id</em> is the primary key, we need to annotate the <em>id</em> variable declaration with <em>@DynamoDBHashKey</em>. Annotate the rest of the attributes with <em>@DynamoDBAttribute</em>. Set the <em>attributeName</em> value in the annotation with the column name you would like to have in the table. Also, include <em>Getters</em> and <em>Setters</em> for all the attributes in the class.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.appsdeveloperblog.awslambda.model</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable</span><span class="o">;</span>
+
+<span class="nd">@DynamoDBTable</span><span class="o">(</span><span class="n">tableName</span> <span class="o">=</span> <span class="s">&#34;user-table&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserEntity</span> <span class="o">{</span>
+
+    <span class="nd">@DynamoDBHashKey</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">id</span><span class="o">;</span>
+    <span class="nd">@DynamoDBAttribute</span><span class="o">(</span><span class="n">attributeName</span> <span class="o">=</span> <span class="s">&#34;first_name&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">first_name</span><span class="o">;</span>
+    <span class="nd">@DynamoDBAttribute</span><span class="o">(</span><span class="n">attributeName</span> <span class="o">=</span> <span class="s">&#34;last_name&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">last_name</span><span class="o">;</span>
+    <span class="nd">@DynamoDBAttribute</span><span class="o">(</span><span class="n">attributeName</span> <span class="o">=</span> <span class="s">&#34;email&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">email</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirst_name</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">first_name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFirst_name</span><span class="o">(</span><span class="n">String</span> <span class="n">first_name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">first_name</span> <span class="o">=</span> <span class="n">first_name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getLast_name</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">last_name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLast_name</span><span class="o">(</span><span class="n">String</span> <span class="n">last_name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">last_name</span> <span class="o">=</span> <span class="n">last_name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getEmail</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">email</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setEmail</span><span class="o">(</span><span class="n">String</span> <span class="n">email</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">email</span> <span class="o">=</span> <span class="n">email</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>In the following step, create a <em>UserRepository</em> interface in the <em>com.appsdeveloperblog.awslambda.repository</em> package.</p>
+<h2 id="userrepositoryjava">UserRepository.java</h2>
+<p><em>UserRepository</em> extends the <em>CrudRepository&lt;UserEntity, String&gt;</em> and is annotated with <em>@Repository</em>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.appsdeveloperblog.awslambda.repository</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.data.repository.CrudRepository</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.appsdeveloperblog.awslambda.model.UserEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Repository</span><span class="o">;</span>
+
+<span class="nd">@Repository</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserRepository</span> <span class="kd">extends</span> <span class="n">CrudRepository</span><span class="o">&lt;</span><span class="n">UserEntity</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="o">{</span>
+
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Later, create a DynamoDB client that can be used to connect to the database and insert records.</p>
+<h2 id="dynamodbclientjava">DynamoDBClient.java</h2>
+<p>In the <em>com.appsdeveloperblog.awslambda.config</em> package, create <em>DynamoDBClient</em> class and define a Bean of type <em>AmazonDynamoDB</em>. <em>AmazonDynamoDB</em> uses <em>BasicAWSCredentials</em> that requires <em>access key ID</em> and <em>secret access key</em> for programmatic access of AWS resources. If you don’t have access keys, you can create them in the Security credentials tab of the User Summary under the IAM Service.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.appsdeveloperblog.awslambda.config</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.amazonaws.auth.AWSStaticCredentialsProvider</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.auth.BasicAWSCredentials</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.dynamodbv2.AmazonDynamoDB</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.appsdeveloperblog.awslambda.repository.UserRepository</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.socialsignin.spring.data.dynamodb.repository.config.EnableDynamoDBRepositories</span><span class="o">;</span>
+
+<span class="nd">@Configuration</span>
+<span class="nd">@EnableDynamoDBRepositories</span><span class="o">(</span><span class="n">basePackageClasses</span> <span class="o">=</span> <span class="n">UserRepository</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamoDBClient</span> <span class="o">{</span>
+
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${aws.auth.accessKeyId}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">accessKeyId</span><span class="o">;</span>
+
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${aws.auth.secretAccessKey}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">secretAccessKey</span><span class="o">;</span>
+
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${aws.auth.region}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">region</span><span class="o">;</span>
+
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">AmazonDynamoDB</span> <span class="nf">amazonDynamoDB</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">BasicAWSCredentials</span> <span class="n">basicAWSCredentials</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BasicAWSCredentials</span><span class="o">(</span><span class="n">accessKeyId</span><span class="o">,</span> <span class="n">secretAccessKey</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">AmazonDynamoDBClientBuilder</span>
+                <span class="o">.</span><span class="na">standard</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">withRegion</span><span class="o">(</span><span class="n">region</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">withCredentials</span><span class="o">(</span><span class="k">new</span> <span class="n">AWSStaticCredentialsProvider</span><span class="o">(</span><span class="n">basicAWSCredentials</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Afterward, define a <em>UserRequest</em> class with attributes <em>first_name, last_name,</em> and <em>email</em>.</p>
+<h2 id="userrequestjava">UserRequest.java</h2>
+<p>This class defines the POST request body format. We also need to define <em>Getters</em> and <em>Setters</em> in this class.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.appsdeveloperblog.awslambda.request</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserRequest</span> <span class="o">{</span>
+
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">first_name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">last_name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">email</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirst_name</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">first_name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFirst_name</span><span class="o">(</span><span class="n">String</span> <span class="n">first_name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">first_name</span> <span class="o">=</span> <span class="n">first_name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getLast_name</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">last_name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLast_name</span><span class="o">(</span><span class="n">String</span> <span class="n">last_name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">last_name</span> <span class="o">=</span> <span class="n">last_name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getEmail</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">email</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setEmail</span><span class="o">(</span><span class="n">String</span> <span class="n">email</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">email</span> <span class="o">=</span> <span class="n">email</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Next, define <em>APIGatewayRequest</em> class in the <em>com.appsdeveloperblog.awslambda.request</em> package and define <em>httpMethod</em> and <em>userRequest</em> attributes in the class. Also, generate <em>Getters</em> and <em>Setters</em> for both the attributes.</p>
+<h2 id="apigatewayrequestjava">APIGatewayRequest.java</h2>
+<p>This class is required to accept specific formatted requests from the AWS API Gateway. Copy the below contents into the <em>APIGatewayRequest.java</em> file.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.appsdeveloperblog.awslambda.request</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">APIGatewayRequest</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">httpMethod</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">UserRequest</span> <span class="n">userRequest</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getHttpMethod</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">httpMethod</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setHttpMethod</span><span class="o">(</span><span class="n">String</span> <span class="n">httpMethod</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">httpMethod</span> <span class="o">=</span> <span class="n">httpMethod</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">UserRequest</span> <span class="nf">getUserRequest</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">userRequest</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUserRequest</span><span class="o">(</span><span class="n">UserRequest</span> <span class="n">userRequest</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">userRequest</span> <span class="o">=</span> <span class="n">userRequest</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>After that, create a Spring Cloud Function named <em>CreateUserFunction</em> that implements the actual business Logic. The <em>CreateUserFunction</em> implements the <em>Function&lt;APIGatewayRequest,UserEntity&gt;</em> functional interface. We need to override the <em>apply()</em> method. In this method, the <em>userRequest</em> extracted from the <em>APIGatewayRequest</em> is mapped to <em>UserEntity</em> and saved into the repository.</p>
+<h2 id="createuserfunctionjava">CreateUserFunction.java</h2>
+<p>In this function, we generate a random <em>UUID</em> and assign it as the id to the <em>UserEntity</em> before inserting the record into the database.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.appsdeveloperblog.awslambda.functions</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.appsdeveloperblog.awslambda.model.UserEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.appsdeveloperblog.awslambda.repository.UserRepository</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.appsdeveloperblog.awslambda.request.APIGatewayRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.modelmapper.ModelMapper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.modelmapper.convention.MatchingStrategies</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.UUID</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.function.Function</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CreateUserFunction</span> <span class="kd">implements</span> <span class="n">Function</span><span class="o">&lt;</span><span class="n">APIGatewayRequest</span><span class="o">,</span><span class="n">UserEntity</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="n">UserRepository</span> <span class="n">userRepository</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">UserEntity</span> <span class="nf">apply</span><span class="o">(</span><span class="n">APIGatewayRequest</span> <span class="n">userRequest</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">ModelMapper</span> <span class="n">modelMapper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ModelMapper</span><span class="o">();</span>
+        <span class="n">modelMapper</span><span class="o">.</span><span class="na">getConfiguration</span><span class="o">().</span><span class="na">setMatchingStrategy</span><span class="o">(</span><span class="n">MatchingStrategies</span><span class="o">.</span><span class="na">STRICT</span><span class="o">);</span>
+        <span class="n">UserEntity</span> <span class="n">userEntity</span> <span class="o">=</span> <span class="n">modelMapper</span><span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">userRequest</span><span class="o">.</span><span class="na">getUserRequest</span><span class="o">(),</span> <span class="n">UserEntity</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">userEntity</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+        <span class="n">userRepository</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">userEntity</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">userEntity</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>After that, create a <em>MyLambdaFunctionHandler</em> class that accepts the requests sent to the Lambda function.</p>
+<h2 id="mylambdafunctionhandlerjava">MyLambdaFunctionHandler.java</h2>
+<p>This class extends the <em>SpringBootRequestHandler</em> class. Leave the class empty as the logic is already defined in the Spring Cloud Function.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.appsdeveloperblog.awslambda</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.appsdeveloperblog.awslambda.request.APIGatewayRequest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.cloud.function.adapter.aws.SpringBootRequestHandler</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyLambdaFunctionHandler</span> <span class="kd">extends</span> <span class="n">SpringBootRequestHandler</span><span class="o">&lt;</span><span class="n">APIGatewayRequest</span><span class="o">,</span><span class="n">Object</span><span class="o">&gt;</span> <span class="o">{</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Lastly, define the necessary fields in the <em>application.properties</em> file.</p>
+<h2 id="applicationproperties">application.properties</h2>
+<p>Define the aws access keys, region, and <em>spring.cloud.function.scan.packages</em> property as shown below.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">aws.auth.accessKeyId=&lt;access-key-id&gt;
+aws.auth.secretAccessKey=&lt;secret-key&gt;
+aws.auth.region=&lt;region&gt;
+spring.cloud.function.scan.packages=com.appsdeveloperblog.awslambda.functions
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="deploying-the-application-on-aws-lambda">Deploying the application on AWS Lambda</h2>
+<p>Once the Spring Boot application is ready, create an executable file by running the <em>maven package</em> command and deploy it as a Lambda function. Set the handler to <em>com.appsdeveloperblog.awslambda.MyLambdaFunctionHandler</em>. If you don’t know how to create a Lambda function from the jar file, check out this tutorial.</p>
+<p><a href="https://appsdeveloperblog.com/build-and-deploy-a-serverless-spring-boot-web-application-with-aws-lambda/">Build and deploy a Serverless Spring Boot Web Application with AWS Lambda</a></p>
+<h2 id="adding-api-gateway-trigger">Adding API Gateway Trigger</h2>
+<p>Under the Networking &amp; Content Delivery Services, click on API Gateway. Then click on Create API, Rest API -&gt; Build. Give a name to the API and click on Create.</p>
+<p>Next, click on Actions beside the resources tab ad select Create Resource. Give the resource name as users and click on Create Resource.</p>
+<p>After that, under the <em>/users</em> resource, create a POST method by clicking on Actions -&gt; Create Method. Specify the name of the Lambda function we created in the previous step and click on Save.</p>
+<p>In the Method execution chart of the POST request, click on Integration Request and add the mapping template as follows.</p>
+<p><img src="https://www.appsdeveloperblog.com/wp-content/uploads/2021/12/mappingTemplates-300x176.jpg" alt="|447x262"></p>
+<h2 id="generate-template">Generate Template</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">#set($inputRoot = $input.path(&#39;$&#39;))
+{ 
+&#34;httpMethod&#34;:&#34;$context.httpMethod&#34;,
+&#34;userRequest&#34;:$input.json(&#39;$&#39;)
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>Click on Save. Then, deploy the API by clicking on Actions -&gt; Deploy API.</p>
+<p>Finally, after the deployment is complete, paste the Invoke URL into Postman and hit a POST request as shown below.</p>
+<p><img src="https://www.appsdeveloperblog.com/wp-content/uploads/2021/12/postmanRequest-300x231.jpg" alt="|512x394"></p>
+<p>In the end, verify whether the Lambda function is invoked or not. Go to DynamoDB, select user-table, and click on View Items. You can see a new record in the database as shown below.</p>
+<p><img src="https://www.appsdeveloperblog.com/wp-content/uploads/2021/12/itemReturned-300x70.jpg" alt="|579x135"></p>
+<p>Link to Code: <a href="https://github.com/vaishu98/Inserting-records-into-DynamoDB-in-a-Spring-Boot-App-using-AWS-Lambda-and-API-gateway">GitHub</a></p>
+<p>That’s it for this tutorial. Stay tuned for the upcoming tutorial on how to fetch records from the DynamoDB table based on id.</p>
+<blockquote>
+<p>Reference <a href="https://www.appsdeveloperblog.com/writing-into-dynamodb-in-a-spring-boot-app-using-aws-lambda/">https://www.appsdeveloperblog.com/writing-into-dynamodb-in-a-spring-boot-app-using-aws-lambda/</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          <a href="https://www.springcloud.io/tags/aws/">aws</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2021-12/spring-cloud-stream-with-schema-registry-and-kafka/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Spring Cloud Stream with Schema Registry and Kafka</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2021-12/retry-in-spring-boot-applications/">
+            <span class="next-text nav-default">Spring Retry</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

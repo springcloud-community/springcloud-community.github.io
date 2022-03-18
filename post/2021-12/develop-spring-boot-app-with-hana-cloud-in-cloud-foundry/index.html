@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Develop Spring Boot App with HANA Cloud in Cloud Foundry - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="Through this post, you can get:
+ How to build a Spring Boot App consuming HANA Cloud How to deploy Spring Boot App in SAP BTP Cloud Foundry Environment Comparison between consuming HANA Cloud instance directly and through hdi-shared / schema Comparison between consuming HANA Cloud with JDBC and JPA Comparison between HANA Cloud users and their authorizations How to get Trial Account on SAP BTP@AliCloud  Trial Account (SAP BTP@AliCloud) If you are an SAP employee , access SAP BTP Control Center – Canary – Alibaba Cloud to grant the service entitlements to your Global Account." />
+<meta name="keywords" content="spring-boot" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2021-12/develop-spring-boot-app-with-hana-cloud-in-cloud-foundry/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Develop Spring Boot App with HANA Cloud in Cloud Foundry" />
+<meta property="og:description" content="Through this post, you can get:
+ How to build a Spring Boot App consuming HANA Cloud How to deploy Spring Boot App in SAP BTP Cloud Foundry Environment Comparison between consuming HANA Cloud instance directly and through hdi-shared / schema Comparison between consuming HANA Cloud with JDBC and JPA Comparison between HANA Cloud users and their authorizations How to get Trial Account on SAP BTP@AliCloud  Trial Account (SAP BTP@AliCloud) If you are an SAP employee , access SAP BTP Control Center – Canary – Alibaba Cloud to grant the service entitlements to your Global Account." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2021-12/develop-spring-boot-app-with-hana-cloud-in-cloud-foundry/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-12-09T09:29:31+08:00" />
+<meta property="article:modified_time" content="2021-12-09T09:29:31+08:00" />
+
+<meta itemprop="name" content="Develop Spring Boot App with HANA Cloud in Cloud Foundry">
+<meta itemprop="description" content="Through this post, you can get:
+ How to build a Spring Boot App consuming HANA Cloud How to deploy Spring Boot App in SAP BTP Cloud Foundry Environment Comparison between consuming HANA Cloud instance directly and through hdi-shared / schema Comparison between consuming HANA Cloud with JDBC and JPA Comparison between HANA Cloud users and their authorizations How to get Trial Account on SAP BTP@AliCloud  Trial Account (SAP BTP@AliCloud) If you are an SAP employee , access SAP BTP Control Center – Canary – Alibaba Cloud to grant the service entitlements to your Global Account."><meta itemprop="datePublished" content="2021-12-09T09:29:31+08:00" />
+<meta itemprop="dateModified" content="2021-12-09T09:29:31+08:00" />
+<meta itemprop="wordCount" content="3566">
+<meta itemprop="keywords" content="spring-boot," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Develop Spring Boot App with HANA Cloud in Cloud Foundry"/>
+<meta name="twitter:description" content="Through this post, you can get:
+ How to build a Spring Boot App consuming HANA Cloud How to deploy Spring Boot App in SAP BTP Cloud Foundry Environment Comparison between consuming HANA Cloud instance directly and through hdi-shared / schema Comparison between consuming HANA Cloud with JDBC and JPA Comparison between HANA Cloud users and their authorizations How to get Trial Account on SAP BTP@AliCloud  Trial Account (SAP BTP@AliCloud) If you are an SAP employee , access SAP BTP Control Center – Canary – Alibaba Cloud to grant the service entitlements to your Global Account."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Develop Spring Boot App with HANA Cloud in Cloud Foundry</h1>
+      
+      <div class="post-meta">
+        <time datetime="2021-12-09" class="post-time">
+          2021-12-09
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 3566 words </span>
+          <span class="more-meta"> 17 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#trial-account-sap-btpalicloud">Trial Account (SAP BTP@AliCloud)</a></li>
+    <li><a href="#entitlements">Entitlements</a></li>
+    <li><a href="#step-1-create-a-spring-boot-application-consuming-hana-cloud">Step 1: Create a Spring Boot Application Consuming HANA Cloud</a></li>
+    <li><a href="#step-2-create-hana-cloud-instance-on-sap-btpalicloud">Step 2: Create HANA Cloud Instance on SAP BTP@AliCloud</a></li>
+    <li><a href="#step-3-create-table">Step 3: Create Table</a></li>
+    <li><a href="#step-4-run-and-test-locally">Step 4: Run and Test locally</a></li>
+    <li><a href="#step-5-deploy-the-spring-boot-app-to-sap-btp-cloud-foundry-environment">Step 5: Deploy the Spring Boot App to SAP BTP Cloud Foundry Environment</a></li>
+    <li><a href="#step-6-get-hana-cloud-credential-with-java-cfenv">Step 6: Get HANA Cloud Credential with Java CFEnv</a></li>
+    <li><a href="#comparison-between-jdbc-and-jpa">Comparison between JDBC and JPA</a></li>
+    <li><a href="#more-references">More References</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>Through this post, you can get:</p>
+<ul>
+<li>How to build a Spring Boot App consuming HANA Cloud</li>
+<li>How to deploy Spring Boot App in SAP BTP Cloud Foundry Environment</li>
+<li>Comparison between consuming HANA Cloud instance directly and through <code>hdi-shared</code> / <code>schema</code></li>
+<li>Comparison between consuming HANA Cloud with JDBC and JPA</li>
+<li>Comparison between HANA Cloud users and their authorizations</li>
+<li>How to get Trial Account on <strong>SAP BTP@AliCloud</strong></li>
+</ul>
+<h2 id="trial-account-sap-btpalicloud">Trial Account (SAP BTP@AliCloud)</h2>
+<p>If you are an <strong>SAP employee</strong> , access <a href="https://cp-control-client.cfapps.canaryac.vlab-sapcloudplatformdev.cn/index.html">SAP BTP Control Center – Canary – Alibaba Cloud</a> to grant the service entitlements to your Global Account.</p>
+<p>If you are a <strong>partner</strong> or <strong>start-up</strong> , read <a href="https://mp.weixin.qq.com/s/xWvUVSWEgVMw316jzeebBQ">this article</a> to apply for BTP TDD (Test, Demonstration and Development) license account.</p>
+<p>If you are a potential <strong>customer</strong> , please reach sales to apply for an Enterprise Trial according to <a href="https://jam4.sapjam.com/groups/y6AlyBoXudmY6A5TfqeqZj/documents/YWPBxR3RJASGuNz3f0JxOx/slide_viewer">this SAP internal page</a>.</p>
+<p>If you are a personal <strong>developer</strong> , start by reading <a href="https://developers.sap.com/tutorials/hcp-create-trial-account.html">Get a Free Account on SAP BTP Trial</a> to get a global free trial account.</p>
+<h2 id="entitlements">Entitlements</h2>
+<table>
+<thead>
+<tr>
+<th><strong>Service</strong></th>
+<th><strong>Plan</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAP HANA Cloud</td>
+<td>hana</td>
+</tr>
+<tr>
+<td>SAP HANA Cloud</td>
+<td>hana-cloud-connection</td>
+</tr>
+<tr>
+<td>SAP HANA Cloud</td>
+<td>relational-data-lake</td>
+</tr>
+<tr>
+<td>SAP HANA Schemas &amp; HDI Containers (HANA)</td>
+<td>schema / hdi-shared</td>
+</tr>
+<tr>
+<td>Cloud Foundry Runtime</td>
+<td>MEMORY</td>
+</tr>
+</tbody>
+</table>
+<h2 id="step-1-create-a-spring-boot-application-consuming-hana-cloud">Step 1: Create a Spring Boot Application Consuming HANA Cloud</h2>
+<p><strong>1. Create a raw SB project</strong></p>
+<p>Create a brand new project with the official tool <a href="https://start.spring.io/">Spring initializr</a>, and add the following dependencies:</p>
+<ul>
+<li>Spring Web</li>
+<li>Spring Data JPA</li>
+</ul>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210914175642503.png" alt="image"></p>
+<p>Click Generate button to get the zip project file and then import it into your IDE.</p>
+<p><strong>2. Add dependency</strong></p>
+<p>Add the HANA Cloud JDBC dependency in <code>pom.xml</code></p>
+<p><a href="https://mvnrepository.com/artifact/com.sap.cloud.db.jdbc/ngdbc">MVN Repository – SAP HANA JDBC Driver</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- https://mvnrepository.com/artifact/com.sap.cloud.db.jdbc/ngdbc --&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>com.sap.cloud.db.jdbc<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>ngdbc<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>2.9.16<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>3. Add model, service, and controller</strong></p>
+<p>Create a new package model under the main package com.sap.alicloud.hc.SpringBootHANADemo, and add a new class JobExecutionStatus:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.model</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="kn">import</span> <span class="nn">javax.persistence.*</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;ECM_JOB_EXECUTION_STATUS\&#34;&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JobExecutionStatus</span> <span class="o">{</span>
+<span class="err">​</span>
+    <span class="nd">@Id</span>
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;JOB_ID\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">200</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">jobId</span><span class="o">;</span>
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;JOB_NAME\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">190</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">jobName</span><span class="o">;</span>
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;START_TIME\&#34;&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="kt">long</span> <span class="n">startTime</span><span class="o">;</span>
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;STATUS\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">16</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">status</span><span class="o">;</span>
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;RESULT\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">250</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">result</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getJobId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">jobId</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setJobId</span><span class="o">(</span><span class="n">String</span> <span class="n">jobId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">jobId</span> <span class="o">=</span> <span class="n">jobId</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getJobName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">jobName</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setJobName</span><span class="o">(</span><span class="n">String</span> <span class="n">jobName</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">jobName</span> <span class="o">=</span> <span class="n">jobName</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getStartTime</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">startTime</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setStartTime</span><span class="o">(</span><span class="kt">long</span> <span class="n">startTime</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">startTime</span> <span class="o">=</span> <span class="n">startTime</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getStatus</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setStatus</span><span class="o">(</span><span class="n">String</span> <span class="n">status</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">status</span> <span class="o">=</span> <span class="n">status</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getResult</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setResult</span><span class="o">(</span><span class="n">String</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Create a new package dao under the main package <code>com.sap.alicloud.hc.SpringBootHANADemo</code>, and add a new class <code>Database</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.dao</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.context.properties.ConfigurationProperties</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="nd">@Configuration</span>
+<span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;database&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Database</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">url</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">password</span><span class="o">;</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUrl</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">url</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUrl</span><span class="o">(</span><span class="n">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">username</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPassword</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">password</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPassword</span><span class="o">(</span><span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Under the main package <code>com.sap.alicloud.hc.SpringBootHANADemo.dao</code>, add a new class <code>NativeSQL</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span><span class="lnt">141
+</span><span class="lnt">142
+</span><span class="lnt">143
+</span><span class="lnt">144
+</span><span class="lnt">145
+</span><span class="lnt">146
+</span><span class="lnt">147
+</span><span class="lnt">148
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.dao</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="kn">import</span> <span class="nn">java.sql.Connection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.sql.DriverManager</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.sql.PreparedStatement</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.sql.ResultSet</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.sql.SQLException</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.model.JobExecutionStatus</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NativeSQL</span> <span class="o">{</span>
+<span class="err">​</span>
+    <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">NativeSQL</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="n">Connection</span> <span class="n">connection</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="nd">@Autowired</span> <span class="n">Database</span> <span class="n">db</span><span class="o">;</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">createConnection</span><span class="o">()</span> <span class="o">{</span>
+<span class="err">​</span>
+        <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+<span class="err">​</span>
+<span class="err">​</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Java version: &#34;</span> <span class="o">+</span> <span class="n">com</span><span class="o">.</span><span class="na">sap</span><span class="o">.</span><span class="na">db</span><span class="o">.</span><span class="na">jdbc</span><span class="o">.</span><span class="na">Driver</span><span class="o">.</span><span class="na">getJavaVersion</span><span class="o">());</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Minimum supported Java version and SAP driver version number: &#34;</span>
+                <span class="o">+</span> <span class="n">com</span><span class="o">.</span><span class="na">sap</span><span class="o">.</span><span class="na">db</span><span class="o">.</span><span class="na">jdbc</span><span class="o">.</span><span class="na">Driver</span><span class="o">.</span><span class="na">getVersionInfo</span><span class="o">());</span>
+<span class="err">​</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">connection</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">db</span><span class="o">.</span><span class="na">getUrl</span><span class="o">(),</span> <span class="n">db</span><span class="o">.</span><span class="na">getUsername</span><span class="o">(),</span> <span class="n">db</span><span class="o">.</span><span class="na">getPassword</span><span class="o">());</span>
+<span class="err">​</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+<span class="err">​</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Connection to HANA successful!&#34;</span><span class="o">);</span>
+            <span class="o">}</span>
+<span class="err">​</span>
+            <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+            <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
+<span class="err">​</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;HANA Connection Time:&#34;</span>  <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
+<span class="err">​</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Connection Failed:&#34;</span><span class="o">);</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">insertJob</span><span class="o">(</span><span class="n">JobExecutionStatus</span> <span class="n">job</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+<span class="err">​</span>
+                <span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span>
+                        <span class="s">&#34;INSERT INTO \&#34;ECM_JOB_EXECUTION_STATUS\&#34; (\&#34;JOB_ID\&#34;, \&#34;JOB_NAME\&#34;, \&#34;RESULT\&#34;, \&#34;START_TIME\&#34;, \&#34;STATUS\&#34;) VALUES (?, ?, ?, ?, ?)&#34;</span><span class="o">);</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">());</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">2</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobName</span><span class="o">());</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">3</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getResult</span><span class="o">());</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">setLong</span><span class="o">(</span><span class="n">4</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getStartTime</span><span class="o">());</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">5</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getStatus</span><span class="o">());</span>
+<span class="err">​</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
+<span class="err">​</span>
+                <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+                <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
+<span class="err">​</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Insert Job:&#34;</span> <span class="o">+</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;:&#34;</span> <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
+<span class="err">​</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Insert failed!&#34;</span><span class="o">);</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateJob</span><span class="o">(</span><span class="n">JobExecutionStatus</span> <span class="n">job</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+<span class="err">​</span>
+                <span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span>
+                        <span class="s">&#34;UPDATE \&#34;ECM_JOB_EXECUTION_STATUS\&#34; SET \&#34;RESULT\&#34; = ?, \&#34;STATUS\&#34; = ? WHERE (\&#34;JOB_ID\&#34; = ?)&#34;</span><span class="o">);</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getResult</span><span class="o">());</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">2</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getStatus</span><span class="o">());</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">3</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">());</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
+<span class="err">​</span>
+                <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+                <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
+<span class="err">​</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Update Job:&#34;</span> <span class="o">+</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;:&#34;</span> <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
+<span class="err">​</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Update failed!&#34;</span><span class="o">);</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getJob</span><span class="o">(</span><span class="n">String</span> <span class="n">jobId</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+<span class="err">​</span>
+                <span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span>
+                        <span class="s">&#34;SELECT \&#34;JOB_ID\&#34;, \&#34;JOB_NAME\&#34;, \&#34;RESULT\&#34;, \&#34;START_TIME\&#34;, \&#34;STATUS\&#34; FROM \&#34;ECM_JOB_EXECUTION_STATUS\&#34; WHERE (\&#34;JOB_ID\&#34; = ?)&#34;</span><span class="o">);</span>
+                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="n">jobId</span><span class="o">);</span>
+<span class="err">​</span>
+                <span class="n">ResultSet</span> <span class="n">rs</span> <span class="o">=</span> <span class="n">pstmt</span><span class="o">.</span><span class="na">executeQuery</span><span class="o">();</span>
+<span class="err">​</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">rs</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">rs</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="n">String</span> <span class="n">job_id</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;JOB_ID&#34;</span><span class="o">);</span>
+                    <span class="n">String</span> <span class="n">job_name</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;JOB_Name&#34;</span><span class="o">);</span>
+                    <span class="kt">long</span> <span class="n">start_time</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getLong</span><span class="o">(</span><span class="s">&#34;START_TIME&#34;</span><span class="o">);</span>
+                    <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;STATUS&#34;</span><span class="o">);</span>
+                    <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;RESULT&#34;</span><span class="o">);</span>
+<span class="err">​</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">job_id</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">job_name</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">start_time</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">status</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">result</span><span class="o">);</span>
+                <span class="o">}</span>
+<span class="err">​</span>
+                <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+                <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
+<span class="err">​</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Query Job:&#34;</span> <span class="o">+</span> <span class="n">jobId</span> <span class="o">+</span> <span class="s">&#34;:&#34;</span> <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
+<span class="err">​</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Query failed!&#34;</span><span class="o">);</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">closeConnection</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">connection</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                <span class="n">connection</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+            <span class="o">}</span>
+<span class="err">​</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Create a new package <code>service</code> under the main package <code>com.sap.alicloud.hc.SpringBootHANADemo</code>, and add a new class <code>NativeSQLRunner</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.service</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="kn">import</span> <span class="nn">java.util.UUID</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.scheduling.annotation.Async</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.dao.NativeSQL</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.model.JobExecutionStatus</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NativeSQLRunner</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">MAX_RUM</span> <span class="o">=</span> <span class="n">100</span><span class="o">;</span>
+<span class="err">​</span>
+    <span class="nd">@Autowired</span>
+    <span class="n">NativeSQL</span> <span class="n">nativeSQL</span><span class="o">;</span>
+<span class="err">​</span>
+    <span class="nd">@Async</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">startTest</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">nativeSQL</span><span class="o">.</span><span class="na">createConnection</span><span class="o">();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MAX_RUM</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">JobExecutionStatus</span> <span class="n">job</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JobExecutionStatus</span><span class="o">();</span>
+            <span class="n">job</span><span class="o">.</span><span class="na">setJobId</span><span class="o">(</span><span class="n">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+            <span class="n">job</span><span class="o">.</span><span class="na">setJobName</span><span class="o">(</span><span class="s">&#34;InstanceCreationJob&#34;</span><span class="o">);</span>
+            <span class="n">job</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="s">&#34;&#34;</span><span class="o">);</span>
+            <span class="n">job</span><span class="o">.</span><span class="na">setStartTime</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
+            <span class="n">job</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="s">&#34;In Progress&#34;</span><span class="o">);</span>
+<span class="err">​</span>
+            <span class="n">nativeSQL</span><span class="o">.</span><span class="na">insertJob</span><span class="o">(</span><span class="n">job</span><span class="o">);</span>
+<span class="err">​</span>
+            <span class="n">job</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="s">&#34;Instance creation successfully completed&#34;</span><span class="o">);</span>
+            <span class="n">job</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="s">&#34;Succeeded&#34;</span><span class="o">);</span>
+<span class="err">​</span>
+            <span class="n">nativeSQL</span><span class="o">.</span><span class="na">updateJob</span><span class="o">(</span><span class="n">job</span><span class="o">);</span>
+<span class="err">​</span>
+            <span class="n">nativeSQL</span><span class="o">.</span><span class="na">getJob</span><span class="o">(</span><span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="n">nativeSQL</span><span class="o">.</span><span class="na">closeConnection</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Create a new package <code>controller</code> under the main package <code>com.sap.alicloud.hc.SpringBootHANADemo</code>, and add a new class <code>TestController</code>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.controller</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.service.NativeSQLRunner</span><span class="o">;</span>
+<span class="err">​</span>
+<span class="nd">@RestController</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="n">NativeSQLRunner</span> <span class="n">runner_native_sql</span><span class="o">;</span>
+<span class="err">​</span>
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/&#34;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">hello</span><span class="o">()</span> <span class="o">{</span>
+<span class="err">​</span>
+        <span class="k">return</span> <span class="s">&#34;Hello!&#34;</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/test_native_sql&#34;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">test_native_sql</span><span class="o">()</span> <span class="o">{</span>
+<span class="err">​</span>
+        <span class="n">runner_native_sql</span><span class="o">.</span><span class="na">startTest</span><span class="o">();</span>
+<span class="err">​</span>
+        <span class="k">return</span> <span class="s">&#34;Test Native SQL Started!&#34;</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="err">​</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>4. Configure application properties</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">database.url=jdbc:sap://&lt;hana-instance-host&gt;:443?encrypt=true&amp;validateCertificate=true&amp;traceFile=stdout&amp;traceOptions=CONNECTIONS,API,STATISTICS,CLEANERS,TIMESTAMPS,ELAPSEDTIMES</span><span class="w">
+</span><span class="w"></span><span class="l">database.username=&lt;username&gt;</span><span class="w">
+</span><span class="w"></span><span class="l">database.password=&lt;password&gt;</span><span class="w">
+</span><span class="w"></span><span class="l">​</span><span class="w">
+</span><span class="w"></span><span class="c">#Spring Boot JPA</span><span class="w">
+</span><span class="w"></span><span class="l">spring.datasource.driver-class-name=com.sap.db.jdbc.Driver</span><span class="w">
+</span><span class="w"></span><span class="l">spring.datasource.url=jdbc:sap://&lt;hana-instance-host&gt;:443?encrypt=true&amp;validateCertificate=true&amp;traceFile=stdout&amp;traceOptions=CONNECTIONS,API,STATISTICS,CLEANERS,TIMESTAMPS,ELAPSEDTIMES</span><span class="w">
+</span><span class="w"></span><span class="l">spring.datasource.username=&lt;username&gt;</span><span class="w">
+</span><span class="w"></span><span class="l">spring.datasource.password=&lt;password&gt;</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="step-2-create-hana-cloud-instance-on-sap-btpalicloud">Step 2: Create HANA Cloud Instance on SAP BTP@AliCloud</h2>
+<p>Please follow this guide to <a href="https://developers.sap.com/tutorials/hana-cloud-deploying.html">Provision HANA Cloud instance</a>.</p>
+<h2 id="step-3-create-table">Step 3: Create Table</h2>
+<p>Login to the HANA Database Explorer and create a table in your HANA Cloud via executing an SQL command:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ECM_JOB_EXECUTION_STATUS</span><span class="p">(</span><span class="w">
+</span><span class="w">  </span><span class="n">JOB_ID</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
+</span><span class="w">  </span><span class="n">JOB_NAME</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
+</span><span class="w">  </span><span class="n">START_TIME</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
+</span><span class="w">  </span><span class="n">STATUS</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
+</span><span class="w">  </span><span class="k">RESULT</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="w">
+</span><span class="w"></span><span class="p">)</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915113159324.png" alt="image"></p>
+<p>Or, you can create the table with JDBC command, for more details, please read <a href="https://help.sap.com/viewer/db19c7071e5f4101837e23f06e576495/hanacloud/en-US/030a162d380b4ec0bc6a284954c8256d.html?q=jdbc">Connect to SAP HANA Cloud via JDBC</a>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">java -jar ngdbc-2.9.16.jar -u &lt;username&gt;,&lt;password&gt; -n &lt;hana-instance-host&gt;:443 -o <span class="nv">encrypt</span><span class="o">=</span><span class="nb">true</span> -c <span class="s2">&#34;CREATE TABLE ECM_JOB_EXECUTION_STATUS(JOB_ID VARCHAR(500),JOB_NAME VARCHAR(500),START_TIME VARCHAR(500),STATUS VARCHAR(500),RESULT VARCHAR(500))&#34;</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Check the new table in the HANA Database Explorer</p>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915125512834.png" alt="image"></p>
+<h2 id="step-4-run-and-test-locally">Step 4: Run and Test locally</h2>
+<p>Run the project locally:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">mvn clean install package
+java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
+</code></pre></td></tr></table>
+</div>
+</div><p>Access <code>http://localhost:8080/</code> in the browser, it would return a hello message:</p>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915125117043.png" alt="image"></p>
+<p>Access <code>http://localhost:8080/test_native_sql</code> in the browser, it would write data into the table in the backend and return a success message.</p>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915125735404.png" alt="image"></p>
+<p>Check the written data in the HANA Database Explorer:</p>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915125836070.png" alt="image"></p>
+<h2 id="step-5-deploy-the-spring-boot-app-to-sap-btp-cloud-foundry-environment">Step 5: Deploy the Spring Boot App to SAP BTP Cloud Foundry Environment</h2>
+<p>Under the root directory of the project, create a <code>manifest.yml</code> file with the following content, more detailed configuration can be found <a href="https://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html">here</a>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">---</span><span class="w">
+</span><span class="w"></span><span class="nt">applications</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
+</span><span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;host&gt;</span><span class="w">
+</span><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar</span><span class="w">
+</span><span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;custom-domain&gt;</span><span class="w">
+</span><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">1G</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>Replace <strong>host</strong> with a unique name, so it does not clash with other deployed applications.</p>
+<p>Replace <strong>custom-domain</strong> with the domain available in your org, you can check it by executing CF command <code>cf domains</code> . For BTP@AliCloud, custom domain is necessary to prepare due to compliance requirement in China. More details on how to get your own custom domain can be found here: <a href="https://blogs.sap.com/2020/07/16/sap-cloud-platform-on-alicloud-series-use-custom-domain-in-sap-cloud-platform-on-alicloud/">Use custom domain in SAP Cloud Platform on Alibaba Cloud</a></p>
+<p>The URL of your application will be: <strong>host.custom-domain</strong> .</p>
+</blockquote>
+<p>For example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">---</span><span class="w">
+</span><span class="w"></span><span class="nt">applications</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
+</span><span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
+</span><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar</span><span class="w">
+</span><span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l">exercise.sap-samples.cn40.apps.platform.sapcloud.cn</span><span class="w">
+</span><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">1G</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>Under the root directory of the project, execute:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cf push
+</code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>This command will deploy the <code>springboothanademo</code> application into your Cloud Foundry environment. When you push an app, Cloud Foundry automatically detects an appropriate buildpack for it. This buildpack is used to compile or prepare your app for launch. In our case, is <code>Java Buildpack</code> .</p>
+<p><code>cf push</code> is always executed in the same directory, where the <code>manifest.yml</code> is located.</p>
+</blockquote>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915133119957.png" alt="image"></p>
+<p>If your app deployment fails, you can troubleshoot by checking its logs:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cf logs springboothanademo --recent
+</code></pre></td></tr></table>
+</div>
+</div><p>When the staging and deployment steps are complete, you can check the state and URL of your application through Cockpit or CF command:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cf apps
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915133312161.png" alt="image"></p>
+<p>Open a browser window and enter the URL of the <code>springboothanademo</code> application, for example:</p>
+<p><code>springboothanademo.exercise.sap-samples.cn40.apps.platform.sapcloud.cn</code></p>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915133447443.png" alt="image"></p>
+<h2 id="step-6-get-hana-cloud-credential-with-java-cfenv">Step 6: Get HANA Cloud Credential with Java CFEnv</h2>
+<p><strong>Motivation</strong></p>
+<p>Until now, you may notice that the HANA Cloud credential is maintained in the project code, which is not a secure and easy way to do credential maintenance. We can try to get the credential in real-time from the environment through binding service instances with your app. However, the service instance we mentioned here is not the HANA Cloud instance itself, instead, it is a kind of <code>hdi-shared</code> (or <code>schema</code> ) instance based on the HANA Cloud instance.</p>
+<p>One of the main reason behind is that the HANA Cloud instance doesn’t provide the DBADMIN credential explicitly in the service instance key. Let’s see an example.</p>
+<p>Let’s create a service key for the HANA Cloud instance, and have a look at its content:</p>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915144844968.png" alt="image"></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;jdbc:sap://02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn:443?encrypt=true&amp;validateCertificate=true&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;certificate&#34;</span><span class="p">:</span> <span class="s2">&#34;-----BEGIN CERTIFICATE-----\nMIIDrzCCApegAwIBAgIQCDvgVpBCRrGhd...bQk\nCAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=\n-----END CERTIFICATE-----&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;driver&#34;</span><span class="p">:</span> <span class="s2">&#34;com.sap.db.jdbc.Driver&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="s2">&#34;443&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>However, let’s create a new <code>hdi-shared</code> instance and a new key for it, and have a look at the content in the key:</p>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915145319479.png" alt="image"></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;jdbc:sap://02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn:443?encrypt=true&amp;validateCertificate=true&amp;currentschema=738720F9AFD34B7CAE1338E937A9F550&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;certificate&#34;</span><span class="p">:</span> <span class="s2">&#34;-----BEGIN CERTIFICATE-----\nMIIDrzCCApegAwI...7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=\n-----END CERTIFICATE-----&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;driver&#34;</span><span class="p">:</span> <span class="s2">&#34;com.sap.db.jdbc.Driver&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;hdi_password&#34;</span><span class="p">:</span> <span class="s2">&#34;Gg3NquSSlSMN9H1c...5Z20jrGhBQAin.67IAeMfFGq_1&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;hdi_user&#34;</span><span class="p">:</span> <span class="s2">&#34;738720F9AFD34B7CAE1338E937A9F550_2HMTZ3RWEJUW0QG35AE4IMD89_DT&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;password&#34;</span><span class="p">:</span> <span class="s2">&#34;Ff53CjMoNmj_hOaeFm...FuV5S-ThZCO9h7.aux&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="s2">&#34;443&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;schema&#34;</span><span class="p">:</span> <span class="s2">&#34;738720F9AFD34B7CAE1338E937A9F550&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="s2">&#34;738720F9AFD34B7CAE1338E937A9F550_2HMTZ3RWEJUW0QG35AE4IMD89_RT&#34;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>Explore <code>hdi-shared</code> and its users</strong></p>
+<p>The deployment of database objects with SAP HANA Deployment Infrastructure (HDI) is based on a container model where each container corresponds roughly to a database schema. Each schema, and the database objects deployed into the schema, are owned by a dedicated technical database user.</p>
+<p>For every container deployed, a new technical database user and schema with the same name as the container are created. Additional schemas and technical users required for metadata and deployment APIs are also created.</p>
+<p>These technical database users are used internally by HDI only. As a general rule, these users are created as restricted database users who do not have any privileges by default (not even the role PUBLIC) and cannot be used to log on to the database. The only exception to this rule concerns user schema#OO who is granted the role PUBLIC by default.</p>
+<p>Every time the service instance is bound to an application, the service broker creates two new users that are specific to this binding. In other words, for each <code>hdi-shared</code> key, you can find two pairs of username and password shown as above, that are:</p>
+<ul>
+<li>Design-time (DT) user: <code>&quot;hdi_user&quot;</code> / <code>&quot;hdi_password&quot;</code></li>
+<li>Run-time (RT) user: <code>&quot;user&quot;</code> / <code>&quot;password&quot;</code></li>
+</ul>
+<p>There would be a separate schema created behind for each user, by default, their name are:</p>
+<ul>
+<li>Schema for DT user: <code>738720F9AFD34B7CAE1338E937A9F550_2HMTZ3RWEJUW0QG35AE4IMD89_DT</code></li>
+<li>Schema for RT user: <code>738720F9AFD34B7CAE1338E937A9F550_2HMTZ3RWEJUW0QG35AE4IMD89_RT</code></li>
+</ul>
+<blockquote>
+<p>If you would like to define it with custom name, you can add a configuration parameter when creating the service instance and key.</p>
+</blockquote>
+<p>DT user and RT user are assigned with different Roles, you can check it in the HANA Cockpit -&gt; Security and User Management -&gt; User Management:</p>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915171900206.png" alt="image"></p>
+<ul>
+<li>Roles for DT userThis user is equipped with privileges for the container’s APIs in the “schema#DI” schema.</li>
+</ul>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915172009344.png" alt="image"></p>
+<ul>
+<li>Roles for RT userThis user is assigned the service instance’s global access role “schema::access_role”</li>
+</ul>
+<p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915172151691.png" alt="image"></p>
+<p><strong>Explore <code>DBADMIN</code> administration user</strong></p>
+<p>All SAP HANA Cloud, SAP HANA database instances have an administration user named <code>DBADMIN</code> . This user is reserved for use by customers. You can use this user to log on to the SAP HANA cockpit and perform all initial user administration tasks. For more detailed information, please read <a href="https://help.sap.com/viewer/c82f8d6a84c147f8b78bf6416dae7290/2021_2_QRC/en-US/dea55d23bb571014bf25f6ed0d3b2b17.html">User Management</a> and <a href="https://help.sap.com/viewer/f9c5015e72e04fffa14d7d4f7267d897/2021_2_QRC/en-US/5b35402c47b344d882ac13c661aff1c0.html">User Management with the SAP HANA Database Administrator DBADMIN</a>.</p>
+<p>The DBADMIN user:</p>
+<ul>
+<li>Is a member and operator of the user group DEFAULT</li>
+<li>Has the system privilege USERGROUP OPERATOR for the user group DEFAULT.</li>
+<li>Has all the grantable permissions of the SYSTEM user, except the system privilege USER ADMIN. This prevents DBADMIN from changing predefined SAP HANA users in the SAP HANA database instance.Permissions for new objects created by SAP HANA Cloud components in the database must be granted to DBADMIN.</li>
+</ul>
+<blockquote>
+<p>It is recommended that you do not use the DBADMIN user for day-to-day activities. Instead:</p>
+<ol>
+<li>Use DBADMIN to create database users for specific administrative tasks and assign them the privileges required.</li>
+<li>Then, deactivate the DBADMIN user.</li>
+</ol>
+</blockquote>
+<p>You can check the Roles for the DBADMIN in the HANA Cockpit:</p>
+<p><strong>Comparison between HANA Cloud users</strong></p>
+<p>It is often necessary to specify different security policies for different types of database user. In the SAP HANA database, a distinction is made between database users that correspond to real people and technical database users.</p>
+<p>Database Users that Correspond to Real People:</p>
+<ul>
+<li>Every person who needs to work with SAP HANA must have a database user. Depending on your system configuration and scenario,</li>
+<li>When database users that correspond to real people leave the organization, the DBA must intervene to delete these users from the database. When a database user is deleted, this means that any database objects that were owned by that user are also automatically dropped, and any privileges granted by that user are automatically revoked.</li>
+<li>Database users are created with either the CREATE USER or CREATE RESTRICTED USER statement, or using the SAP HANA cockpit.</li>
+</ul>
+<p>Technical Database Users:</p>
+<ul>
+<li>
+<p>Technical database users do not correspond to real people. They are therefore not dropped if a person leaves the organization. This means that they should be used for administrative tasks such as creating objects and granting privileges for a particular application.</p>
+</li>
+<li>
+<p>Some technical users are available as standard, for example, the user SYS.</p>
+</li>
+<li>
+<p>Other technical database users are created for application-specific purposes. For example, an application server may log on to the SAP HANA database using a dedicated technical database user. For example, <strong>HDI user</strong> .</p>
+</li>
+<li>
+<p>Technical users are standard users created with the CREATE USER statement.</p>
+</li>
+</ul>
+<p><strong>Comparison between consuming HANA Cloud instance directly and through <code>hdi-shared</code> / <code>schema</code></strong></p>
+<p>We can consume HANA Cloud instance without <code>hdi-shared</code> / <code>schema</code> instance. However, <code>hdi-shared</code> / <code>schema</code> has strong advantages over consuming with a single HANA Cloud instance.</p>
+<p><code>hdi-shared</code> / <code>schema</code> is the Service Plan of the <code>SAP HANA Schemas &amp; HDI Containers (HANA)</code> Service. This service generates a schema (if you use <strong>schema</strong> plan) which allows your Spring Boot application to create its database artifacts. There are other plans of course which cater to different use-cases. For example, if you follow the <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/00823f91779d4d42aa29a498e0535cdf.html">Cloud Application Programming</a> model, it is recommended to model the database artifacts in CDS. In that case, <strong>hdi-shared</strong> plan is used, which deploys the database artifacts from your CDS files.</p>
+<p>The <code>hdi-shared</code> Service Plan:</p>
+<ul>
+<li>
+<p>CredentialWhen you create and bind a service instance with the service plan hdi-shared, an application receives the credentials required for access to an HDI container, which is basically a database schema that is equipped with additional metadata.</p>
+</li>
+<li>
+<p>IsolationHDI containers ensure isolation, and within an SAP HANA database you can define an arbitrary number of HDI containers. The same objects can be deployed multiple times into different HDI containers in the same SAP HANA database, for example, to install several instances of the same software product in the same SAP HANA database. HDI containers are isolated from each other by means of schema-level access privileges. Cross-container access at the database level is prevented by default but can be enabled by explicitly granting the necessary privileges, for example, using synonyms.</p>
+</li>
+<li>
+<p>PersistenceDatabase objects (tables, views, procedures, and so on) have an owner: the user who created the object. When the owner of a database object is deleted, all objects owned by the deleted user are removed from the database, too. In addition, if application objects are created by end users, the objects are deleted when the end user is deleted, for example when the employee leaves the organization. HDI ensures that during deployment all database objects are created by a container-specific technical user, which is never deleted as long as the container exists.</p>
+</li>
+</ul>
+<p>The <code>schema</code> Service Plan:</p>
+<p>The schema service plan creates a plain schema, which you need to manage by hand. Consider using this service plan if your application uses an OR Mapper concept and a framework is available that creates the necessary database resources on demand.</p>
+<p><strong>Enhanced code with Java CFEnv</strong></p>
+<p><a href="https://github.com/pivotal-cf/java-cfenv">Java CFEnv</a> is a library for easily accessing the environment variables set when deploying an application to Cloud Foundry. It is modeled after the design of the node library <a href="https://github.com/cloudfoundry-community/node-cfenv/">node-cfenv</a> and other <code>-cfenv</code> libraries in the Cloud Foundry ecosystem.</p>
+<p>You can access the stable release from maven central using the coordinates, add it to your <code>pom.xml</code> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>io.pivotal.cfenv<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>java-cfenv-boot<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>2.2.2.RELEASE<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>And add a code snippet:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">	<span class="nd">@Bean</span>
+	<span class="nd">@Primary</span>
+	<span class="nd">@Profile</span><span class="o">(</span><span class="s">&#34;cloud&#34;</span><span class="o">)</span>
+	<span class="kd">public</span> <span class="n">DataSourceProperties</span> <span class="nf">dataSourceProperties</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">CfJdbcEnv</span> <span class="n">cfJdbcEnv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CfJdbcEnv</span><span class="o">();</span>
+		<span class="n">DataSourceProperties</span> <span class="n">properties</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataSourceProperties</span><span class="o">();</span>
+		<span class="n">CfCredentials</span> <span class="n">hanaCredentials</span> <span class="o">=</span> <span class="n">cfJdbcEnv</span><span class="o">.</span><span class="na">findCredentialsByTag</span><span class="o">(</span><span class="s">&#34;hana&#34;</span><span class="o">);</span>
+
+		<span class="k">if</span> <span class="o">(</span><span class="n">hanaCredentials</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+
+			<span class="n">String</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">hanaCredentials</span><span class="o">.</span><span class="na">getUri</span><span class="o">(</span><span class="s">&#34;hana&#34;</span><span class="o">);</span>
+			<span class="n">properties</span><span class="o">.</span><span class="na">setUrl</span><span class="o">(</span><span class="n">uri</span><span class="o">);</span>
+			<span class="n">properties</span><span class="o">.</span><span class="na">setUsername</span><span class="o">(</span><span class="n">hanaCredentials</span><span class="o">.</span><span class="na">getUsername</span><span class="o">());</span>
+			<span class="n">properties</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="n">hanaCredentials</span><span class="o">.</span><span class="na">getPassword</span><span class="o">());</span>
+		<span class="o">}</span>
+
+		<span class="k">return</span> <span class="n">properties</span><span class="o">;</span>
+	<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>Modify <code>mainifest.yml</code> file</strong></p>
+<p>Add the service instance in the <code>mainifest.yml</code> file, Cloud Foundry automatically bind the service instance to your app <code>springboothanademo</code> so that your app can get the environment variables.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">---</span><span class="w">
+</span><span class="w"></span><span class="nt">applications</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
+</span><span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
+</span><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar</span><span class="w">
+</span><span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l">exercise.sap-samples.cn40.apps.platform.sapcloud.cn</span><span class="w">
+</span><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">1G</span><span class="w">
+</span><span class="w">    </span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="l">hana-hdi-shared</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Deploy app to Cloud Foundry again</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cf push
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>Check app environment variables</strong></p>
+<p>You can check the app environment variables via executing the command:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cf env springboothanademo
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915153544901.png" alt="image"></p>
+<h2 id="comparison-between-jdbc-and-jpa">Comparison between JDBC and JPA</h2>
+<p>To communicate with HANA Cloud, JDBC and JPA (Hibernate, EclipseLink, etc.) are both supported. In this post, we focus on consuming HANA Cloud in the JDBC way. For the other JPA mode, we can open a new post if you have an interest in it. Just let me know via giving comments below.</p>
+<p><strong>When it comes to deciding how to communicate with back-end database systems, software architects face a significant technological challenge</strong> . The debate between JPA and JDBC is often the deciding factor, as the two database technologies take very different approaches to work with persistent data. For more details on the key differences between them, you can read <a href="https://www.baeldung.com/jpa-vs-jdbc">A Comparison Between JPA and JDBC</a>.</p>
+<h2 id="more-references">More References</h2>
+<p><a href="https://help.sap.com/viewer/c82f8d6a84c147f8b78bf6416dae7290/2021_2_QRC/en-US/de4ee8bbbb5710148a04f023da147c8d.html">Predefined Users</a></p>
+<p><a href="https://help.sap.com/viewer/f4997718ff9d45f49f90f5d01d16d5a0/hanacloud/en-US/83d5ac7bffc34a279f6c5e991c1ea65e.html">Security in SAP HANA Cloud</a></p>
+<p><a href="https://help.sap.com/viewer/f1b440ded6144a54ada97ff95dac7adf/2.9/en-US/434e2962074540e18c802fd478de86d6.html">JDBC Application Programming</a></p>
+<p><a href="https://help.sap.com/viewer/4fe29514fd584807ac9f2a04f6754767/2.0.03/en-US/20a1569875191014b507cf392724b7eb.html">Data Types</a></p>
+<blockquote>
+<p>Reference <a href="https://blogs.sap.com/2021/09/16/develop-spring-boot-app-with-hana-cloud-in-cloud-foundry/">https://blogs.sap.com/2021/09/16/develop-spring-boot-app-with-hana-cloud-in-cloud-foundry/</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2021-12/spring-cloud-config-server-encryption-and-decryption-2ejc/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Spring Cloud Config Server - Encryption and Decryption</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2021-12/dapr-spring-cloud-gateway/">
+            <span class="next-text nav-default">An Intro to Dapr with Spring Cloud Gateway</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>
