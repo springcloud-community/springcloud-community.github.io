@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Messaging with RabbitMQ in Spring Boot Application - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="In this article, we will learn about RabbitMQ and explore its common use-cases. We will also walk through a step-by-step guide to implement messaging using RabbitMQ in a Spring Boot Application and will see how to publish and consume messages in a queue using RabbitMQ." />
+<meta name="keywords" content="spring boot, rabbitmq" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-03/messaging-using-rabbitmq-in-spring-boot-application/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Messaging with RabbitMQ in Spring Boot Application" />
+<meta property="og:description" content="In this article, we will learn about RabbitMQ and explore its common use-cases. We will also walk through a step-by-step guide to implement messaging using RabbitMQ in a Spring Boot Application and will see how to publish and consume messages in a queue using RabbitMQ." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-03/messaging-using-rabbitmq-in-spring-boot-application/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-03-20T14:31:45+08:00" />
+<meta property="article:modified_time" content="2022-03-20T14:31:45+08:00" />
+
+<meta itemprop="name" content="Messaging with RabbitMQ in Spring Boot Application">
+<meta itemprop="description" content="In this article, we will learn about RabbitMQ and explore its common use-cases. We will also walk through a step-by-step guide to implement messaging using RabbitMQ in a Spring Boot Application and will see how to publish and consume messages in a queue using RabbitMQ."><meta itemprop="datePublished" content="2022-03-20T14:31:45+08:00" />
+<meta itemprop="dateModified" content="2022-03-20T14:31:45+08:00" />
+<meta itemprop="wordCount" content="2409">
+<meta itemprop="keywords" content="spring-boot,rabbitmq," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Messaging with RabbitMQ in Spring Boot Application"/>
+<meta name="twitter:description" content="In this article, we will learn about RabbitMQ and explore its common use-cases. We will also walk through a step-by-step guide to implement messaging using RabbitMQ in a Spring Boot Application and will see how to publish and consume messages in a queue using RabbitMQ."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Messaging with RabbitMQ in Spring Boot Application</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-03-20" class="post-time">
+          2022-03-20
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 2409 words </span>
+          <span class="more-meta"> 12 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#what-is-a-rabbitmq">What is a RabbitMQ?</a>
+      <ul>
+        <li><a href="#why-do-we-need-a-messaging-queue">Why do we need a Messaging Queue?</a></li>
+        <li><a href="#key-components-in-messaging-via-rabbitmq">Key-Components in Messaging via RabbitMQ</a></li>
+      </ul>
+    </li>
+    <li><a href="#common-use-cases-of-using-messaging-queue">Common Use-Cases of using Messaging Queue</a></li>
+    <li><a href="#prerequisite-steps">Prerequisite Steps</a></li>
+    <li><a href="#implement-messaging-using-rabbitmq-with-spring-boot-application">Implement messaging using RabbitMQ with Spring Boot Application</a>
+      <ul>
+        <li><a href="#pomxml">pom.xml</a></li>
+        <li><a href="#applicationproperties">application.properties</a></li>
+      </ul>
+    </li>
+    <li><a href="#define-the-rabbitmq-configuration-class">Define the RabbitMQ Configuration Class</a>
+      <ul>
+        <li><a href="#key-points-of-configuration-class">Key-points of Configuration Class</a></li>
+      </ul>
+    </li>
+    <li><a href="#define-the-domain-model-class">Define the Domain Model Class</a>
+      <ul>
+        <li><a href="#menuorderjava">MenuOrder.java</a></li>
+      </ul>
+    </li>
+    <li><a href="#define-the-senderreceiver-classes">Define the Sender/Receiver Classes</a>
+      <ul>
+        <li><a href="#rabbitmqsenderjava">RabbitMQSender.java</a></li>
+        <li><a href="#rabbitmqreceiverjava">RabbitMQReceiver.java</a></li>
+      </ul>
+    </li>
+    <li><a href="#define-the-controller-class">Define the Controller Class</a></li>
+    <li><a href="#define-the-spring-boot-application-main-class">Define the Spring Boot Application Main Class</a></li>
+    <li><a href="#testing">Testing</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>In this article, we will learn about RabbitMQ and explore its common use-cases. We will also walk through a step-by-step guide to implement messaging using RabbitMQ in a Spring Boot Application and will see how to publish and consume messages in a queue using RabbitMQ. So, let&rsquo;s begin learning!</p>
+<h2 id="what-is-a-rabbitmq">What is a RabbitMQ?</h2>
+<p>RabbitMQ is an open-source message broker that allows enterprise applications to communicate with each other. It&rsquo;s a popular AMQP (Advanced Message Queuing Protocol)broker. Various programming languages provide support for RabbitMQ.</p>
+<h3 id="why-do-we-need-a-messaging-queue">Why do we need a Messaging Queue?</h3>
+<p>Communication is a two-way process; we may receive an immediate response, but we may also receive a response after some time. In the latter case, we do not wait until the response arrives and therefore we can continue our own work, as we are not dependent on the response. Similarly, in the world of Softwares communication works the same way.</p>
+<p>Consider an analogy of a mailbox where you send your letter or email to the recipient via mail service and you are assured that it will be received. Here mailbox is the RabbitMQ. RabbitMQ receives, stores, and forwards the data or messages. It is important to note that communication is Asynchronous in the messaging queue, which means the sender and receiver do not need to interact with the message at the same time.</p>
+<h3 id="key-components-in-messaging-via-rabbitmq">Key-Components in Messaging via RabbitMQ</h3>
+<p>Below is the image that depicts the workflow and key components involved in the messaging via RabbitMQ.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/20/a7d9a4c65f894506bc94e864863c40bc.png" alt="workflow and key components involved in the messaging via RabbitMQ"></p>
+<ul>
+<li><strong>Message:</strong> A message is a form of data that is shared from the producer to the consumer. The data can hold requests, information, meta-data, etc.</li>
+<li><strong>Producer:</strong> A producer is a user program that is responsible to send or produce messages.</li>
+<li><strong>Exchange:</strong> Exchanges are message routing agents, it is responsible to route the messages to different queues with the help of header attributes, bindings, and routing keys. <strong>Binding</strong> is the link between a queue and the exchange. Whereas, the <strong>R</strong> <strong>outing K</strong> <strong>ey</strong> is the address that the exchange uses to determine which queue the message should be sent to.</li>
+<li><strong>Queue:</strong> A queue is a mailbox or a buffer that stores messages. It has certain limitations like disk space and memory.</li>
+<li><strong>Consumer:</strong> A consumer is a user program that is responsible to receive messages.</li>
+</ul>
+<h2 id="common-use-cases-of-using-messaging-queue">Common Use-Cases of using Messaging Queue</h2>
+<p>In real life, we frequently deal with the application of messaging queues. Take, for example, a messaging queue application at a coffee shop to demonstrate the use-case.</p>
+<p>When you enter the coffee shop, the front desk worker greets you, takes your order, and gives you an order number. The order is sent to the kitchen, where your drink will be prepared. The kitchen crew received your order and began preparing it. While the kitchen crew prepares your food, the front-line employee does not sit around waiting for your order. Rather, he continues to work and entertain other customers. Similarly, the kitchen crew receives increased orders for drink preparation. However, the delivery of order happens in order. As a result, neither frontline workers nor kitchen employees are dependent on one another; instead, they are aware of their roles and continue to work as independent entities.</p>
+<p>There are many use-cases of Messaging Queue such as:</p>
+<ul>
+<li><strong>Decoupling:</strong> We need a way to decouple communication between different services or applications.</li>
+<li><strong>High Response Time:</strong> When the response time of a request is too much. For example, calculations, searching or pdf creation, etc.</li>
+<li><strong>Background Jobs:</strong> Sending background messages, emails, or notifications to loads of users.</li>
+<li><strong>Asynchronous Messaging:</strong> Messaging queues are the best way to implement asynchronous programming.</li>
+</ul>
+<h2 id="prerequisite-steps">Prerequisite Steps</h2>
+<p>To begin with the RabbitMQ integration with the Spring Boot Application, the primary step is to download and install RabbitMQ on your local machine. There are two common ways to set up RabbitMQ on your local machine.</p>
+<ol>
+<li>Via Docker Container. You can refer to this blog <a href="https://appsdeveloperblog.com/run-rabbitmq-docker-container-command/">post</a> to run RabbitMQ on your machine via Docker.</li>
+<li>Using the installer. You can follow directions from the official RabbitMQ <a href="https://www.rabbitmq.com/download.html">website</a> to install RabbitMQ as per your operating system. For MAC OS, you can refer to this <a href="https://appsdeveloperblog.com/rabbit-mq-download-install-and-change-password/">blog</a>.</li>
+</ol>
+<p>RabbitMQ is accessible by default over port 15672 once setup is complete and RabbitMQ is running.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/20/378f6525486d4618bcb9357767f23c9b.png" alt="RabbitMQ UI"></p>
+<h2 id="implement-messaging-using-rabbitmq-with-spring-boot-application">Implement messaging using RabbitMQ with Spring Boot Application</h2>
+<p>Create a Maven, Spring Boot Project in any of your favorite IDE. Refer to this <a href="https://www.appsdeveloperblog.com/create-web-service-project-with-spring-boot/">article</a> for more details.</p>
+<h3 id="pomxml">pom.xml</h3>
+<p>Following is a complete pom.xml file that contains the RabbitMQ dependencies.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&#34;http://maven.apache.org/POM/4.0.0&#34;</span>
+         <span class="na">xmlns:xsi=</span><span class="s">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+         <span class="na">xsi:schemaLocation=</span><span class="s">&#34;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&#34;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+    <span class="nt">&lt;parent&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-parent<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>2.5.6<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;relativePath/&gt;</span>
+        <span class="c">&lt;!-- lookup parent from repository --&gt;</span>
+    <span class="nt">&lt;/parent&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.example<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>RabbitMQSpringBootExample<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;properties&gt;</span>
+        <span class="nt">&lt;maven.compiler.source&gt;</span>11<span class="nt">&lt;/maven.compiler.source&gt;</span>
+        <span class="nt">&lt;maven.compiler.target&gt;</span>11<span class="nt">&lt;/maven.compiler.target&gt;</span>
+        <span class="nt">&lt;spring.ampqp.version&gt;</span>2.2.9.RELEASE<span class="nt">&lt;/spring.ampqp.version&gt;</span>
+        <span class="nt">&lt;springboot-version&gt;</span>2.5.6<span class="nt">&lt;/springboot-version&gt;</span>
+        <span class="nt">&lt;lombok.version&gt;</span>1.18.12<span class="nt">&lt;/lombok.version&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
+    <span class="nt">&lt;dependencies&gt;</span>
+        <span class="c">&lt;!-- Spring Boot --&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${springboot-version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.amqp<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-amqp<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.ampqp.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="c">&lt;!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit --&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.springframework.amqp<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>spring-rabbit<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${spring.ampqp.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.apache.logging.log4j<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>log4j-core<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>2.15.0<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>org.projectlombok<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>lombok<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>${lombok.version}<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;/dependencies&gt;</span>
+<span class="nt">&lt;/project&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="applicationproperties">application.properties</h3>
+<p>This is how the application.properties file looks like. Add RabbitMQ specific properties where:</p>
+<ul>
+<li><em><strong>rabbitmq.host:</strong></em> RabbitMQ host</li>
+<li><em><strong>rabbitmq.virtualhost:</strong></em> Virtual host to use when connecting to the broker.</li>
+<li><em><strong>rabbitmq.port:</strong></em> RabbitMQ port</li>
+<li><em><strong>rabbitmq.username:</strong></em> Login user to authenticate to the broker.</li>
+<li><em><strong>rabbitmq.password:</strong></em> Log in to authenticate against the broker.</li>
+<li><em><strong>rabbitmq.exchange:</strong></em> The name of the exchange to use for send operations.</li>
+<li><em><strong>rabbitmq.queue:</strong></em> The name of the message queue where messages are saved.</li>
+<li><em><strong>rabbitmq.routingkey:</strong></em> Name of the routing key.</li>
+<li><em><strong>rabbitmq.reply.timeout:</strong></em> Timeout is enforced on consumer delivery acknowledgment. This helps detect buggy consumers that never acknowledge deliveries.</li>
+<li><em><strong>rabbitmq.concurrent.consumers:</strong></em> This field is important when we are with multiple producers and consumers reading/writing from the same queue.</li>
+<li><em><strong>rabbitmq.max.concurrent.consumers:</strong></em> It shows the number of concurrent consumers, but in our example, we are working with a single consumer only.</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">#RabbitMQ settings
+rabbitmq.host=localhost
+rabbitmq.virtualhost=/
+rabbitmq.port=15672
+rabbitmq.username=guest
+rabbitmq.password=guest
+rabbitmq.exchange=rabbitmq.exchange
+rabbitmq.queue=rabbitmq.queue
+rabbitmq.routingkey=rabbitmq.routingkey
+rabbitmq.reply.timeout=60000
+rabbitmq.concurrent.consumers=1
+rabbitmq.max.concurrent.consumers=1
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="define-the-rabbitmq-configuration-class">Define the RabbitMQ Configuration Class</h2>
+<p>In our example, we are disabling the default behavior of RabbitMQ by disabling <em>RabbitAutoConfiguration</em> class.</p>
+<p>We need a custom Configuration class to declare <em>@Bean</em> ourselves and configure them as wanted because we are not using boot autoconfiguration. This allows us to adapt Beans according to our RabbitMQ server specifications. One of the use-cases of using the custom Configuration class is to give us leverage to connect to the remote RabbitMQ server to an IP Address and valid credentials.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">org.appsdeveloper.config</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.fasterxml.jackson.databind.ObjectMapper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.LogManager</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.Logger</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.core.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.annotation.EnableRabbit</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.connection.CachingConnectionFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.connection.ConnectionFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.core.RabbitAdmin</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.core.RabbitTemplate</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.support.ListenerExecutionFailedException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.support.converter.Jackson2JsonMessageConverter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.support.converter.MessageConverter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.util.ErrorHandler</span><span class="o">;</span>
+<span class="nd">@EnableRabbit</span>
+<span class="nd">@Configuration</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RabbitMQConfig</span> <span class="o">{</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rabbitmq.queue}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">queueName</span><span class="o">;</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rabbitmq.exchange}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">exchange</span><span class="o">;</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rabbitmq.routingkey}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">routingkey</span><span class="o">;</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rabbitmq.username}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rabbitmq.password}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">password</span><span class="o">;</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rabbitmq.host}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">host</span><span class="o">;</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rabbitmq.virtualhost}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">virtualHost</span><span class="o">;</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rabbitmq.reply.timeout}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">Integer</span> <span class="n">replyTimeout</span><span class="o">;</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rabbitmq.concurrent.consumers}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">Integer</span> <span class="n">concurrentConsumers</span><span class="o">;</span>
+    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rabbitmq.max.concurrent.consumers}&#34;</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">Integer</span> <span class="n">maxConcurrentConsumers</span><span class="o">;</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">Queue</span> <span class="nf">queue</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">(</span><span class="n">queueName</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">DirectExchange</span> <span class="nf">exchange</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">DirectExchange</span><span class="o">(</span><span class="n">exchange</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">Binding</span> <span class="nf">binding</span><span class="o">(</span><span class="n">Queue</span> <span class="n">queue</span><span class="o">,</span> <span class="n">DirectExchange</span> <span class="n">exchange</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">queue</span><span class="o">).</span><span class="na">to</span><span class="o">(</span><span class="n">exchange</span><span class="o">).</span><span class="na">with</span><span class="o">(</span><span class="n">routingkey</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">MessageConverter</span> <span class="nf">jsonMessageConverter</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">ObjectMapper</span> <span class="n">objectMapper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ObjectMapper</span><span class="o">();</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">Jackson2JsonMessageConverter</span><span class="o">(</span><span class="n">objectMapper</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">ConnectionFactory</span> <span class="nf">connectionFactory</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">CachingConnectionFactory</span> <span class="n">connectionFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CachingConnectionFactory</span><span class="o">();</span>
+        <span class="n">connectionFactory</span><span class="o">.</span><span class="na">setVirtualHost</span><span class="o">(</span><span class="n">virtualHost</span><span class="o">);</span>
+        <span class="n">connectionFactory</span><span class="o">.</span><span class="na">setHost</span><span class="o">(</span><span class="n">host</span><span class="o">);</span>
+        <span class="n">connectionFactory</span><span class="o">.</span><span class="na">setUsername</span><span class="o">(</span><span class="n">username</span><span class="o">);</span>
+        <span class="n">connectionFactory</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="n">password</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">connectionFactory</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">AmqpTemplate</span> <span class="nf">rabbitTemplate</span><span class="o">(</span><span class="n">ConnectionFactory</span> <span class="n">connectionFactory</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">RabbitTemplate</span> <span class="n">rabbitTemplate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RabbitTemplate</span><span class="o">(</span><span class="n">connectionFactory</span><span class="o">);</span>
+        <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">setDefaultReceiveQueue</span><span class="o">(</span><span class="n">queueName</span><span class="o">);</span>
+        <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">setMessageConverter</span><span class="o">(</span><span class="n">jsonMessageConverter</span><span class="o">());</span>
+        <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">setReplyAddress</span><span class="o">(</span><span class="n">queue</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+        <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">setReplyTimeout</span><span class="o">(</span><span class="n">replyTimeout</span><span class="o">);</span>
+        <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">setUseDirectReplyToContainer</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">rabbitTemplate</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">AmqpAdmin</span> <span class="nf">amqpAdmin</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">RabbitAdmin</span><span class="o">(</span><span class="n">connectionFactory</span><span class="o">());</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">SimpleRabbitListenerContainerFactory</span> <span class="nf">rabbitListenerContainerFactory</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">SimpleRabbitListenerContainerFactory</span> <span class="n">factory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleRabbitListenerContainerFactory</span><span class="o">();</span>
+        <span class="n">factory</span><span class="o">.</span><span class="na">setConnectionFactory</span><span class="o">(</span><span class="n">connectionFactory</span><span class="o">());</span>
+        <span class="n">factory</span><span class="o">.</span><span class="na">setMessageConverter</span><span class="o">(</span><span class="n">jsonMessageConverter</span><span class="o">());</span>
+        <span class="n">factory</span><span class="o">.</span><span class="na">setConcurrentConsumers</span><span class="o">(</span><span class="n">concurrentConsumers</span><span class="o">);</span>
+        <span class="n">factory</span><span class="o">.</span><span class="na">setMaxConcurrentConsumers</span><span class="o">(</span><span class="n">maxConcurrentConsumers</span><span class="o">);</span>
+        <span class="n">factory</span><span class="o">.</span><span class="na">setErrorHandler</span><span class="o">(</span><span class="n">errorHandler</span><span class="o">());</span>
+        <span class="k">return</span> <span class="n">factory</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="nd">@Bean</span>
+    <span class="kd">public</span> <span class="n">ErrorHandler</span> <span class="nf">errorHandler</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">ConditionalRejectingErrorHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">MyFatalExceptionStrategy</span><span class="o">());</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">MyFatalExceptionStrategy</span> <span class="kd">extends</span> <span class="n">ConditionalRejectingErrorHandler</span><span class="o">.</span><span class="na">DefaultExceptionStrategy</span> <span class="o">{</span>
+        <span class="kd">private</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LogManager</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">getClass</span><span class="o">());</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isFatal</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">t</span> <span class="k">instanceof</span> <span class="n">ListenerExecutionFailedException</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">ListenerExecutionFailedException</span> <span class="n">lefe</span> <span class="o">=</span> <span class="o">(</span><span class="n">ListenerExecutionFailedException</span><span class="o">)</span> <span class="n">t</span><span class="o">;</span>
+                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Failed to process inbound message from queue &#34;</span>
+                        <span class="o">+</span> <span class="n">lefe</span><span class="o">.</span><span class="na">getFailedMessage</span><span class="o">().</span><span class="na">getMessageProperties</span><span class="o">().</span><span class="na">getConsumerQueue</span><span class="o">()</span>
+                        <span class="o">+</span> <span class="s">&#34;; failed message: &#34;</span> <span class="o">+</span> <span class="n">lefe</span><span class="o">.</span><span class="na">getFailedMessage</span><span class="o">(),</span> <span class="n">t</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">isFatal</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="key-points-of-configuration-class">Key-points of Configuration Class</h3>
+<p>In the above class, we have configured Beans as per our RabbitMQ properties defined in the application.properties class.</p>
+<ul>
+<li>Use @ <em><strong>EnableRabbit</strong></em> to enable support for Rabbit Listener.</li>
+<li><em><strong>@Value</strong></em> injects properties from the resource file into the Component classes.</li>
+<li>Define a bean of <em><strong>Queue</strong></em> with a name and mark it as non-durable. Non-durable means that the queue and any messages on it will be removed when RabbitMQ is stopped. On the other hand, restarting the application won&rsquo;t have any effect on the queue.</li>
+<li>For the exchange, we have four different types, but in our example, we have registered a bean of the <em><strong>DirectExchange</strong></em> type. It routes messages to a queue by matching a complete routing key.</li>
+<li>Then we created a bean for <em><strong>Binding</strong></em> to tie an exchange with the queue.</li>
+<li>To ensure that messages are delivered in JSON format, create a bean for <em><strong>MessageConverter</strong></em></li>
+<li>Register <em><strong>ConnectionFactory</strong></em> bean to make a connection to RabbitMQ.</li>
+<li>Bean of <em><strong>rabbitTemplate</strong></em> serves the purpose of sending messages to the queue.</li>
+<li>To define RabbitAdmin, declare <em><strong>AmqpAdmin</strong></em> bean or define it in the ApplicationContext. It&rsquo;s useful if we need queues to be automatically declared and bounded.</li>
+<li>For the container factory bean, we have used <em><strong>SimpleRabbitListenerContainerFactory.</strong></em> It is required since the infrastructure looks for a bean rabbitListenerContainerFactory as the factory&rsquo;s source for creating message listener containers by default.</li>
+<li>The <em><strong>errorHandler</strong></em> is used to return some user-friendly <code>Error</code> Object when an exception is thrown by the listener.</li>
+</ul>
+<h2 id="define-the-domain-model-class">Define the Domain Model Class</h2>
+<h3 id="menuorderjava">MenuOrder.java</h3>
+<p>Keeping the use-case of the Restaurant Management System, we have created a domain class of MenuOrder.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">org.appsdeveloper.domain</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.fasterxml.jackson.annotation.JsonProperty</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.AllArgsConstructor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Getter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.NoArgsConstructor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Setter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.Serializable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+<span class="nd">@Getter</span>
+<span class="nd">@Setter</span>
+<span class="nd">@NoArgsConstructor</span>
+<span class="nd">@AllArgsConstructor</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MenuOrder</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="o">-</span><span class="n">1138446817700416884L</span><span class="o">;</span>
+    <span class="nd">@JsonProperty</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">orderIdentifier</span><span class="o">;</span>
+    <span class="nd">@JsonProperty</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">orderId</span><span class="o">;</span>
+    <span class="nd">@JsonProperty</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">orderList</span><span class="o">;</span>
+    <span class="nd">@JsonProperty</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">customerName</span><span class="o">;</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">&#34;MenuOrder{&#34;</span> <span class="o">+</span>
+                <span class="s">&#34;orderIdentifier=&#39;&#34;</span> <span class="o">+</span> <span class="n">orderIdentifier</span> <span class="o">+</span> <span class="sc">&#39;\&#39;&#39;</span> <span class="o">+</span>
+                <span class="s">&#34;, orderId=&#34;</span> <span class="o">+</span> <span class="n">orderId</span> <span class="o">+</span>
+                <span class="s">&#34;, orderList=&#34;</span> <span class="o">+</span> <span class="n">orderList</span> <span class="o">+</span>
+                <span class="s">&#34;, customerName=&#39;&#34;</span> <span class="o">+</span> <span class="n">customerName</span> <span class="o">+</span> <span class="sc">&#39;\&#39;&#39;</span> <span class="o">+</span>
+                <span class="sc">&#39;}&#39;</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="define-the-senderreceiver-classes">Define the Sender/Receiver Classes</h2>
+<h3 id="rabbitmqsenderjava">RabbitMQSender.java</h3>
+<p>Following is an implementation of a service class to send messages in the form of a MenuOrder object to the queue using RabbitTemplate.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">org.appsdeveloper.queue</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.LogManager</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.Logger</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.appsdeveloper.domain.MenuOrder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.core.AmqpTemplate</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.core.Queue</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+<span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RabbitMQSender</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="n">AmqpTemplate</span> <span class="n">rabbitTemplate</span><span class="o">;</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="n">Queue</span> <span class="n">queue</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LogManager</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">RabbitMQSender</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">send</span><span class="o">(</span><span class="n">MenuOrder</span> <span class="n">menuOrder</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">convertAndSend</span><span class="o">(</span><span class="n">queue</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">menuOrder</span><span class="o">);</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Sending Message to the Queue : &#34;</span> <span class="o">+</span> <span class="n">menuOrder</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Annotate the class with @Service annotation to inject it as a dependency.</li>
+<li><em><strong>rabbitTemplate.convertAndSend(queue.getName(), menuOrder);</strong></em> It is the main method that adds a message to the queue after conversion.</li>
+</ul>
+<h3 id="rabbitmqreceiverjava">RabbitMQReceiver.java</h3>
+<p>Following is a Listener class to consume messages of a MenuOrder payload type from the queue.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">org.appsdeveloper.queue</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.LogManager</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.Logger</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.appsdeveloper.domain.MenuOrder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.annotation.RabbitHandler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.amqp.rabbit.annotation.RabbitListener</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+<span class="nd">@Component</span>
+<span class="nd">@RabbitListener</span><span class="o">(</span><span class="n">queues</span> <span class="o">=</span> <span class="s">&#34;rabbitmq.queue&#34;</span><span class="o">,</span> <span class="n">id</span> <span class="o">=</span> <span class="s">&#34;listener&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RabbitMQReceiver</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LogManager</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">RabbitMQReceiver</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="nd">@RabbitHandler</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">receiver</span><span class="o">(</span><span class="n">MenuOrder</span> <span class="n">menuOrder</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;MenuOrder listener invoked - Consuming Message with MenuOrder Identifier : &#34;</span> <span class="o">+</span> <span class="n">menuOrder</span><span class="o">.</span><span class="na">getOrderIdentifier</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><em><strong>@RabbitListener</strong></em> is responsible to listen to the RabbitMQ queue for any incoming messages.</li>
+<li>When classifying reading data based on payload type, <em><strong>@RabbitHandler</strong></em> is crucial. Define different methods, annotate each with @RabbitHandler to consume multiple data type payloads from the same queue.</li>
+</ul>
+<h2 id="define-the-controller-class">Define the Controller Class</h2>
+<p>Expose a POST endpoint to send messages to the queue.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">org.appsdeveloper.rest</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.appsdeveloper.queue.RabbitMQSender</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.appsdeveloper.domain.MenuOrder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.*</span><span class="o">;</span>
+<span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#34;/rabbitmq&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RabbitMQDemoController</span> <span class="o">{</span>
+    <span class="nd">@Autowired</span>
+    <span class="n">RabbitMQSender</span> <span class="n">rabbitMQSender</span><span class="o">;</span>
+    <span class="nd">@PostMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#34;/sender&#34;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">producer</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">MenuOrder</span> <span class="n">menuOrder</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">rabbitMQSender</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">menuOrder</span><span class="o">);</span>
+        <span class="k">return</span> <span class="s">&#34;Message sent to the RabbitMQ Queue Successfully&#34;</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="define-the-spring-boot-application-main-class">Define the Spring Boot Application Main Class</h2>
+<p>The following code shows the main application class.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">org.appsdeveloper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.SpringApplication</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.autoconfigure.EnableAutoConfiguration</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="o">;</span>
+<span class="nd">@SpringBootApplication</span>
+<span class="nd">@EnableAutoConfiguration</span><span class="o">(</span><span class="n">exclude</span><span class="o">={</span><span class="n">org</span><span class="o">.</span><span class="na">springframework</span><span class="o">.</span><span class="na">boot</span><span class="o">.</span><span class="na">autoconfigure</span><span class="o">.</span><span class="na">amqp</span><span class="o">.</span><span class="na">RabbitAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoApplication</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;Hello&#34;</span><span class="o">);</span>
+        <span class="n">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">DemoApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="testing">Testing</h2>
+<p>It&rsquo;s time to test the flow from the Postman. Let&rsquo;s hit the Sender API to send the record to the queue:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/20/141d5c643c4f42019c28da4a10738496.png" alt="postman Testing"></p>
+<p>API has successfully sent the record to the RabbitMQ Queue as per the configuration. As a result, the message was consumed or received by the Listener because we added a logger to the Receiver class.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/20/8821b1e968904aa6ad68f2df5d9a08e5.png" alt="spring boot rabbitmq log"></p>
+<p>In the following RabbitMQ snapshot, we can observe the spike that indicates a message was received at the last minute and processed by the consumer.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/20/36e7b9f9f0184974b6e8d47fe1d1a58e.png" alt="Rabbitmq UI"></p>
+<p>In the above image, we can also see details pertaining to the consumer.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>In this article, we learned the fundamentals of RabbitMQ as a messaging queue and examined a practical example that demonstrates how to send and consume messages from queues. However, there exist more complex use-cases of using RabbitMQ but to keep things simple, we kept our use-case minimal, with only one consumer subscribed to a single queue. In addition to this, we also learned the core ideas needed to understand how to implement messaging using RabbitMQ with Spring Boot Application in practice.</p>
+<p>If you find this article helpful, don&rsquo;t forget to share your feedback or thoughts in the comments section.</p>
+<p>Happy Coding!</p>
+<blockquote>
+<p>Reference <a href="https://www.appsdeveloperblog.com/messaging-using-rabbitmq-in-spring-boot-application/">https://www.appsdeveloperblog.com/messaging-using-rabbitmq-in-spring-boot-application/</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          <a href="https://www.springcloud.io/tags/rabbitmq/">rabbitmq</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/2022-03/load-balanced-websockets-with-spring-cloud-gateway/">
+            <span class="next-text nav-default">Load Balanced Websockets with Spring Cloud Gateway</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>
