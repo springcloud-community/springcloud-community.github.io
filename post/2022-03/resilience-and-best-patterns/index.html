@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Resilience and Best Patterns - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+
+  <meta name="description" content="Monolithic solutions or solutions where a single point of failure can derail an operation is a big problem. In products and platforms that target availability as an essential feature, this problem ends up creating major engineering challenges. This difficulty can be solved with a Microservices architecture. This architecture aims to: Make processes independent and managed in a unique way and without interdependence, so responsibilities are divided and decentralized, something very common in a distributed computing pattern." />
+<meta name="keywords" content="resilience, Best Patterns" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-03/resilience-and-best-patterns/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Resilience and Best Patterns" />
+<meta property="og:description" content="Monolithic solutions or solutions where a single point of failure can derail an operation is a big problem. In products and platforms that target availability as an essential feature, this problem ends up creating major engineering challenges. This difficulty can be solved with a Microservices architecture. This architecture aims to: Make processes independent and managed in a unique way and without interdependence, so responsibilities are divided and decentralized, something very common in a distributed computing pattern." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-03/resilience-and-best-patterns/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-03-28T19:50:05+08:00" />
+<meta property="article:modified_time" content="2022-03-28T19:50:05+08:00" />
+
+<meta itemprop="name" content="Resilience and Best Patterns">
+<meta itemprop="description" content="Monolithic solutions or solutions where a single point of failure can derail an operation is a big problem. In products and platforms that target availability as an essential feature, this problem ends up creating major engineering challenges. This difficulty can be solved with a Microservices architecture. This architecture aims to: Make processes independent and managed in a unique way and without interdependence, so responsibilities are divided and decentralized, something very common in a distributed computing pattern."><meta itemprop="datePublished" content="2022-03-28T19:50:05+08:00" />
+<meta itemprop="dateModified" content="2022-03-28T19:50:05+08:00" />
+<meta itemprop="wordCount" content="2466">
+<meta itemprop="keywords" content="resilience," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Resilience and Best Patterns"/>
+<meta name="twitter:description" content="Monolithic solutions or solutions where a single point of failure can derail an operation is a big problem. In products and platforms that target availability as an essential feature, this problem ends up creating major engineering challenges. This difficulty can be solved with a Microservices architecture. This architecture aims to: Make processes independent and managed in a unique way and without interdependence, so responsibilities are divided and decentralized, something very common in a distributed computing pattern."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Resilience and Best Patterns</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-03-28" class="post-time">
+          2022-03-28
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 2466 words </span>
+          <span class="more-meta"> 12 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#faults-and-microservice-architecture">Faults and Microservice architecture</a></li>
+    <li><a href="#how-to-build-resilient-services">How to build Resilient services?</a>
+      <ul>
+        <li><a href="#scenario-identification">Scenario Identification</a></li>
+        <li><a href="#mitigating-cascading-failures">Mitigating cascading failures</a></li>
+        <li><a href="#mitigating-single-points-of-failure">Mitigating single points of failure</a></li>
+      </ul>
+    </li>
+    <li><a href="#implementing-resilience-patterns">Implementing Resilience Patterns</a></li>
+    <li><a href="#bulkhead-pattern">Bulkhead Pattern</a>
+      <ul>
+        <li><a href="#when-to-use-this-pattern">When to use this pattern</a></li>
+      </ul>
+    </li>
+    <li><a href="#circuit-breaker-pattern">Circuit Breaker Pattern</a>
+      <ul>
+        <li><a href="#when-to-use-this-pattern-1">When to use this pattern</a></li>
+      </ul>
+    </li>
+    <li><a href="#when-not-to-use-circuit-breaker">When not to use Circuit Breaker</a></li>
+    <li><a href="#rate-limiter-pattern">Rate Limiter Pattern</a>
+      <ul>
+        <li><a href="#when-to-use-this-pattern-2">When to use this pattern</a></li>
+      </ul>
+    </li>
+    <li><a href="#retry-pattern">Retry Pattern</a>
+      <ul>
+        <li><a href="#when-to-use-this-pattern-3">When to use this pattern</a></li>
+      </ul>
+    </li>
+    <li><a href="#timeout-pattern">Timeout Pattern</a>
+      <ul>
+        <li><a href="#advantages-in-use-this-pattern">Advantages in use this pattern</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/28/9d4a1d09eb2848ebaeade50e629f7f98.png" alt="Resilience"></p>
+<p>Monolithic solutions or solutions where a single point of failure can derail an operation is a big problem. In products and platforms that target availability as an essential feature, this problem ends up creating major engineering challenges. This difficulty can be solved with a Microservices architecture. This architecture aims to: Make processes independent and managed in a unique way and without interdependence, so responsibilities are divided and decentralized, something very common in a distributed computing pattern. Problems happen in isolation and problems are solved.</p>
+<p>In technology there is no perfect solution, questions about availability will always be pertinent. Is a microservices architecture fault resilient? In that case the answer is: No, totally.</p>
+<p>Migrating between architectures will not guarantee the complete resolution of all your fault tolerance issues, in which case our issues and our solutions change name and address.</p>
+<p>A distributed computing architecture can only be called fault tolerant if it has resilience and its patterns as the essence of its construction. We need to note that distributed components can fail, but in that case we will anticipate failures and manage them.</p>
+<p>Conceptually, resilience assumes the premise that failures happen at any time and that we must be ready for any scenario. Questions like:</p>
+<ul>
+<li>Service A communicates with Service B only works through responses from Service C.</li>
+<li>What are we going to make Service B stop?</li>
+<li>What fallback treatment plan will we have in this circumstance?</li>
+<li>Work with default values?</li>
+<li>Request information from service C?</li>
+<li>Return an error message?</li>
+</ul>
+<p>By applying resilience and its patterns, you will probably know how to act in the best way when idealizing and building a product, a much more favorable scenario than crises in productive environments.</p>
+<h2 id="faults-and-microservice-architecture">Faults and Microservice architecture</h2>
+<p>When you finish a migration between monolith and Microservice, the first thing you&rsquo;ll notice is the number of components that need to be managed. All these interconnected components make up the solution. A good way to compare this architecture to an orchestra. Both need good tuning. In order for the orchestra to reach the audience&rsquo;s ecstasy, the conductor conducts the entire symphony, resilience will be the conductor of our orchestra, promoting discussions such as tolerance and dealing with failures with failures as scenarios and not crises. For our product to perform with mastery, components cannot fail and compromise all our engineering and architecture.</p>
+<h2 id="how-to-build-resilient-services">How to build Resilient services?</h2>
+<h3 id="scenario-identification">Scenario Identification</h3>
+<p>Prior to our delivery to production, we perform integration, performance, unit and architectural tests. All these tests are essential for the perfect functioning of functions and code quality, but they do not mitigate failure scenarios. Mapping failure scenarios is an essential task when designing a solution. Architecture and engineering need to work closely together on the best solution for the business. The business needs to be fully together when deciding how to handle failures. Questions like:</p>
+<ul>
+<li>Are we able to map our risk and crisis scenario?</li>
+<li>Are we ready to support failure across the entire service layer?</li>
+<li>How to recover from failures quickly and with minimal impact?</li>
+</ul>
+<p>The perfect scenario to address resilience within agile methodology teams is: Solutions Architects, Tech Leads and Product Owner, need an error mapping process at the time of refinement so that each feature can have its risk map and documentation containing all feature details and solution decisions. This needs to be recorded and made available for the engineering team to consult at the time of construction.</p>
+<p>Once we have a failure mitigation plan and an automatic recovery plan, we will introduce a concept popularly known as Chaos Engineering. Where we will test and create engineering situations in which we will follow the behavior of a set of services in a crisis situation and how fault tolerance will behave in scenarios:</p>
+<ul>
+<li>Service A not communicating with other services</li>
+<li>Database unavailability</li>
+<li>Server without Communication</li>
+<li>High response time</li>
+<li>Failure in integrations in general</li>
+</ul>
+<h3 id="mitigating-cascading-failures">Mitigating cascading failures</h3>
+<p>Dependencies between services makes the solution prone to cascading errors, a small problem can become a big problem. So that you do not propagate errors, it is necessary to ensure that this type of failure does not occur in order to better manage network resources, using threads is a good way to network, but an essential point is that the failed service recovers from automatically.</p>
+<h3 id="mitigating-single-points-of-failure">Mitigating single points of failure</h3>
+<p>The instant we are designing something, we need to discuss fault tolerance, we need to make sure that we are designing something that is not dependent on a single component. Solutions need to be designed so that single points of failure do not exist, dealing with requests is the technology challenge and ensuring availability of the entire ecosystem is essential. In addition to mapping, recovery strategy is critical to success.</p>
+<p>Tolerating failures is our mantra and in case of errors and exceptions we need to deal with them in the best possible way, creating messages or default values for the business, these are types of solutions that we can adopt so that failures and elegance fit in the same sentence.</p>
+<h2 id="implementing-resilience-patterns">Implementing Resilience Patterns</h2>
+<p>Now that we have defined the concepts of fault tolerance in agile projects, recovery and resilience, we will implement the main resilience patterns. We will go in a conceptual approach with drawings that illustrate the situations, we will make available a project on GitHub that implements all the mentioned patterns so that in addition to the concept we have construction examples. The patterns that will be implemented are:</p>
+<p><a href="https://github.com/lucasnscr/Resilience-Patterns">Repository with all patterns mentioned</a></p>
+<ul>
+<li><a href="https://github.com/lucasnscr/Resilience-Patterns/tree/main/rate-limiter">Rate Limiter</a></li>
+<li><a href="https://github.com/lucasnscr/Resilience-Patterns/tree/main/bulkhead">Bulkhead</a></li>
+<li><a href="https://github.com/lucasnscr/Resilience-Patterns/tree/main/circuitbreaker">Circuit Breaker</a></li>
+<li><a href="https://github.com/lucasnscr/Resilience-Patterns/tree/main/retry">Retry</a></li>
+<li><a href="https://github.com/lucasnscr/Resilience-Patterns/tree/main/timeout">Timeout</a></li>
+</ul>
+<p>All projects will be built with the following technologies:</p>
+<ul>
+<li>Java 17</li>
+<li>Spring Boot</li>
+<li>Lombok</li>
+<li>Spring Boot Actuator</li>
+</ul>
+<h2 id="bulkhead-pattern">Bulkhead Pattern</h2>
+<p>The Bulkhead pattern is a type of application design that is tolerant of failure. In a bulkhead architecture, elements of an application are isolated into pools so that if one fails, the others will continue to function. It&rsquo;s named after the sectioned partitions (bulkheads) of a ship&rsquo;s hull. If the hull of a ship is compromised, only the damaged section fills with water, which prevents the ship from sinking.</p>
+<p>Partition service instances into different groups, based on consumer load and availability requirements. This design helps to isolate failures, and allows you to sustain service functionality for some consumers, even during a failure.
+A consumer can also partition resources, to ensure that resources used to call one service don&rsquo;t affect the resources used to call another service. For example, a consumer that calls multiple services may be assigned a connection pool for each service. If a service begins to fail, it only affects the connection pool assigned for that service, allowing the consumer to continue using the other services.
+The benefits of this pattern include:</p>
+<ul>
+<li>Isolates consumers and services from cascading failures. An issue affecting a consumer or service can be isolated within its own bulkhead, preventing the entire solution from failing.</li>
+<li>Allows you to preserve some functionality in the event of a service failure. Other services and features of the application will continue to work.</li>
+<li>Allows you to deploy services that offer a different quality of service for consuming applications. A high-priority consumer pool can be configured to use high-priority services.</li>
+</ul>
+<h3 id="when-to-use-this-pattern">When to use this pattern</h3>
+<p><strong>Use this pattern to:</strong></p>
+<ul>
+<li>Isolate resources used to consume a set of backend services, especially if the application can provide some level of functionality even when one of the services is not responding.</li>
+<li>Isolate critical consumers from standard consumers.</li>
+<li>Protect the application from cascading failures.</li>
+</ul>
+<p><strong>This pattern may not be suitable when:</strong></p>
+<ul>
+<li>Less efficient use of resources may not be acceptable in the project.</li>
+<li>The added complexity is not necessary</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/28/a491f41c7a374847875c707fe7ddf17f.png" alt="Resilience Pattern"></p>
+<h2 id="circuit-breaker-pattern">Circuit Breaker Pattern</h2>
+<p>Great for preventing a service failure that could lead to cascading failures throughout the application. A Microservice must request another Microservice through a proxy that works similarly to an Electrical Circuit Breaker. The proxy should count the number of recent failures that have occurred and use that to decide whether to allow the operation to continue or simply return an exception immediately.</p>
+<p>The circuit have three states: <strong>Closed, Open and Half-Open</strong></p>
+<ul>
+<li>
+<p>Closed</p>
+<p>The Circuit Breaker forwards requests to the Microservice and counts the number of failures in a given period of time. If the number of failures in a given period of time exceeds a threshold, it trips and goes into the open state.</p>
+</li>
+<li>
+<p>Open
+the microservice request fails immediately and an exception is returned. After a timeout, the circuit breaker goes into a half-open state.</p>
+</li>
+<li>
+<p>Half-Open
+Only a limited number of Microservice requests are allowed to pass and invoke the operation. If these requests are successful, the circuit breaker will enter the Closed state. If any request fails, the circuit breaker goes into the Open state.</p>
+</li>
+<li>
+<p>Strong</p>
+<ul>
+<li>Improve fault tolerance and resilience of microservices architecture.</li>
+<li>Stops the cascade of failures for other microservices.</li>
+</ul>
+</li>
+<li>
+<p>Weak</p>
+<ul>
+<li>Needs sophisticated exception handling.</li>
+</ul>
+</li>
+</ul>
+<h3 id="when-to-use-this-pattern-1">When to use this pattern</h3>
+<ul>
+<li>Incremental migration of a large Backend Monolithic application to Microservices.</li>
+<li>In large corporations, API Gateway is mandatory to centralize cross-cutting and security concerns.</li>
+</ul>
+<h2 id="when-not-to-use-circuit-breaker">When not to use Circuit Breaker</h2>
+<ul>
+<li>Loosely coupled, event-driven microservices architecture.</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/28/fce6928ae3924fb4b9c26cf2e2775a7a.png" alt="Circuit Breaker"></p>
+<h2 id="rate-limiter-pattern">Rate Limiter Pattern</h2>
+<p>Rate limiting can reduce your traffic and potentially improve throughput by reducing the number of records sent to a service over a given period of time.
+A service may throttle based on different metrics over time, such as:</p>
+<ul>
+<li>The number of operations (for example, 20 requests per second).</li>
+<li>The amount of data (for example, 2 GiB per minute).</li>
+<li>The relative cost of operations (for example, 20,000 RUs per second).</li>
+</ul>
+<p>Regardless of the metric used for throttling, your rate limiting implementation will involve controlling the number and/or size of operations sent to the service over a specific time period, optimizing your use of the service while not exceeding its throttling capacity.
+In scenarios where your APIs can handle requests faster than any throttled ingestion services allow, you&rsquo;ll need to manage how quickly you can use the service. However, only treating the throttling as a data rate mismatch problem, and simply buffering your ingestion requests until the throttled service can catch up, is risky. If your application crashes in this scenario, you risk losing any of this buffered data.
+To avoid this risk, consider sending your records to a durable messaging system that can handle your full ingestion rate. (Services such as Azure Event Hubs can handle millions of operations per second). You can then use one or more job processors to read the records from the messaging system at a controlled rate that is within the throttled service&rsquo;s limits. Submitting records to the messaging system can save internal memory by allowing you to dequeue only the records that can be processed during a given time interval.</p>
+<h3 id="when-to-use-this-pattern-2">When to use this pattern</h3>
+<ul>
+<li>Reduce throttling errors raised by a throttle-limited service.</li>
+<li>Reduce traffic compared to a naive retry on error approach.</li>
+<li>Reduce memory consumption by dequeuing records only when there is capacity to process them.</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/28/bce42e187c034eb5b16357cff96a3217.png" alt="pattern"></p>
+<h2 id="retry-pattern">Retry Pattern</h2>
+<p>Enable an application to handle transient failures when it tries to connect to a service or network resource, by transparently retrying a failed operation. This can improve the stability of the application.</p>
+<p>In the cloud, transient faults aren&rsquo;t uncommon and an application should be designed to handle them elegantly and transparently. This minimizes the effects faults can have on the business tasks the application is performing.
+If an application detects a failure when it tries to send a request to a remote service, it can handle the failure using the following strategies:</p>
+<ul>
+<li><strong>Cancel.</strong> If the fault indicates that the failure isn&rsquo;t transient or is unlikely to be successful if repeated, the application should cancel the operation and report an exception. For example, an authentication failure caused by providing invalid credentials is not likely to succeed no matter how many times it&rsquo;s attempted.</li>
+<li><strong>Retry.</strong> If the specific fault reported is unusual or rare, it might have been caused by unusual circumstances such as a network packet becoming corrupted while it was being transmitted. In this case, the application could retry the failing request again immediately because the same failure is unlikely to be repeated and the request will probably be successful.</li>
+<li><strong>Retry after delay.</strong> If the fault is caused by one of the more commonplace connectivity or busy failures, the network or service might need a short period while the connectivity issues are corrected or the backlog of work is cleared. The application should wait for a suitable time before retrying the request.</li>
+</ul>
+<h3 id="when-to-use-this-pattern-3">When to use this pattern</h3>
+<p>Use this pattern when an application could experience transient faults as it interacts with a remote service or accesses a remote resource. These faults are expected to be short lived, and repeating a request that has previously failed could succeed on a subsequent attempt.</p>
+<p>This pattern might not be useful:</p>
+<ul>
+<li>When a fault is likely to be long lasting, because this can affect the responsiveness of an application. The application might be wasting time and resources trying to repeat a request that&rsquo;s likely to fail.</li>
+<li>For handling failures that aren&rsquo;t due to transient faults, such as internal exceptions caused by errors in the business logic of an application.</li>
+<li>As an alternative to addressing scalability issues in a system. If an application experiences frequent busy faults, it&rsquo;s often a sign that the service or resource being accessed should be scaled up.</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/28/18e65d75074e4224bcd0e5814b784cc5.png" alt="pattern"></p>
+<h2 id="timeout-pattern">Timeout Pattern</h2>
+<p>In microservice architecture, one service (A) depends on the other service (B), sometimes due to some network issue, Service B might not respond as expected. This slowness could affect Service A as well as A is waiting for the response from B to proceed further. As it is not uncommon issue, It is better to take this service unavailability issue into consideration while designing your microservices.</p>
+<p>The timeout pattern is pretty straightforward and many HTTP clients have a default timeout configured. The goal is to avoid unbounded waiting times for responses and thus treating every request as failed where no response was received within the timeout.</p>
+<p>Timeouts are used in almost every application to avoid requests getting stuck forever. Dealing with timeouts is not trivial, however. Imagine an order placement timing out in an online shop. You cannot be sure if the order was placed successfully but the response timed out if the order creation was still in progress, or the request was never processed. If you combine the timeout with a retry, you might end up with a duplicate order. If you mark the order as failed, the customer might think the order didn&rsquo;t succeed but maybe it did and they will get charged.</p>
+<h3 id="advantages-in-use-this-pattern">Advantages in use this pattern</h3>
+<ul>
+<li>Make the core services work always even when the dependent services are not available</li>
+<li>We do not want to wait indefinitely</li>
+<li>We do not want to block any threads</li>
+<li>To handle network related issues and make the system remain functional using some cached responses.</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/28/4177757f967442b0b57888535246f920.png" alt="pattern"></p>
+<blockquote>
+<p>Reference <a href="https://dev.to/lucasnscr/resilience-and-best-patterns-4mo">https://dev.to/lucasnscr/resilience-and-best-patterns-4mo</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/resilience/">resilience</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/2022-03/spring-boot-mongodb-logging/">
+            <span class="next-text nav-default">Logging MongoDB Queries with Spring Boot</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>
