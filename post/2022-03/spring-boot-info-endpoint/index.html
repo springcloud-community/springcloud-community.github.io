@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Exposing a Helpful Info Endpoint with Spring Boot Actuator - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="Learn how to use the Spring Boot Actuator and Maven/Gradle build plugins to add application deployment times, application deployment versions, Git commit information, and more to our projects." />
+<meta name="keywords" content="Spring Boot, Spring BOot Actuator, Info Endpoint" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-03/spring-boot-info-endpoint/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Exposing a Helpful Info Endpoint with Spring Boot Actuator" />
+<meta property="og:description" content="Learn how to use the Spring Boot Actuator and Maven/Gradle build plugins to add application deployment times, application deployment versions, Git commit information, and more to our projects." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-03/spring-boot-info-endpoint/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-03-29T15:47:28+08:00" />
+<meta property="article:modified_time" content="2022-03-29T15:47:28+08:00" />
+
+<meta itemprop="name" content="Exposing a Helpful Info Endpoint with Spring Boot Actuator">
+<meta itemprop="description" content="Learn how to use the Spring Boot Actuator and Maven/Gradle build plugins to add application deployment times, application deployment versions, Git commit information, and more to our projects."><meta itemprop="datePublished" content="2022-03-29T15:47:28+08:00" />
+<meta itemprop="dateModified" content="2022-03-29T15:47:28+08:00" />
+<meta itemprop="wordCount" content="1697">
+<meta itemprop="keywords" content="spring-boot,spring-boot-actuator," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Exposing a Helpful Info Endpoint with Spring Boot Actuator"/>
+<meta name="twitter:description" content="Learn how to use the Spring Boot Actuator and Maven/Gradle build plugins to add application deployment times, application deployment versions, Git commit information, and more to our projects."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Exposing a Helpful Info Endpoint with Spring Boot Actuator</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-03-29" class="post-time">
+          2022-03-29
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 1697 words </span>
+          <span class="more-meta"> 8 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#example-code">Example Code</a></li>
+    <li><a href="#enabling-spring-boot-actuator">Enabling Spring Boot Actuator</a>
+      <ul>
+        <li><a href="#securing-endpoints">Securing Endpoints</a></li>
+      </ul>
+    </li>
+    <li><a href="#spring-boot-application-info">Spring Boot Application Info</a></li>
+    <li><a href="#adding-build-info">Adding Build Info</a>
+      <ul>
+        <li><a href="#using-the-maven-plugin">Using the Maven Plugin</a></li>
+        <li><a href="#using-the-gradle-plugin">Using the Gradle Plugin</a></li>
+      </ul>
+    </li>
+    <li><a href="#adding-git-info">Adding Git Info</a>
+      <ul>
+        <li><a href="#using-the-maven-plugin-1">Using the Maven Plugin</a></li>
+        <li><a href="#using-the-gradle-plugin-1">Using the Gradle Plugin</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>In a distributed, fast-paced environment, dev teams often want to find out <strong>at what time they deployed the app, what version of the app they deployed, what Git commit was deployed, and more.</strong></p>
+<p>Spring Boot Actuator helps us monitor and manage the application. It exposes various endpoints that provide app health, metrics, and other relevant information.</p>
+<p>In this article, we will find out how to use Spring Boot Actuator and the Maven/Gradle build plugins to add such information to our projects.</p>
+<h2 id="example-code">Example Code</h2>
+<p>This article is accompanied by a working code example <a href="https://github.com/thombergs/code-examples/tree/master/spring-boot/spring-boot-app-info">on GitHub</a>.</p>
+<h2 id="enabling-spring-boot-actuator">Enabling Spring Boot Actuator</h2>
+<p>Spring Boot Actuator is a sub-project of Spring Boot. In this section, we will quickly see how to bootstrap the sample project and enable the <code>/info</code> endpoint. If you want to know more about Spring Boot Actuator, there is already a great <a href="https://reflectoring.io/exploring-a-spring-boot-app-with-actuator-and-jq/">tutorial</a>.</p>
+<p>Let&rsquo;s quickly create a Spring Boot project using the <a href="https://start.spring.io/">Spring Initializr</a>. We will require the following dependencies:</p>
+<table>
+<thead>
+<tr>
+<th>Dependency</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spring Boot Actuator</td>
+<td>To expose the application management endpoints e.g. <code>info</code> .</td>
+</tr>
+<tr>
+<td>Spring Web</td>
+<td>To enable the web app behavior.</td>
+</tr>
+</tbody>
+</table>
+<p>If it helps, here is a link to the pre-populated projects in <a href="https://start.spring.io/#!type=maven-project&amp;language=java&amp;platformVersion=2.6.4&amp;packaging=jar&amp;jvmVersion=11&amp;groupId=io.reflectoring&amp;artifactId=demo&amp;name=Demo%20Application&amp;description=Demo%20project%20for%20Spring%20Boot%20Application%20Info&amp;packageName=io.reflectoring.demo&amp;dependencies=web,actuator">Maven</a> and <a href="https://start.spring.io/#!type=gradle-project&amp;language=java&amp;platformVersion=2.6.4&amp;packaging=jar&amp;jvmVersion=11&amp;groupId=io.reflectoring&amp;artifactId=demo&amp;name=Demo%20Application&amp;description=Demo%20project%20for%20Spring%20Boot%20Application%20Info&amp;packageName=io.reflectoring.demo&amp;dependencies=web,actuator">Gradle</a>.</p>
+<p>After the project is built we will expose the built-in <code>/info</code> endpoint over HTTP. <strong>By default the <code>/info</code> web endpoint is disabled</strong> . We can simply enable it by adding the the <code>management.endpoints.web.exposure.include</code> property in the <code>application.properties</code> configuration:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">management.endpoints.web.exposure.include=health,info
+</code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s run the Spring Boot application and open the URL <code>http://localhost:8080/actuator/info</code> in a browser. Nothing useful will be visible yet as we still have to make a few config changes. In the next section, we will see how we can add informative build information in this response.</p>
+<h3 id="securing-endpoints">Securing Endpoints</h3>
+<p>If you are exposing the endpoints publicly, please make sure to <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints.security">secure</a> them as appropriate. We should not expose any sensitive information unknowingly.</p>
+<h2 id="spring-boot-application-info">Spring Boot Application Info</h2>
+<p>Spring collects useful application information from various <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/actuate/info/InfoContributor.html"><code>InfoContributor</code></a> beans defined in the application context. Below is a summary of the default <code>InfoContributor</code> beans:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Bean Name</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>build</code></td>
+<td><code>BuildInfoContributor</code></td>
+<td>Exposes build information.</td>
+</tr>
+<tr>
+<td><code>env</code></td>
+<td><code>EnvironmentInfoContributor</code></td>
+<td>Exposes any property from the <code>Environment</code> whose name starts with <code>info.</code></td>
+</tr>
+<tr>
+<td><code>git</code></td>
+<td><code>GitInfoContributor</code></td>
+<td>Exposes Git related information.</td>
+</tr>
+<tr>
+<td><code>java</code></td>
+<td><code>JavaInfoContributor</code></td>
+<td>Exposes Java runtime information.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>By default, the <code>env</code> and <code>java</code> contributors are disabled.</strong></p>
+<p>First, we will enable the <code>java</code> contributor by adding the following key-value pair in <code>application.properties</code> :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">management.info.java.enabled=true
+</code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s rerun the application. If we open the actuator <code>/info</code> endpoint again in a browser, we get an output like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;java&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;vendor&#34;</span><span class="p">:</span> <span class="s2">&#34;Eclipse Adoptium&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;11.0.14&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;runtime&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;OpenJDK Runtime Environment&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;11.0.14+9&#34;</span>
+    <span class="p">},</span>
+    <span class="nt">&#34;jvm&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;OpenJDK 64-Bit Server VM&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;vendor&#34;</span><span class="p">:</span> <span class="s2">&#34;Eclipse Adoptium&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;11.0.14+9&#34;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>You are likely to see different values based on the installed Java version.</p>
+<p>Now, it&rsquo;s time to display environment variables. Spring picks up any environment variable with a property name starting with <code>info</code> . To see this in action, let&rsquo;s add the following properties in the <code>application.properties</code> file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">management.info.env.enabled=true
+info.app.website=reflectoring.io
+</code></pre></td></tr></table>
+</div>
+</div><p>Upon restarting the app, we will start seeing the following information added to the actuator <code>info</code> endpoint:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;app&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;website&#34;</span><span class="p">:</span> <span class="s2">&#34;reflectoring.io&#34;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Feel free to add as many info variables you want :)</p>
+<p>In the following sections, we will see how to add Git and application build specific information.</p>
+<h2 id="adding-build-info">Adding Build Info</h2>
+<p>Adding useful <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/howto.html#howto.build.generate-info">build information</a> helps to quickly identify the build artifact name, version, time created, etc. It could come in handy to check if the team deployed the relevant version of the app. Spring Boot allows easy ways to add this using Maven or Gradle build plugins.</p>
+<h3 id="using-the-maven-plugin">Using the Maven Plugin</h3>
+<p>The Spring Boot Maven Plugin comes bundled with plenty of useful features such as creating executable jar or war archives, running the application, etc. It also provides a way to add application build info.</p>
+<p>Spring Boot Actuator will show build details if a valid <code>META-INF/build-info.properties</code> file is present. <strong>The Spring Boot Maven plugin has a <code>build-info</code> goal to create this file.</strong></p>
+<p>This plugin will be by default present in the <code>pom.xml</code> if you bootstrapped the project using Spring Initializr. We just have to add the <code>build-info</code> goal for execution as shown below:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;plugin&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>2.6.4<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;executions&gt;</span>
+    <span class="nt">&lt;execution&gt;</span>
+      <span class="nt">&lt;goals&gt;</span>
+        <span class="nt">&lt;goal&gt;</span>build-info<span class="nt">&lt;/goal&gt;</span>
+      <span class="nt">&lt;/goals&gt;</span>
+    <span class="nt">&lt;/execution&gt;</span>
+  <span class="nt">&lt;/executions&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>If we run the command <code>./mvnw spring-boot:run</code> (for Linux/macOS) or <code>mvnw.bat spring-boot:run</code> (for Windows) now, the required file would be created in <code>target/classes/META-INF/build-info.properties</code> .</p>
+<p><strong>The file content will be similar to this:</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">build.artifact=spring-boot-build-info
+build.group=io.reflectoring
+build.name=spring-boot-build-info
+build.time=2022-03-06T05\:53\:45.236Z
+build.version=0.0.1-SNAPSHOT
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>We can also add custom properties to this list</strong> using the <code>additionalProperties</code> attribute:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;execution&gt;</span>
+  <span class="nt">&lt;goals&gt;</span>
+    <span class="nt">&lt;goal&gt;</span>build-info<span class="nt">&lt;/goal&gt;</span>
+  <span class="nt">&lt;/goals&gt;</span>
+  <span class="nt">&lt;configuration&gt;</span>
+    <span class="nt">&lt;additionalProperties&gt;</span>
+      <span class="nt">&lt;custom.key1&gt;</span>value1<span class="nt">&lt;/custom.key1&gt;</span>
+      <span class="nt">&lt;custom.key2&gt;</span>value2<span class="nt">&lt;/custom.key2&gt;</span>
+    <span class="nt">&lt;/additionalProperties&gt;</span>
+  <span class="nt">&lt;/configuration&gt;</span>
+<span class="nt">&lt;/execution&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>If we run the app now and open the <code>http://localhost:8080/actuator/info</code> endpoint in the browser, we will see a response similar to below:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;build&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;custom&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;key2&#34;</span><span class="p">:</span> <span class="s2">&#34;value2&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;key1&#34;</span><span class="p">:</span> <span class="s2">&#34;value1&#34;</span>
+    <span class="p">},</span>
+    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;0.0.1-SNAPSHOT&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;artifact&#34;</span><span class="p">:</span> <span class="s2">&#34;spring-boot-build-info&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;spring-boot-build-info&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;time&#34;</span><span class="p">:</span> <span class="s2">&#34;2022-03-06T06:34:30.306Z&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;group&#34;</span><span class="p">:</span> <span class="s2">&#34;io.reflectoring&#34;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>If you want to exclude any of the properties</strong> that is possible using the <code>excludeInfoProperties</code> configuration. Let&rsquo;s see how to exclude the <code>artifact</code> property:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;excludeInfoProperties&gt;</span>
+    <span class="nt">&lt;infoProperty&gt;</span>artifact<span class="nt">&lt;/infoProperty&gt;</span>
+  <span class="nt">&lt;/excludeInfoProperties&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Please refer to the official Spring Boot <a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#goals-build-info">documentation</a> to know more.</p>
+<p>Now, it&rsquo;s time to see how we can achieve the same output using the Spring Boot Gradle plugin.</p>
+<h3 id="using-the-gradle-plugin">Using the Gradle Plugin</h3>
+<p>The easiest way to add the build info is using the plugin DSL. In the <code>build.gradle</code> file, we need to add the following block:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="n">springBoot</span> <span class="o">{</span>
+  <span class="n">buildInfo</span><span class="o">()</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>If we sync the Gradle project now, we can see a new task <code>bootBuildInfo</code> is available for use. Running the task will generate similar <code>build/resources/main/META-INF/build-info.properties</code> file with build info (derived from the project). Using the DSL we can customize existing values or add new properties:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">springBoot {
+  buildInfo {
+    properties {
+      name = &#39;Sample App&#39;
+      additional = [
+        &#39;customKey&#39;: &#39;customValue&#39;
+      ]
+    }
+  }
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>Time to run the app using <code>./gradlew bootRun</code> (for macOS/Linux) or <code>gradlew.bat bootRun</code> (for Windows) command. Once the app is running, we can open the <code>http://localhost:8080/actuator/info</code> endpoint in the browser and find the response as:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;build&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;customKey&#34;</span><span class="p">:</span> <span class="s2">&#34;customValue&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;0.0.1-SNAPSHOT&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;artifact&#34;</span><span class="p">:</span> <span class="s2">&#34;spring-boot-build-info&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Sample App&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;time&#34;</span><span class="p">:</span> <span class="s2">&#34;2022-03-06T09:11:53.380Z&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;group&#34;</span><span class="p">:</span> <span class="s2">&#34;io.reflectoring&#34;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>We can exclude any default properties from the generated build information by setting its value to <code>null</code> . For example:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">properties {
+  group = null
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>To know more about the plugin, you can refer to the official Spring Boot <a href="https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/htmlsingle/#integrating-with-actuator">documentation</a>.</p>
+<h2 id="adding-git-info">Adding Git Info</h2>
+<p><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/howto.html#howto.build.generate-git-info">Git information</a> comes handy to quickly identify if the relevant code is present in production or if the distributed deployments are in sync with expectations. Spring Boot can easily include Git properties in the Actuator endpoint using the Maven and Gradle plugins.</p>
+<p>Using this plugin we can generate a <code>git.properties</code> file. The presence of this file will auto-configure the <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/info/GitProperties.html"><code>GitProperties</code></a> bean to be used by the <a href="https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/actuate/info/GitInfoContributor.html"><code>GitInfoContributor</code></a> bean to collate relevant information.</p>
+<p><strong>By default the following information will be exposed:</strong></p>
+<ul>
+<li><code>git.branch</code></li>
+<li><code>git.commit.id</code></li>
+<li><code>git.commit.time</code></li>
+</ul>
+<p>The following management application properties control the Git related information:</p>
+<table>
+<thead>
+<tr>
+<th>Application Property</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>management.info.git.enabled=false</code></td>
+<td>Disables the Git information entirely from the <code>info</code> endpoint</td>
+</tr>
+<tr>
+<td><code>management.info.git.mode=full</code></td>
+<td>Displays all the properties from the <code>git.properties</code> file</td>
+</tr>
+</tbody>
+</table>
+<h3 id="using-the-maven-plugin-1">Using the Maven Plugin</h3>
+<p>The <a href="https://github.com/git-commit-id/git-commit-id-maven-plugin">Maven Git Commit ID plugin</a> is managed via the <code>spring-boot-starter-parent</code> pom. To use this we have to edit the <code>pom.xml</code> as below:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;plugin&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>pl.project13.maven<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>git-commit-id-plugin<span class="nt">&lt;/artifactId&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>If we run the project and open the <code>/actuator/info</code> endpoint in the browser, it will return the Git related information:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;git&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;branch&#34;</span><span class="p">:</span> <span class="s2">&#34;main&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;commit&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;5404bdf&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;time&#34;</span><span class="p">:</span> <span class="s2">&#34;2022-03-06T10:34:16Z&#34;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>We can also inspect the generated file under <code>target/classes/git.properties</code> . Here is what it looks like for me:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">#Generated by Git-Commit-Id-Plugin
+git.branch=main
+git.build.host=mylaptop
+git.build.time=2022-03-06T23\:22\:16+0530
+git.build.user.email=user@email.com
+git.build.user.name=user
+git.build.version=0.0.1-SNAPSHOT
+git.closest.tag.commit.count=
+git.closest.tag.name=
+git.commit.author.time=2022-03-06T22\:46\:56+0530
+git.commit.committer.time=2022-03-06T22\:46\:56+0530
+git.commit.id=e9fa20d4914367c1632e3a0eb8ca4d2f32b31a89
+git.commit.id.abbrev=e9fa20d
+git.commit.id.describe=e9fa20d-dirty
+git.commit.id.describe-short=e9fa20d-dirty
+git.commit.message.full=Update config
+git.commit.message.short=Update config
+git.commit.time=2022-03-06T22\:46\:56+0530
+git.commit.user.email=saikat@email.com
+git.commit.user.name=Saikat
+git.dirty=true
+git.local.branch.ahead=NO_REMOTE
+git.local.branch.behind=NO_REMOTE
+git.remote.origin.url=Unknown
+git.tags=
+git.total.commit.count=2
+</code></pre></td></tr></table>
+</div>
+</div><p>This plugin comes with lot of <a href="https://github.com/git-commit-id/git-commit-id-maven-plugin/blob/master/docs/using-the-plugin.md">configuration</a> options. For example, to include/exclude specific properties we can add a <code>configuration</code> section like this:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;configuration&gt;</span>
+  <span class="nt">&lt;excludeProperties&gt;</span>
+    <span class="nt">&lt;excludeProperty&gt;</span>time<span class="nt">&lt;/excludeProperty&gt;</span>
+  <span class="nt">&lt;/excludeProperties&gt;</span>
+  <span class="nt">&lt;includeOnlyProperties&gt;</span>
+    <span class="nt">&lt;property&gt;</span>git.commit.id<span class="nt">&lt;/property&gt;</span>
+  <span class="nt">&lt;/includeOnlyProperties&gt;</span>
+<span class="nt">&lt;/configuration&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>It will generate an output like below:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;git&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;commit&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;5404bdf&#34;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s now find out what options are available for Gradle users.</p>
+<h3 id="using-the-gradle-plugin-1">Using the Gradle Plugin</h3>
+<p>In the <code>build.gradle</code> we will add the <a href="https://github.com/n0mer/gradle-git-properties"><code>gradle-git-properties</code></a> plugin:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">plugins {
+  id &#39;com.gorylenko.gradle-git-properties&#39; version &#39;2.4.0&#39;
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s build the Gradle project now. We can see <code>build/resources/main/git.properties</code> file is created. And, the actuator <code>info</code> endpoint will display the same data:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;git&#34;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&#34;branch&#34;</span><span class="p">:</span> <span class="s2">&#34;main&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;commit&#34;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;5404bdf&#34;</span><span class="p">,</span>
+      <span class="nt">&#34;time&#34;</span><span class="p">:</span> <span class="s2">&#34;2022-03-06T10:34:16Z&#34;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>This plugin too provides multiple ways to configure the output using the attribute <code>gitProperties</code> . For example, let&rsquo;s limit the keys to be present by adding below:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">gitProperties {
+  keys = [&#39;git.commit.id&#39;]
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>Rerunning the app will now show limited Git info:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yml" data-lang="yml">{<span class="w">
+</span><span class="w">  </span><span class="nt">&#34;git&#34;: </span>{<span class="w">
+</span><span class="w">    </span><span class="nt">&#34;commit&#34;: </span>{<span class="w">
+</span><span class="w">      </span><span class="nt">&#34;id&#34;: </span><span class="s2">&#34;5404bdf&#34;</span><span class="w">
+</span><span class="w">    </span>}<span class="w">
+</span><span class="w">  </span>}<span class="w">
+</span><span class="w"></span>}<span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="conclusion">Conclusion</h2>
+<p>In this article, we learned how to use Spring Actuator to expose relevant information about our application. We found out how information about the build, environment, Git, and Java environment can be added to the Actuator <code>/info</code> endpoint. We also looked at how all this information can be configured and controlled by the Maven/Gradle build plugins.</p>
+<p>You can play around with a complete application illustrating these ideas using the code <a href="https://github.com/thombergs/code-examples/tree/master/spring-boot/spring-boot-app-info">on GitHub</a>.</p>
+<blockquote>
+<p>Reference <a href="https://reflectoring.io/spring-boot-info-endpoint/">https://reflectoring.io/spring-boot-info-endpoint/</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          <a href="https://www.springcloud.io/tags/spring-boot-actuator/">spring-boot-actuator</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/2022-03/getting-started-with-spring-webflux/">
+            <span class="next-text nav-default">Getting Started With Spring Webflux</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>
