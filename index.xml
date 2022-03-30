@@ -6,7 +6,7 @@
     <description>Recent content on Spring Cloud</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 29 Mar 2022 17:24:15 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 30 Mar 2022 10:06:26 +0800</lastBuildDate>
     
         <atom:link href="https://www.springcloud.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -36,6 +36,67 @@
 &lt;/ul&gt;
 &lt;h2 id=&#34;contact&#34;&gt;Contact&lt;/h2&gt;
 &lt;p&gt;Email: TODO&lt;/p&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>About Spring Core Spring Beans Remote Code Warning Notice for Execution 0day Vulnerability</title>
+      <link>https://www.springcloud.io/post/2022-03/spring-0day-vulnerability/</link>
+      <pubDate>Wed, 30 Mar 2022 10:06:26 +0800</pubDate>
+      
+      <guid>https://www.springcloud.io/post/2022-03/spring-0day-vulnerability/</guid>
+      
+        <description>&lt;p&gt;Information indicates that an RCE 0day vulnerability has been reported in the Spring Framework. If the target system is developed using Spring and has a JDK version above JDK9, an unauthorized attacker can exploit this vulnerability to remotely execute arbitrary code on the target device.&lt;/p&gt;
+&lt;h2 id=&#34;1-vulnerability-situation-analysis&#34;&gt;1. Vulnerability Situation Analysis&lt;/h2&gt;
+&lt;p&gt;The Spring framework is the most widely used lightweight open source framework for Java, and in the JDK9 version of the Spring framework (and above), a remote attacker can obtain an AccessLogValve object through the framework&amp;rsquo;s parameter binding feature and use malicious field values to trigger the pipeline mechanism and write to a file in an arbitrary path if certain conditions are met. file under any path.&lt;/p&gt;
+&lt;h2 id=&#34;2-the-scope-of-the-vulnerability-affected-by-the-affected-version&#34;&gt;2. the scope of the vulnerability affected by the affected version&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;JDK 9.0+&lt;/li&gt;
+&lt;li&gt;Spring framework and derivative framework spring-beans-*.jar exists&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;3-the-vulnerability-disposal-recommendations&#34;&gt;3. the vulnerability disposal recommendations&lt;/h2&gt;
+&lt;p&gt;Temporary fix: The following two steps need to be followed simultaneously for the temporary fix of the vulnerability.&lt;/p&gt;
+&lt;h3 id=&#34;step-1&#34;&gt;Step 1&lt;/h3&gt;
+&lt;p&gt;Search the application group globally for the &lt;code&gt;@InitBinder&lt;/code&gt; annotation and see if the &lt;code&gt;dataBinder.setDisallowedFields&lt;/code&gt; method is called inside the method. If the introduction of this code snippet is found, add &lt;code&gt;{&amp;quot;class.*&amp;quot;, &amp;quot;Class.*&amp;quot;, &amp;quot;*.class.*&amp;quot;, &amp;quot;*.Class.*&amp;quot;}&lt;/code&gt; to the original black list. (Note: If this code snippet is used more often, it needs to be appended in each place)&lt;/p&gt;
+&lt;h3 id=&#34;step-2&#34;&gt;Step 2&lt;/h3&gt;
+&lt;p&gt;Create the following global class under the project package of the application system and make sure the class is loaded by Spring (it is recommended to add it in the package where the Controller is located). After adding the class, you need to recompile and repackage the project and verify the functionality, and republish the project.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;org.sptingframework.core.annotation.Order&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;org.springframework.web.bind.WebDataBinder&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;org.springframework.web.bind.annotation.ControllezAdvice&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;org.springframework.web.bind.annotation.InitBinder&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;nd&#34;&gt;@ControllerAdvice&lt;/span&gt;
+&lt;span class=&#34;nd&#34;&gt;@Order&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;10000&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;Global&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ControllerAdvice&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;nd&#34;&gt;@uitBinder&lt;/span&gt;
+    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;setAllowedFields&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;WebDataBinder&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dataBinder&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;String&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;abd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;new&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;String&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[]{&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;class.*&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Class.*&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;*.class.*&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;*.Class.*&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;};&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;dataBinder&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;setDisallowedFields&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;abd&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Repair suggestion: No official security patch or latest version has been released yet. Affected customers can use a third-party firewall for defense.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Reference &lt;a href=&#34;https://www.javai.net/post/202203/spring-0day-vulnerability/&#34;&gt;https://www.javai.net/post/202203/spring-0day-vulnerability/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 </description>
       
     </item>
@@ -6748,277 +6809,6 @@ encrypt.keystore.alias=myApiTutorialKey
 &lt;p&gt;And that&amp;rsquo;s about it. It honestly is a very short process to encrpyt your data and I hope this tutorial helped you on your spring cloud journey!&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Reference &lt;a href=&#34;https://dev.to/markbdsouza/spring-cloud-config-server-encryption-and-decryption-2ejc&#34;&gt;https://dev.to/markbdsouza/spring-cloud-config-server-encryption-and-decryption-2ejc&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-</description>
-      
-    </item>
-    
-    <item>
-      <title>Spring Cloud Config Server: Step by Step</title>
-      <link>https://www.springcloud.io/post/2022-03/spring-cloud-config-server-step-by-step/</link>
-      <pubDate>Thu, 17 Mar 2022 14:30:41 +0800</pubDate>
-      
-      <guid>https://www.springcloud.io/post/2022-03/spring-cloud-config-server-step-by-step/</guid>
-      
-        <description>&lt;p&gt;Spring Cloud Config Server is used to provide server-side and client-side support for externalized configuration in a distributed system. So when you have multiple microservices, and you want to easily control the configuration for all of them at one go - you&amp;rsquo;ll mostly be looking at Spring Cloud Config Server.&lt;/p&gt;
-&lt;h2 id=&#34;so-how-do-we-do-this&#34;&gt;So how do we do this?&lt;/h2&gt;
-&lt;p&gt;We will create a git project which contains all your properties files for the multiple microservices that you have (easy enough). We then create one spring boot application whose only role will be to be a micro service pointing to these files as it acts as a Spring Cloud Config Server. All the other microservices(the clients) can be configured to get the required properties from the Config Server.&lt;/p&gt;
-&lt;p&gt;This isn&amp;rsquo;t too tricky, and is actually easy to implement. In the below steps, I will walk you through how you can set this up in your project and even configure profiles for your microservices.&lt;/p&gt;
-&lt;h2 id=&#34;step-1-create-the-spring-cloud-config-server&#34;&gt;Step 1) Create the Spring Cloud Config Server&lt;/h2&gt;
-&lt;h3 id=&#34;11-create-a-sprig-boot-app&#34;&gt;1.1) Create a Sprig Boot App&lt;/h3&gt;
-&lt;p&gt;Lets start off creating our Spring boot application using &lt;a href=&#34;https://start.spring.io&#34;&gt;start.spring.io&lt;/a&gt;
-I am using the Spring boot version &lt;code&gt;2.4.3&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/17/c23387a7de5c477a88e3c194dee14abe.png&#34; alt=&#34;start.spring.io&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Make sure the dependency is Config Server and not Config Client.
-Hit generate and you&amp;rsquo;re done.&lt;/p&gt;
-&lt;h3 id=&#34;12-update-the-main-class&#34;&gt;1.2 Update the Main Class&lt;/h3&gt;
-&lt;p&gt;Open the project with your IDE.
-Open up your main Spring boot class with @SpringBootApplication and add &lt;code&gt;@EnableConfigServer&lt;/code&gt; as well (Imported from import org.springframework.cloud.config.server.EnableConfigServer)&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/17/d56ed45665a441b4bc876db4adb9edb4.png&#34; alt=&#34;EnableConfigServer&#34;&gt;&lt;/p&gt;
-&lt;h3 id=&#34;13-create-a-git-repo-with-the-properties-file&#34;&gt;1.3 Create a git repo with the properties file&lt;/h3&gt;
-&lt;p&gt;Create a new folder where you will hold your config file and do a git init on that folder.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;mkdir config-files
-&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; config-files
-git init
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;now create the property file that you will map to your config server. We will be naming our microservice : microservice-one
-File Name : miroservice-one.properties&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;microservice-one.value=10
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;Now add and commit your changes. Else the spring boot app will not read it&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;git add .
-git commit -m &lt;span class=&#34;s2&#34;&gt;&amp;#34;created property file for microservice-one&amp;#34;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;Note: you can also use yml files here&lt;/p&gt;
-&lt;h3 id=&#34;14-update-applicationproperties&#34;&gt;1.4 Update application.properties&lt;/h3&gt;
-&lt;p&gt;Copy the path of your new git repository and paste it in your application.properties file.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;spring.application.name = spring-cloud-config-server
-server.port=8888
-spring.cloud.config.server.git.uri = file:///c:/Users/madsouza/Desktop/blogPost/config-files
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;The config server is generally set to port 8888.
-Windows users should make sure you are using the / and not \ when copying the path.&lt;/p&gt;
-&lt;h3 id=&#34;15-test-it-out&#34;&gt;1.5 Test it out&lt;/h3&gt;
-&lt;p&gt;Launch the application and navigate to : &lt;code&gt;http://localhost:8888/microservice-one/default&lt;/code&gt;
-where microservice-one is the name of the file we have created.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/17/86d3704699fd458d9cb6acefd16e7fb3.png&#34; alt=&#34;spring cloud config git&#34;&gt;&lt;/p&gt;
-&lt;p&gt;As you can see, the property you have mapped is present. With this we are done setting up our basic Spring Cloud Config Server&lt;/p&gt;
-&lt;h2 id=&#34;step-2-create-the-client-microservice&#34;&gt;Step 2) Create the Client Microservice&lt;/h2&gt;
-&lt;p&gt;Next up is fetching the property from this config server in an independent microservice. In our case microservice-one&lt;/p&gt;
-&lt;h3 id=&#34;21-create-a-spring-boot-app&#34;&gt;2.1 Create a Spring Boot App&lt;/h3&gt;
-&lt;p&gt;Back to &lt;a href=&#34;https://start.spring.io&#34;&gt;start.spring.io&lt;/a&gt; with Spring boot version &lt;code&gt;2.4.3&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/17/f05fde66dcc44fecae3578f0db870e76.png&#34; alt=&#34;start.spring.io&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Go ahead and generate the app.&lt;/p&gt;
-&lt;h3 id=&#34;22-update-applicationproperties&#34;&gt;2.2 Update application.properties&lt;/h3&gt;
-&lt;p&gt;Open the app with your IDE and its time to do some configuration&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;spring.application.name = microservice-one
-spring.config.import = optional:configserver:http://localhost:8888
-#backup value
-microservice-one.value=99
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;Here, we are basically importing the config server and providing the URL for the microservice.
-We can also mention the backup value in case for some reason we cannot find the config server.&lt;/p&gt;
-&lt;h3 id=&#34;23-create-a-configuration-class&#34;&gt;2.3 Create a configuration class&lt;/h3&gt;
-&lt;p&gt;Let us now create a Class that can read the properties from the config server&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kn&#34;&gt;package&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;com.markbdsouza.com.microserviceone&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-
-&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;org.springframework.boot.context.properties.ConfigurationProperties&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-
-&lt;span class=&#34;nd&#34;&gt;@ConfigurationProperties&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;microservice-one&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;span class=&#34;nd&#34;&gt;@org.springframework.context.annotation.Configuration&lt;/span&gt;
-&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;Configuration&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-    &lt;span class=&#34;kd&#34;&gt;private&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-
-    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getValue&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-
-    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;setValue&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;this&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;value&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;Here we are setting the Configuration Properties annotation with the name of the file. This Class will automatically get set when the spring boot application is run and it would set the value that is present in the Spring Cloud Config Server&lt;/p&gt;
-&lt;h3 id=&#34;24-create-a-rest-controller&#34;&gt;2.4 Create a Rest controller&lt;/h3&gt;
-&lt;p&gt;Now lets expose an endpoint which returns the config value&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;kn&#34;&gt;package&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;com.markbdsouza.com.microserviceone&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-
-&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;org.springframework.beans.factory.annotation.Autowired&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;org.springframework.web.bind.annotation.GetMapping&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;org.springframework.web.bind.annotation.RestController&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-
-&lt;span class=&#34;nd&#34;&gt;@RestController&lt;/span&gt;
-&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;MicroServiceController&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-
-    &lt;span class=&#34;nd&#34;&gt;@Autowired&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;Configuration&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;configuration&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;;&lt;/span&gt;
-
-    &lt;span class=&#34;nd&#34;&gt;@GetMapping&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/endpoint&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;retrieveLimits&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(){&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;configuration&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;getValue&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;();&lt;/span&gt;
-    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;Here we are auto-wiring the configuration class we created in the previous step and setting it at the &amp;lsquo;/endpoint&amp;rsquo; endpoint.&lt;/p&gt;
-&lt;h3 id=&#34;25-test-it-out&#34;&gt;2.5 Test it out&lt;/h3&gt;
-&lt;p&gt;Run the microservice-one spring boot application. and go to the defined controller end point
-&lt;code&gt;http://localhost:8080/endpoint&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/17/06b2025a95f14fafa6e19565aba1380f.png&#34; alt=&#34;spring cloud config git&#34;&gt;&lt;/p&gt;
-&lt;p&gt;With these simple steps you are DONE!
-I hope it doesn&amp;rsquo;t seem as challenging as you thought it would be !!&lt;/p&gt;
-&lt;h2 id=&#34;step-3-implementing-profiles&#34;&gt;Step 3) Implementing Profiles&lt;/h2&gt;
-&lt;p&gt;Now the only way to enhance this and make it really useful is having using different profiles. Depending on the environment, we usually have different properties file being used. So let&amp;rsquo;s see how we can add different profile related configuration to our server and have it reflected in our client&lt;/p&gt;
-&lt;h3 id=&#34;31-commit-additional-properties-files-in-git&#34;&gt;3.1) Commit additional properties files in git&lt;/h3&gt;
-&lt;p&gt;Now create additional application.properties files. One for dev and one for qa.
-File Name: microservice-one-dev.properties&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;microservice-one.value=50
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;File Name: microservice-one-qa.properties&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;microservice-one.value=75
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;make sure you do a git add and commit&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;git add .
-git commit -m &lt;span class=&#34;s2&#34;&gt;&amp;#34;created additional dev qa property files&amp;#34;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;That&amp;rsquo;s all you need to add new properties files. You don&amp;rsquo;t need to touch the spring boot application we created as such. Just check in the files created.&lt;/p&gt;
-&lt;h3 id=&#34;32-test-the-profile-related-server-endpoints&#34;&gt;3.2) Test the profile related server endpoints&lt;/h3&gt;
-&lt;p&gt;Earlier we navigated to
-&lt;code&gt;http://localhost:8888/microservice-one/default&lt;/code&gt;
-Now, 2 new endpoints open up in our 8888 port.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;http://localhost:8888/microservice-one/dev&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/17/a620b7514edd49c2b609ac2fcc94d435.png&#34; alt=&#34;spring cloud config dev&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;http://localhost:8888/microservice-one/qa&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/17/3e75be1ce9014586be6023dc2813d69f.png&#34; alt=&#34;spring cloud config qa&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Note that for both of these, we actually see the default value available as well.&lt;/p&gt;
-&lt;h3 id=&#34;33-update-the-micro-service&#34;&gt;3.3) Update the micro service&lt;/h3&gt;
-&lt;p&gt;All you really need to do is update the application.properties file of microservice-one and set the profile you want to use
-&lt;code&gt;spring.profiles.active=dev&lt;/code&gt;
-The overall file would now look like&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;spring.application.name = microservice-one
-spring.config.import = optional:configserver:http://localhost:8888
-spring.profiles.active=dev
-
-#backup value
-microservice-one.value=99
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h3 id=&#34;34-one-last-test&#34;&gt;3.4) One last Test&lt;/h3&gt;
-&lt;p&gt;Now if we hit the same endpoint we did earlier : &lt;code&gt;http://localhost:8080/endpoint&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/17/4c101e21447b4d7d9124d22729ab2dea.png&#34; alt=&#34;spring cloud config test&#34;&gt;&lt;/p&gt;
-&lt;p&gt;How quick and easy was that? You can very easily set it up for other profiles as well. I hope you&amp;rsquo;ve found this useful!!&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Reference &lt;a href=&#34;https://dev.to/markbdsouza/spring-cloud-config-server-step-by-step-14fd&#34;&gt;https://dev.to/markbdsouza/spring-cloud-config-server-step-by-step-14fd&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 </description>
       
