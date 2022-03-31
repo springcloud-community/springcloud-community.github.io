@@ -68,7 +68,7 @@
 <meta itemprop="name" content="Spring Framework RCE, Early Announcement">
 <meta itemprop="description" content="Spring official announcement for the recent Spring Framework RCE."><meta itemprop="datePublished" content="2022-03-31T19:16:46+08:00" />
 <meta itemprop="dateModified" content="2022-03-31T19:16:46+08:00" />
-<meta itemprop="wordCount" content="692">
+<meta itemprop="wordCount" content="821">
 <meta itemprop="keywords" content="spring-framework," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Spring Framework RCE, Early Announcement"/>
 <meta name="twitter:description" content="Spring official announcement for the recent Spring Framework RCE."/>
@@ -391,7 +391,7 @@
             <a href="https://www.springcloud.io/categories/news/"> news </a>
             
           </div>
-        <span class="more-meta"> 692 words </span>
+        <span class="more-meta"> 821 words </span>
           <span class="more-meta"> 4 min read </span>
 
         
@@ -409,12 +409,13 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li>
-      <ul>
-        <li><a href="#suggested-workarounds">Suggested Workarounds</a></li>
-        <li><a href="#further-updates">Further Updates</a></li>
-      </ul>
-    </li>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#vulnerability">Vulnerability</a></li>
+    <li><a href="#am-i-impacted">Am I Impacted?</a></li>
+    <li><a href="#status">Status</a></li>
+    <li><a href="#suggested-workarounds">Suggested Workarounds</a></li>
+    <li><a href="#misconceptions">Misconceptions</a></li>
+    <li><a href="#further-updates">Further Updates</a></li>
   </ul>
 </nav>
   </div>
@@ -422,12 +423,52 @@
 
     
     <div class="post-content">
-      <p><strong>Update 12:11 BST:</strong> A minor issue in the workaround with adding to the <code>disallowedFields</code> array has been fixed.</p>
-<p><strong>Update 11:59 BST:</strong> Spring Framework versions <strong>5.3.18</strong> and <strong>5.2.20</strong> , which address the vulnerability, are now available on Maven Central. The release process for Spring Boot is in progress,but applications can already upgrade their Spring Framework version independently in order to be protected.</p>
-<p>I would like to acknowledge an RCE vulnerability in the Spring Framework that does not have a published CVE report yet. The issue was first reported to VMware late on Tuesday evening, close to Midnight, GMT time by codeplutos, meizjm3i of AntGroup FG. On Wednesday we worked through investigation, analysis, identifying a fix, testing, while aiming for emergency releases on Thursday. In the mean time also on Wednesday, the vulnerability was leaked in full detail online, which is why we are providing this update ahead of the releases and the CVE report.</p>
-<p>The vulnerability impacts Spring MVC and Spring WebFlux applications running on JDK 9+. The specific exploit requires the application to be packaged as a WAR and deployed to Apache Tomcat. This does mean the exploit does not work for Spring Boot with embedded Tomcat. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.</p>
-<p>The release process for Spring Framework 5.3.18 and 5.2.20 is currently in progress, to be followed up with corresponding Spring Boot releases, immediately after. We expect those to become available available in the next 1-2 hours and will provide further updates.</p>
-<h3 id="suggested-workarounds">Suggested Workarounds</h3>
+      <p><strong>Updates:</strong></p>
+<ul>
+<li><strong>[14:00 BST]</strong> <a href="https://tanzu.vmware.com/security/cve-2022-22965">CVE-2022-22965</a> is published.</li>
+<li><strong>[13:03 BST]</strong> Added section &ldquo;Misconceptions&rdquo;.</li>
+<li><strong>[12:34 BST]</strong> Added section &ldquo;Am I Impacted&rdquo;.</li>
+<li><strong>[12:11 BST]</strong> Fix minor issue in the workaround for adding <code>disallowedFields</code> .</li>
+<li><strong>[11:59 BST]</strong> Spring Framework versions <strong>5.3.18</strong> and <strong>5.2.20</strong> , which address the vulnerability, are now available. The release process for Spring Boot is in progress.</li>
+</ul>
+<h2 id="overview">Overview</h2>
+<p>I would like to announce an RCE vulnerability in the Spring Framework that was leaked out ahead of CVE publication. The issue was first reported to VMware late on Tuesday evening, close to Midnight, GMT time by codeplutos, meizjm3i of AntGroup FG. On Wednesday we worked through investigation, analysis, identifying a fix, testing, while aiming for emergency releases on Thursday. In the mean time, also on Wednesday, details were leaked in full detail online, which is why we are providing this update ahead of the releases and the CVE report.</p>
+<h2 id="vulnerability">Vulnerability</h2>
+<p>The vulnerability impacts Spring MVC and Spring WebFlux applications running on JDK 9+. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.</p>
+<h2 id="am-i-impacted">Am I Impacted?</h2>
+<p>These are the requirements for the specific scenario from the report:</p>
+<ul>
+<li>JDK 9 or higher</li>
+<li>Apache Tomcat as the Servlet container</li>
+<li>Packaged as WAR</li>
+<li><code>spring-webmvc</code> or <code>spring-webflux</code> dependency</li>
+</ul>
+<p>However, the nature of the vulnerability is more general, and there may be other ways to exploit it that have not been reported yet.</p>
+<h2 id="status">Status</h2>
+<p>Spring Framework 5.3.18 and 5.2.20 have already been released and <a href="https://tanzu.vmware.com/security/cve-2022-22965">CVE-2022-22965</a> has been published. The corresponding Spring Boot releases are in progress. We will provide an update once those are ready.</p>
+<p>To <a href="https://docs.spring.io/spring-boot/docs/current/maven-plugin/reference/htmlsingle/#using.parent-pom">upgrade with Maven</a> the Spring Framework version in a Boot application:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;properties&gt;</span>
+    <span class="nt">&lt;spring-framework.version&gt;</span>5.3.18<span class="nt">&lt;/spring-framework.version&gt;</span>
+<span class="nt">&lt;/properties&gt;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>To <a href="https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/htmlsingle/#managing-dependencies.dependency-management-plugin.customizing">upgrade with Gradle</a>:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">ext[&#39;spring-framework.version&#39;] = &#39;5.3.18&#39;
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="suggested-workarounds">Suggested Workarounds</h2>
 <p><strong>NOTE:</strong> Spring Framework versions <strong>5.3.18</strong> and <strong>5.2.20</strong> , which address the vulnerability, are already available on Maven Central. If you&rsquo;re able to upgrade, you do not need the workarounds below.</p>
 <p>The leaked reports recommend setting <code>disallowedFields</code> on <code>WebDataBinder</code> through an <code>@ControllerAdvice</code> :</p>
 <div class="highlight"><div class="chroma">
@@ -588,8 +629,11 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>For Spring MVC withouth Spring Boot, an application can switch from <code>@EnableWebMvc</code> to extending <code>DelegatingWebMvcConfiguration</code> directly as described in <a href="https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-config-advanced-java">Advanced Config</a> section of the documentation, then overriding the <code>createRequestMappingHandlerAdapter</code> method.</p>
-<h3 id="further-updates">Further Updates</h3>
-<p>When the releases are ready, we will post another blog on this site, to announce their availability. So please continue to watch <a href="https://spring.io/blog">https://spring.io/blog</a>. We may also update this blog post, if there any corrections to be made, and in that case we&rsquo;ll clearly call those out at the top.</p>
+<h2 id="misconceptions">Misconceptions</h2>
+<p>There was speculation surrounding the commit to deprecate <code>SerializationUtils</code> . This class has only one usage within the framework and is not exposed to external input. The deprecation is unrelated to this vulnerability.</p>
+<p>There was confusion with a <a href="https://spring.io/blog/2022/03/29/cve-report-published-for-spring-cloud-function">CVE for Spring Cloud Function</a> which was released just before the report for this vulnerability. It is also unrelated.</p>
+<h2 id="further-updates">Further Updates</h2>
+<p>When the releases are ready, we will post another blog on this site, to announce their availability. So please continue to watch <a href="https://spring.io/blog">https://spring.io/blog</a>. We may also update this blog post, if there are any corrections to be made, and in that case we&rsquo;ll clearly call those out at the top.</p>
 <blockquote>
 <p>Reference <a href="https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement">https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement</a></p>
 </blockquote>
