@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Deadlock problem caused by improper use of ThreadPoolTaskExecutor - Spring Cloud</title>
+  <title>Solve the problem that SpringBoot fails to start after updating to 2.6.0 - Spring Cloud</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -22,8 +22,8 @@
 
 <meta name="mobile-web-app-capable" content="yes">
 
-<meta name="description" content="Solve the deadlock problem caused by using ThredPoolTaskExcutor in spring applications." />
-<meta name="keywords" content="spring, ThreadPoolTaskExecutor, deadlock" />
+<meta name="description" content="Solve the startup failure problem caused by springfox after upgrading springboot to 2.6.x." />
+<meta name="keywords" content="Spring Boot 2.6.0, springfox, Start fail" />
 
 
 
@@ -34,7 +34,7 @@
 <meta name="generator" content="Hugo 0.92.2" />
 
 
-<link rel="canonical" href="https://www.springcloud.io/post/2022-04/spring-threadpool/" />
+<link rel="canonical" href="https://www.springcloud.io/post/2022-04/spring-boot-start-fail/" />
 
 
 
@@ -58,20 +58,20 @@
 
 
 
-<meta property="og:title" content="Deadlock problem caused by improper use of ThreadPoolTaskExecutor" />
-<meta property="og:description" content="Solve the deadlock problem caused by using ThredPoolTaskExcutor in spring applications." />
+<meta property="og:title" content="Solve the problem that SpringBoot fails to start after updating to 2.6.0" />
+<meta property="og:description" content="Solve the startup failure problem caused by springfox after upgrading springboot to 2.6.x." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://www.springcloud.io/post/2022-04/spring-threadpool/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2022-04-03T19:56:15+08:00" />
-<meta property="article:modified_time" content="2022-04-03T19:56:15+08:00" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-04/spring-boot-start-fail/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-04-04T15:11:03+08:00" />
+<meta property="article:modified_time" content="2022-04-04T15:11:03+08:00" />
 
-<meta itemprop="name" content="Deadlock problem caused by improper use of ThreadPoolTaskExecutor">
-<meta itemprop="description" content="Solve the deadlock problem caused by using ThredPoolTaskExcutor in spring applications."><meta itemprop="datePublished" content="2022-04-03T19:56:15+08:00" />
-<meta itemprop="dateModified" content="2022-04-03T19:56:15+08:00" />
-<meta itemprop="wordCount" content="696">
-<meta itemprop="keywords" content="spring-framework,threadpooltaskexecutor," /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Deadlock problem caused by improper use of ThreadPoolTaskExecutor"/>
-<meta name="twitter:description" content="Solve the deadlock problem caused by using ThredPoolTaskExcutor in spring applications."/>
+<meta itemprop="name" content="Solve the problem that SpringBoot fails to start after updating to 2.6.0">
+<meta itemprop="description" content="Solve the startup failure problem caused by springfox after upgrading springboot to 2.6.x."><meta itemprop="datePublished" content="2022-04-04T15:11:03+08:00" />
+<meta itemprop="dateModified" content="2022-04-04T15:11:03+08:00" />
+<meta itemprop="wordCount" content="407">
+<meta itemprop="keywords" content="spring-boot,springfox," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Solve the problem that SpringBoot fails to start after updating to 2.6.0"/>
+<meta name="twitter:description" content="Solve the startup failure problem caused by springfox after upgrading springboot to 2.6.x."/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -381,17 +381,17 @@
           <article class="post bg-white">
     
     <header class="post-header">
-      <h1 class="post-title">Deadlock problem caused by improper use of ThreadPoolTaskExecutor</h1>
+      <h1 class="post-title">Solve the problem that SpringBoot fails to start after updating to 2.6.0</h1>
       
       <div class="post-meta">
-        <time datetime="2022-04-03" class="post-time">
-          2022-04-03
+        <time datetime="2022-04-04" class="post-time">
+          2022-04-04
         </time>
         <div class="post-category">
             <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
             
           </div>
-        <span class="more-meta"> 696 words </span>
+        <span class="more-meta"> 407 words </span>
           <span class="more-meta"> 2 min read </span>
 
         
@@ -409,9 +409,8 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-overview">1. Overview</a></li>
-    <li><a href="#2-exceptions-where-multiple-asynchronous-processes-share-the-same-thread-pool">2. Exceptions where multiple asynchronous processes share the same thread pool</a></li>
-    <li><a href="#3-problem-analysis">3. Problem Analysis</a></li>
+    <li><a href="#problem-description">Problem Description</a></li>
+    <li><a href="#solution">Solution</a></li>
   </ul>
 </nav>
   </div>
@@ -419,21 +418,9 @@
 
     
     <div class="post-content">
-      <p>Spring comes with a thread pool is very convenient to use, but in relatively complex concurrent programming scenarios, the use of the scenario still requires careful consideration of the configuration, or you may encounter the pitfalls mentioned in this article.</p>
-<blockquote>
-<p>Specific code reference <a href="https://github.com/qihaiyan/springcamp/tree/master/spring-taskexecutor-block">sample project</a></p>
-</blockquote>
-<h2 id="1-overview">1. Overview</h2>
-<p><code>ThredPoolTaskExcutor</code> has 2 core configurations, one is the thread pool size and one is the queue size. The processing flow of <code>ThredPoolTaskExcutor</code>: New threads are created and requests are processed until the thread count size is equal to corePoolSize; requests are put into workQueue and free threads in the thread pool go to workQueue to fetch tasks and process them; when workQueue is full, new threads are created and requests are processed and when the thread pool size is equal to maximumPoolSize, <code>RejectedExecutionHandler</code> will be used to do the rejection process.</p>
-<p>There are four types of Reject policies.</p>
-<ul>
-<li><code>AbortPolicy</code> policy, which is the default policy, rejects the request and throws an exception RejectedExecutionException.</li>
-<li><code>CallerRunsPolicy</code> policy , the task is executed by the calling thread.</li>
-<li><code>DiscardPolicy</code> policy that rejects the request without throwing an exception.</li>
-<li><code>DiscardOldestPolicy</code> policy to discard the first task to enter the queue.</li>
-</ul>
-<h2 id="2-exceptions-where-multiple-asynchronous-processes-share-the-same-thread-pool">2. Exceptions where multiple asynchronous processes share the same thread pool</h2>
-<p>Simulates a time-consuming operation that is set to execute asynchronously by the <code>@Async</code> annotation. async will use a thread pool named taskExecutor by default. The operation returns a <code>CompletableFuture</code>, and subsequent processing waits for the asynchronous operation to complete.</p>
+      <h2 id="problem-description">Problem Description</h2>
+<p>SpringBoot project has integrated <a href="https://github.com/springfox/springfox">springfox</a>. After updating SpringBoot to 2.6.0 the application fails to start and throws an exception: <code>Failed to start bean 'documentationPluginsBootstrapper'; nested exception is java.lang.NullPointerException</code>.</p>
+<p>The exception stack is as follows.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -449,118 +436,138 @@
 </span><span class="lnt">11
 </span><span class="lnt">12
 </span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Service</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DelayService</span> <span class="o">{</span>
-    <span class="nd">@Async</span>
-    <span class="kd">public</span> <span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">delayFoo</span><span class="o">(</span><span class="n">String</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">1000L</span><span class="o">);</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="o">}</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">v</span> <span class="o">+</span> <span class="s">&#34; runs in thread: &#34;</span> <span class="o">+</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
-        <span class="k">return</span> <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">completedFuture</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">Error starting ApplicationContext. To display the conditions report re-run your application with &#39;debug&#39; enabled.
+2021-12-23 16:52:35.735 ERROR 15348 --- [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.context.ApplicationContextException: Failed to start bean &#39;documentationPluginsBootstrapper&#39;; nested exception is java.lang.NullPointerException
+    at org.springframework.context.support.DefaultLifecycleProcessor.doStart(DefaultLifecycleProcessor.java:181)
+    at org.springframework.context.support.DefaultLifecycleProcessor.access$200(DefaultLifecycleProcessor.java:54)
+    at org.springframework.context.support.DefaultLifecycleProcessor$LifecycleGroup.start(DefaultLifecycleProcessor.java:356)
+    at org.springframework.context.support.DefaultLifecycleProcessor$$Lambda$778/18341126.accept(Unknown Source)
+    at java.lang.Iterable.forEach(Iterable.java:75)
+    at org.springframework.context.support.DefaultLifecycleProcessor.startBeans(DefaultLifecycleProcessor.java:155)
+    at org.springframework.context.support.DefaultLifecycleProcessor.onRefresh(DefaultLifecycleProcessor.java:123)
+    at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:935)
+    at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:586)
+    at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:145)
+    at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:730)
+    at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:412)
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:302)
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:1301)
+    at org.springframework.boot.SpringApplication.run(SpringApplication.java:1290)
+    at com.chqiuu.test.TestApplication.main(TestApplication.java:23)
+Caused by: java.lang.NullPointerException: null
+    at springfox.documentation.spring.web.WebMvcPatternsRequestConditionWrapper.getPatterns(WebMvcPatternsRequestConditionWrapper.java:56)
+    at springfox.documentation.RequestHandler.sortedPaths(RequestHandler.java:113)
+    at springfox.documentation.spi.service.contexts.Orderings.lambda$byPatternsCondition$3(Orderings.java:89)
+    at springfox.documentation.spi.service.contexts.Orderings$$Lambda$796/7205235.apply(Unknown Source)
+    at java.util.Comparator.lambda$comparing$77a9974f$1(Comparator.java:469)
+    at java.util.Comparator$$Lambda$68/3330950.compare(Unknown Source)
+    at java.util.TimSort.countRunAndMakeAscending(TimSort.java:351)
+    at java.util.TimSort.sort(TimSort.java:230)
+    at java.util.Arrays.sort(Arrays.java:1512)
+    at java.util.ArrayList.sort(ArrayList.java:1454)
+    at java.util.stream.SortedOps$RefSortingSink.end(SortedOps.java:387)
+    at java.util.stream.Sink$ChainedReference.end(Sink.java:258)
+    at java.util.stream.Sink$ChainedReference.end(Sink.java:258)
+    at java.util.stream.Sink$ChainedReference.end(Sink.java:258)
+    at java.util.stream.Sink$ChainedReference.end(Sink.java:258)
+    at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:513)
+    at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:502)
+    at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:708)
+    at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+    at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:499)
+    at springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider.requestHandlers(WebMvcRequestHandlerProvider.java:81)
+    at springfox.documentation.spring.web.plugins.AbstractDocumentationPluginsBootstrapper$$Lambda$790/3038834.apply(Unknown Source)
+    at java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:193)
+    at java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1374)
+    at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:512)
+    at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:502)
+    at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:708)
+    at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+    at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:499)
+    at springfox.documentation.spring.web.plugins.AbstractDocumentationPluginsBootstrapper.withDefaults(AbstractDocumentationPluginsBootstrapper.java:107)
+    at springfox.documentation.spring.web.plugins.AbstractDocumentationPluginsBootstrapper.buildContext(AbstractDocumentationPluginsBootstrapper.java:91)
+    at springfox.documentation.spring.web.plugins.AbstractDocumentationPluginsBootstrapper.bootstrapDocumentationPlugins(AbstractDocumentationPluginsBootstrapper.java:82)
+    at springfox.documentation.spring.web.plugins.DocumentationPluginsBootstrapper.start(DocumentationPluginsBootstrapper.java:100)
+    at org.springframework.context.support.DefaultLifecycleProcessor.doStart(DefaultLifecycleProcessor.java:178)
+    ... 15 common frames omitted
+
 </code></pre></td></tr></table>
 </div>
-</div><p>Set the thread pool size to 2 and the queue to a value larger than the thread pool, in this case 10. When the queue size is larger than or equal to the thread pool size, the program will block as in this article.</p>
+</div><h2 id="solution">Solution</h2>
+<p>This problem has plagued me for a long time, but also on the Internet to find a lot of information, but also some people say springboot version upgrade caused by the problem.
+There are two solutions found.</p>
+<ol>
+<li>downgrade springboot to 2.5.7, but this is only a temporary solution to the problem, not a permanent solution.</li>
+<li>migrate from SpringFox to SpringDoc, this way you can deal with the problem, but the amount of changes is still a bit large for the project that is already online.</li>
+</ol>
+<p>Neither of these solutions is what I want the most, and I recently researched the documentation for Spring Boot 2.6.0. I found that 2.6.0 started using path matching based on <code>PathPatternParser</code>, while the Springfox version has not been updated or uses <code>AntPathMatcher</code> which causes this problem.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/04/7f12ab0ccc9e4cc7820c8610d0a6b336.png" alt="documentation for Spring Boot 2.6.0"></p>
+<p>Handling this issue is also very simple. Just modify the yaml file to change the SpringBoot path matching pattern to <code>AntPathMatcher</code>.</p>
+<p>The configuration is as follows.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">Executor</span> <span class="nf">taskExecutor</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">ThreadPoolTaskExecutor</span> <span class="n">executor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadPoolTaskExecutor</span><span class="o">();</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setCorePoolSize</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setMaxPoolSize</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setQueueCapacity</span><span class="o">(</span><span class="n">10</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setThreadNamePrefix</span><span class="o">(</span><span class="s">&#34;taskExecutor-&#34;</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setRejectedExecutionHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">ThreadPoolExecutor</span><span class="o">.</span><span class="na">CallerRunsPolicy</span><span class="o">());</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setWaitForTasksToCompleteOnShutdown</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">initialize</span><span class="o">();</span>
-        <span class="k">return</span> <span class="n">executor</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yml" data-lang="yml"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">mvc</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">pathmatch</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">matching-strategy</span><span class="p">:</span><span class="w"> </span><span class="l">ANT_PATH_MATCHER</span><span class="w">
+</span></code></pre></td></tr></table>
 </div>
-</div><p>Concurrency processing.</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">runAsync</span><span class="o">(</span>
-                <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">allOf</span><span class="o">(</span><span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&#34;1&#34;</span><span class="o">,</span> <span class="s">&#34;2&#34;</span><span class="o">,</span> <span class="s">&#34;3&#34;</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">v</span> <span class="o">-&gt;</span> <span class="n">delayService</span><span class="o">.</span><span class="na">delayFoo</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="n">CompletableFuture</span><span class="o">[]::</span><span class="k">new</span><span class="o">))</span> <span class="c1">// 将数组中的任务提交到线程池中
-</span><span class="c1"></span>                <span class="o">.</span><span class="na">join</span><span class="o">(),</span> <span class="n">taskExecutor</span><span class="o">);</span> <span class="c1">// 通过join方法等待任务完成
-</span><span class="c1"></span>            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-</code></pre></td></tr></table>
-</div>
-</div><h2 id="3-problem-analysis">3. Problem Analysis</h2>
-<p>After the program starts, it blocks soon. Checking the thread status through jstack, we find that taskExecutor-1, taskExecutor-2 and main are in WAITING state, waiting for the execution of <code>CompletableFuture.join</code> method to finish.</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">priority:5 - threadId:0x00007f7f8eb36800 - nativeId:0x3e03 - nativeId (decimal):15875 - state:WAITING
-stackTrace:
-java.lang.Thread.State: WAITING (parking)
-at sun.misc.Unsafe.park(Native Method)
-- parking to wait for &lt;0x00000007961fe548&gt; (a java.util.concurrent.CompletableFuture$Signaller)
-at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
-at java.util.concurrent.CompletableFuture$Signaller.block(CompletableFuture.java:1693)
-at java.util.concurrent.ForkJoinPool.managedBlock(ForkJoinPool.java:3323)
-at java.util.concurrent.CompletableFuture.waitingGet(CompletableFuture.java:1729)
-at java.util.concurrent.CompletableFuture.join(CompletableFuture.java:1934)
-</code></pre></td></tr></table>
-</div>
-</div><p>By analyzing the execution process of the program, it is not difficult to find the reason of blocking. As the size of the Queue set by the thread pool is larger than the size of the thread pool, when the thread pool is full, the delayFoo method will be in the queue, and as the program is executed, there will always be a situation where the thread pool is full of <code>CompletableFuture.join</code> methods and the queue is full of delayFoo methods.</p>
-<p>At this time, the join method in the thread is waiting for the execution of the delayFoo method in the queue to complete, and the delayFoo method in the queue cannot be executed because it cannot wait for the available threads, and the whole program is in a deadlock state.</p>
-<p>The solution is simple: set the size of the queue to a size smaller than the number of threads, so that the methods in the queue will have a chance to get threads, and thus will not enter a deadlock state because the threads are full.</p>
-<blockquote>
-<p>Reference <a href="http://springcamp.cn/java-concurrent-thread-block/">http://springcamp.cn/java-concurrent-thread-block/</a></p>
+</div><blockquote>
+<p>Reference <a href="https://blog.csdn.net/QIU176161650/article/details/122111567">https://blog.csdn.net/QIU176161650/article/details/122111567</a></p>
 </blockquote>
 
     </div>
@@ -574,30 +581,17 @@ at java.util.concurrent.CompletableFuture.join(CompletableFuture.java:1934)
 
     <footer class="post-footer">
       <div class="post-tags">
-          <a href="https://www.springcloud.io/tags/spring-framework/">spring-framework</a>
-          <a href="https://www.springcloud.io/tags/threadpooltaskexecutor/">threadpooltaskexecutor</a>
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          <a href="https://www.springcloud.io/tags/springfox/">springfox</a>
           
         </div>
 
       
       <nav class="post-nav">
         
-          <a class="prev" href="/post/2022-04/spring-selective-injection/">
-            
-            <i class="iconfont">
-              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
-  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-  width="18" height="18">
-  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
-</svg>
-
-            </i>
-            <span class="prev-text nav-default">4 solutions for selective injection when the interface has multiple implementations</span>
-            <span class="prev-text nav-mobile">Prev</span>
-          </a>
         
-          <a class="next" href="/post/2022-04/spring-redis-resolver/">
-            <span class="next-text nav-default">Spring Cache custom resolver</span>
+          <a class="next" href="/post/2022-04/spring-selective-injection/">
+            <span class="next-text nav-default">4 solutions for selective injection when the interface has multiple implementations</span>
             <span class="prev-text nav-mobile">Next</span>
             
             <i class="iconfont">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Deadlock problem caused by improper use of ThreadPoolTaskExecutor - Spring Cloud</title>
+  <title>4 solutions for selective injection when the interface has multiple implementations - Spring Cloud</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -22,8 +22,8 @@
 
 <meta name="mobile-web-app-capable" content="yes">
 
-<meta name="description" content="Solve the deadlock problem caused by using ThredPoolTaskExcutor in spring applications." />
-<meta name="keywords" content="spring, ThreadPoolTaskExecutor, deadlock" />
+<meta name="description" content="Learn the 4 solutions for selective injection when there are multiple implementations of the interface in the IOC. " />
+<meta name="keywords" content="spring, multiple implementation classes, Selective Injection" />
 
 
 
@@ -34,7 +34,7 @@
 <meta name="generator" content="Hugo 0.92.2" />
 
 
-<link rel="canonical" href="https://www.springcloud.io/post/2022-04/spring-threadpool/" />
+<link rel="canonical" href="https://www.springcloud.io/post/2022-04/spring-selective-injection/" />
 
 
 
@@ -58,20 +58,20 @@
 
 
 
-<meta property="og:title" content="Deadlock problem caused by improper use of ThreadPoolTaskExecutor" />
-<meta property="og:description" content="Solve the deadlock problem caused by using ThredPoolTaskExcutor in spring applications." />
+<meta property="og:title" content="4 solutions for selective injection when the interface has multiple implementations" />
+<meta property="og:description" content="Learn the 4 solutions for selective injection when there are multiple implementations of the interface in the IOC. " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://www.springcloud.io/post/2022-04/spring-threadpool/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2022-04-03T19:56:15+08:00" />
-<meta property="article:modified_time" content="2022-04-03T19:56:15+08:00" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-04/spring-selective-injection/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-04-04T14:48:39+08:00" />
+<meta property="article:modified_time" content="2022-04-04T14:48:39+08:00" />
 
-<meta itemprop="name" content="Deadlock problem caused by improper use of ThreadPoolTaskExecutor">
-<meta itemprop="description" content="Solve the deadlock problem caused by using ThredPoolTaskExcutor in spring applications."><meta itemprop="datePublished" content="2022-04-03T19:56:15+08:00" />
-<meta itemprop="dateModified" content="2022-04-03T19:56:15+08:00" />
-<meta itemprop="wordCount" content="696">
-<meta itemprop="keywords" content="spring-framework,threadpooltaskexecutor," /><meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Deadlock problem caused by improper use of ThreadPoolTaskExecutor"/>
-<meta name="twitter:description" content="Solve the deadlock problem caused by using ThredPoolTaskExcutor in spring applications."/>
+<meta itemprop="name" content="4 solutions for selective injection when the interface has multiple implementations">
+<meta itemprop="description" content="Learn the 4 solutions for selective injection when there are multiple implementations of the interface in the IOC. "><meta itemprop="datePublished" content="2022-04-04T14:48:39+08:00" />
+<meta itemprop="dateModified" content="2022-04-04T14:48:39+08:00" />
+<meta itemprop="wordCount" content="884">
+<meta itemprop="keywords" content="spring-framework," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="4 solutions for selective injection when the interface has multiple implementations"/>
+<meta name="twitter:description" content="Learn the 4 solutions for selective injection when there are multiple implementations of the interface in the IOC. "/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -381,17 +381,17 @@
           <article class="post bg-white">
     
     <header class="post-header">
-      <h1 class="post-title">Deadlock problem caused by improper use of ThreadPoolTaskExecutor</h1>
+      <h1 class="post-title">4 solutions for selective injection when the interface has multiple implementations</h1>
       
       <div class="post-meta">
-        <time datetime="2022-04-03" class="post-time">
-          2022-04-03
+        <time datetime="2022-04-04" class="post-time">
+          2022-04-04
         </time>
         <div class="post-category">
             <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
             
           </div>
-        <span class="more-meta"> 696 words </span>
+        <span class="more-meta"> 884 words </span>
           <span class="more-meta"> 2 min read </span>
 
         
@@ -409,9 +409,15 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-overview">1. Overview</a></li>
-    <li><a href="#2-exceptions-where-multiple-asynchronous-processes-share-the-same-thread-pool">2. Exceptions where multiple asynchronous processes share the same thread pool</a></li>
-    <li><a href="#3-problem-analysis">3. Problem Analysis</a></li>
+    <li><a href="#1-description-of-the-problem">1. Description of the problem</a></li>
+    <li><a href="#2-relatively-low-level-solutions">2. Relatively low-level solutions</a>
+      <ul>
+        <li><a href="#21-option-1-use-primary-annotation">2.1. Option 1: Use <code>@Primary</code> annotation</a></li>
+        <li><a href="#22-option-2-use-the-resource-annotation">2.2. Option 2: Use the <code>@Resource</code> annotation</a></li>
+        <li><a href="#23-option-3-use-the-qualifier-annotation">2.3. Option 3: Use the <code>@Qualifier</code> annotation</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-a-relatively-advanced-solution">3. A relatively advanced solution</a></li>
   </ul>
 </nav>
   </div>
@@ -419,21 +425,61 @@
 
     
     <div class="post-content">
-      <p>Spring comes with a thread pool is very convenient to use, but in relatively complex concurrent programming scenarios, the use of the scenario still requires careful consideration of the configuration, or you may encounter the pitfalls mentioned in this article.</p>
-<blockquote>
-<p>Specific code reference <a href="https://github.com/qihaiyan/springcamp/tree/master/spring-taskexecutor-block">sample project</a></p>
-</blockquote>
-<h2 id="1-overview">1. Overview</h2>
-<p><code>ThredPoolTaskExcutor</code> has 2 core configurations, one is the thread pool size and one is the queue size. The processing flow of <code>ThredPoolTaskExcutor</code>: New threads are created and requests are processed until the thread count size is equal to corePoolSize; requests are put into workQueue and free threads in the thread pool go to workQueue to fetch tasks and process them; when workQueue is full, new threads are created and requests are processed and when the thread pool size is equal to maximumPoolSize, <code>RejectedExecutionHandler</code> will be used to do the rejection process.</p>
-<p>There are four types of Reject policies.</p>
+      <h2 id="1-description-of-the-problem">1. Description of the problem</h2>
+<p>In the actual system application development I often encounter such a class of requirements, and I believe that you will often encounter in your work.</p>
 <ul>
-<li><code>AbortPolicy</code> policy, which is the default policy, rejects the request and throws an exception RejectedExecutionException.</li>
-<li><code>CallerRunsPolicy</code> policy , the task is executed by the calling thread.</li>
-<li><code>DiscardPolicy</code> policy that rejects the request without throwing an exception.</li>
-<li><code>DiscardOldestPolicy</code> policy to discard the first task to enter the queue.</li>
+<li>The same system is deployed in multiple provinces.</li>
+<li>A business in Beijing is one way of implementation, based on the needs of Beijing users.</li>
+<li>The same business is implemented in Shanghai in another way, much the same way as in Beijing.</li>
 </ul>
-<h2 id="2-exceptions-where-multiple-asynchronous-processes-share-the-same-thread-pool">2. Exceptions where multiple asynchronous processes share the same thread pool</h2>
-<p>Simulates a time-consuming operation that is set to execute asynchronously by the <code>@Async</code> annotation. async will use a thread pool named taskExecutor by default. The operation returns a <code>CompletableFuture</code>, and subsequent processing waits for the asynchronous operation to complete.</p>
+<p>When we encounter such a requirement, we usually define an interface for the business implementation, e.g.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">IDemoService</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doSomething</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Implemented this way in the Beijing environment, e.g.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoServiceBeijing</span> <span class="kd">implements</span> <span class="n">IDemoService</span> <span class="o">{</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doSomething</span><span class="o">()</span> <span class="o">{</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;北京的业务实现&#34;</span><span class="o">);}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Implemented this way in the Shanghai environment, e.g.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoServiceShanghai</span> <span class="kd">implements</span> <span class="n">IDemoService</span> <span class="o">{</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doSomething</span><span class="o">()</span> <span class="o">{</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;上海的业务实现&#34;</span><span class="o">);}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Then we write a mock business test case.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -446,121 +492,129 @@
 </span><span class="lnt"> 8
 </span><span class="lnt"> 9
 </span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Service</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DelayService</span> <span class="o">{</span>
-    <span class="nd">@Async</span>
-    <span class="kd">public</span> <span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">delayFoo</span><span class="o">(</span><span class="n">String</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">1000L</span><span class="o">);</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="o">}</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">v</span> <span class="o">+</span> <span class="s">&#34; runs in thread: &#34;</span> <span class="o">+</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
-        <span class="k">return</span> <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">completedFuture</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@SpringBootTest</span>
+<span class="kd">class</span> <span class="nc">DemoApplicationTests</span> <span class="o">{</span>
+    <span class="c1">//这里注入的demoService是DemoServiceShanghai，还是DemoServiceBeijing？
+</span><span class="c1"></span>    <span class="nd">@Resource</span>
+    <span class="n">IDemoService</span> <span class="n">demoService</span><span class="o">;</span>  
+    <span class="nd">@Test</span>
+    <span class="kt">void</span> <span class="nf">testDemoService</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">demoService</span><span class="o">.</span><span class="na">doSomething</span><span class="o">();</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>Set the thread pool size to 2 and the queue to a value larger than the thread pool, in this case 10. When the queue size is larger than or equal to the thread pool size, the program will block as in this article.</p>
+</div><p>When we execute this test case an exception must be thrown. This is because Spring has found two IDemoService implementation classes. It does not know which implementation class to instantiate as the actual business processing bean for IDemoService. of course we expect the following state.</p>
+<ul>
+<li>When deploying the system in Beijing, use DemoServiceBeijing as the IDemoService implementation class to complete the dependency injection</li>
+<li>When deploying the system in Shanghai, use DemoServiceShanghai as the implementation class of IDemoService to complete the dependency injection.</li>
+</ul>
+<h2 id="2-relatively-low-level-solutions">2. Relatively low-level solutions</h2>
+<p>In the face of the above requirements, let&rsquo;s start with a few relatively low-level solutions, which can achieve our desired state, but are not friendly enough for operation and maintenance.</p>
+<h3 id="21-option-1-use-primary-annotation">2.1. Option 1: Use <code>@Primary</code> annotation</h3>
+<p>If you deploy the system in Beijing, add <code>@Primary</code> to the DemoServiceBeijing class. The purpose of this annotation is to force a single implementation class to be chosen from multiple implementations, and if Spring doesn&rsquo;t know which one to choose, we tell it the default one.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">Executor</span> <span class="nf">taskExecutor</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">ThreadPoolTaskExecutor</span> <span class="n">executor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadPoolTaskExecutor</span><span class="o">();</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setCorePoolSize</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setMaxPoolSize</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setQueueCapacity</span><span class="o">(</span><span class="n">10</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setThreadNamePrefix</span><span class="o">(</span><span class="s">&#34;taskExecutor-&#34;</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setRejectedExecutionHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">ThreadPoolExecutor</span><span class="o">.</span><span class="na">CallerRunsPolicy</span><span class="o">());</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setWaitForTasksToCompleteOnShutdown</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">initialize</span><span class="o">();</span>
-        <span class="k">return</span> <span class="n">executor</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Primary</span>
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoServiceBeijing</span> <span class="kd">implements</span> <span class="n">IDemoService</span> <span class="o">..</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>Concurrency processing.</p>
+</div><h3 id="22-option-2-use-the-resource-annotation">2.2. Option 2: Use the <code>@Resource</code> annotation</h3>
+<p>Because the Resource annotation uses names for dependency injection by default. So what is used is the DemoServiceBeijing implementation class (the variable name is explicitly called demoServiceBeijing, with lowercase initials).</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">runAsync</span><span class="o">(</span>
-                <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">allOf</span><span class="o">(</span><span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&#34;1&#34;</span><span class="o">,</span> <span class="s">&#34;2&#34;</span><span class="o">,</span> <span class="s">&#34;3&#34;</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">v</span> <span class="o">-&gt;</span> <span class="n">delayService</span><span class="o">.</span><span class="na">delayFoo</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="n">CompletableFuture</span><span class="o">[]::</span><span class="k">new</span><span class="o">))</span> <span class="c1">// 将数组中的任务提交到线程池中
-</span><span class="c1"></span>                <span class="o">.</span><span class="na">join</span><span class="o">(),</span> <span class="n">taskExecutor</span><span class="o">);</span> <span class="c1">// 通过join方法等待任务完成
-</span><span class="c1"></span>            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Resource</span>
+<span class="n">IDemoService</span> <span class="n">demoServiceBeijing</span><span class="o">;</span>  <span class="c1">//这里的变量名称指定了bean名称
+</span><span class="c1">//IDemoService demoService;  被替换掉
+</span></code></pre></td></tr></table>
 </div>
-</div><h2 id="3-problem-analysis">3. Problem Analysis</h2>
-<p>After the program starts, it blocks soon. Checking the thread status through jstack, we find that taskExecutor-1, taskExecutor-2 and main are in WAITING state, waiting for the execution of <code>CompletableFuture.join</code> method to finish.</p>
+</div><p>or</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">priority:5 - threadId:0x00007f7f8eb36800 - nativeId:0x3e03 - nativeId (decimal):15875 - state:WAITING
-stackTrace:
-java.lang.Thread.State: WAITING (parking)
-at sun.misc.Unsafe.park(Native Method)
-- parking to wait for &lt;0x00000007961fe548&gt; (a java.util.concurrent.CompletableFuture$Signaller)
-at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
-at java.util.concurrent.CompletableFuture$Signaller.block(CompletableFuture.java:1693)
-at java.util.concurrent.ForkJoinPool.managedBlock(ForkJoinPool.java:3323)
-at java.util.concurrent.CompletableFuture.waitingGet(CompletableFuture.java:1729)
-at java.util.concurrent.CompletableFuture.join(CompletableFuture.java:1934)
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Resource</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;demoServiceBeijing&#34;</span><span class="o">)</span>  <span class="c1">//使用resource注解明确指定名称
+</span><span class="c1"></span><span class="n">IDemoService</span> <span class="n">demoService</span><span class="o">;</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>By analyzing the execution process of the program, it is not difficult to find the reason of blocking. As the size of the Queue set by the thread pool is larger than the size of the thread pool, when the thread pool is full, the delayFoo method will be in the queue, and as the program is executed, there will always be a situation where the thread pool is full of <code>CompletableFuture.join</code> methods and the queue is full of delayFoo methods.</p>
-<p>At this time, the join method in the thread is waiting for the execution of the delayFoo method in the queue to complete, and the delayFoo method in the queue cannot be executed because it cannot wait for the available threads, and the whole program is in a deadlock state.</p>
-<p>The solution is simple: set the size of the queue to a size smaller than the number of threads, so that the methods in the queue will have a chance to get threads, and thus will not enter a deadlock state because the threads are full.</p>
+</div><h3 id="23-option-3-use-the-qualifier-annotation">2.3. Option 3: Use the <code>@Qualifier</code> annotation</h3>
+<p>For the same reason as above, use the <code>@Qualifier</code> annotation to specify the name of the bean for dependency injection.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;demoServiceBeijing&#34;</span><span class="o">)</span>  <span class="c1">//使用Qualifier注解明确指定名称
+</span><span class="c1"></span><span class="nd">@Resource</span>
+<span class="n">IDemoService</span> <span class="n">demoService</span><span class="o">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>The three solutions mentioned above can solve the problem of using different interface implementation classes for different deployment environments to accomplish dependency injection. But this is not good, because once we change the deployment environment from beijing to shanghai, we need to change the location or content of the above annotations all over again (all the implementation class code should be changed).</p>
+<h2 id="3-a-relatively-advanced-solution">3. A relatively advanced solution</h2>
+<p>We propose a further expectation: that is, the operation of switching deployment environments can be done by modifying only one configuration. For example.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yml" data-lang="yml"><span class="nt">deploy</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">province</span><span class="p">:</span><span class="w"> </span><span class="l">beijing</span><span class="w">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>When we want to switch the deployment environment from Beijing to Shanghai, we just need to change beijing to shanghai in the above configuration, how to achieve this?</p>
+<ul>
+<li>
+<p>Add the ConditionalOnProperty annotation to the Beijing implementation class, with the value of havingValue as beijing.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Component</span>
+<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;deploy.province&#34;</span><span class="o">,</span><span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;beijing&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoServiceBeijing</span> <span class="kd">implements</span> <span class="n">IDemoService</span> <span class="o">{</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>Add the ConditionalOnProperty annotation to the Shanghai implementation class, with the value of havingValue as shanghai.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Component</span>
+<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="s">&#34;deploy.province&#34;</span><span class="o">,</span><span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;shanghai&#34;</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DemoServiceShanghai</span> <span class="kd">implements</span> <span class="n">IDemoService</span> <span class="o">{</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<p>What the <code>ConditionalOnProperty</code> annotation does here is: it reads the configuration file and finds <code>deploy.since</code>, and matches the value of that configuration with <code>havingValue</code>, and instantiates whichever class matches as the implementation bean of the interface to inject into the Spring container (of course the injection process needs to be with the <code>@Component</code> annotation).</p>
 <blockquote>
-<p>Reference <a href="http://springcamp.cn/java-concurrent-thread-block/">http://springcamp.cn/java-concurrent-thread-block/</a></p>
+<p>Reference <a href="https://blog.csdn.net/hanxiaotongtong/article/details/123252830">https://blog.csdn.net/hanxiaotongtong/article/details/123252830</a></p>
 </blockquote>
 
     </div>
@@ -575,14 +629,13 @@ at java.util.concurrent.CompletableFuture.join(CompletableFuture.java:1934)
     <footer class="post-footer">
       <div class="post-tags">
           <a href="https://www.springcloud.io/tags/spring-framework/">spring-framework</a>
-          <a href="https://www.springcloud.io/tags/threadpooltaskexecutor/">threadpooltaskexecutor</a>
           
         </div>
 
       
       <nav class="post-nav">
         
-          <a class="prev" href="/post/2022-04/spring-selective-injection/">
+          <a class="prev" href="/post/2022-04/spring-boot-start-fail/">
             
             <i class="iconfont">
               <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
@@ -592,12 +645,12 @@ at java.util.concurrent.CompletableFuture.join(CompletableFuture.java:1934)
 </svg>
 
             </i>
-            <span class="prev-text nav-default">4 solutions for selective injection when the interface has multiple implementations</span>
+            <span class="prev-text nav-default">Solve the problem that SpringBoot fails to start after updating to 2.6.0</span>
             <span class="prev-text nav-mobile">Prev</span>
           </a>
         
-          <a class="next" href="/post/2022-04/spring-redis-resolver/">
-            <span class="next-text nav-default">Spring Cache custom resolver</span>
+          <a class="next" href="/post/2022-04/spring-threadpool/">
+            <span class="next-text nav-default">Deadlock problem caused by improper use of ThreadPoolTaskExecutor</span>
             <span class="prev-text nav-mobile">Next</span>
             
             <i class="iconfont">
