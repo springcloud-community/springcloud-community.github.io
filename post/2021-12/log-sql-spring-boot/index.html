@@ -34,7 +34,7 @@ Don’t log SQL statements with the Spring Boot show-sql property It’s very co
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2021-12/log-sql-spring-boot/" />
@@ -443,8 +443,8 @@ Don’t log SQL statements with the Spring Boot show-sql property It’s very co
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.jpa.show-sql=true
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.jpa.show-sql=true
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>However, this is not a good idea because, behind the scenes, it simply enables the Hibernate <code>hibernate.show_sql</code> configuration property:</p>
 <div class="highlight"><div class="chroma">
@@ -452,8 +452,8 @@ Don’t log SQL statements with the Spring Boot show-sql property It’s very co
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">jpaProperties</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;hibernate.show_sql&#34;</span><span class="o">,</span> <span class="s">&#34;true&#34;</span><span class="o">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">jpaProperties</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;hibernate.show_sql&#34;</span><span class="o">,</span> <span class="s">&#34;true&#34;</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As I explained in <a href="https://vladmihalcea.com/the-best-way-to-log-jdbc-statements/">this article</a>, you should not use the <code>hibernate.show_sql</code> configuration property as it’s basically the equivalent of printing your SQL queries using <code>System.out.println</code> .</p>
 <p>For the same reasons we are using logging frameworks and not <code>System.out.println</code> calls for application logging, we should not use the <code>show_sql</code> properties provided by Spring Boot or Hibernate.</p>
@@ -465,9 +465,9 @@ Don’t log SQL statements with the Spring Boot show-sql property It’s very co
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">logging.level.org.hibernate.SQL=debug
-logging.level.org.hibernate.type.descriptor.sql=trace
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">logging.level.org.hibernate.SQL=debug
+</span></span><span class="line"><span class="cl">logging.level.org.hibernate.type.descriptor.sql=trace
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>And, Spring Boot will log SQL statements like this:</p>
 <div class="highlight"><div class="chroma">
@@ -486,19 +486,19 @@ logging.level.org.hibernate.type.descriptor.sql=trace
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">org</span><span class="p">.</span><span class="n">hibernate</span><span class="p">.</span><span class="k">SQL</span><span class="w"> </span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="k">SELECT</span><span class="w">
-</span><span class="w">       </span><span class="n">u</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">id1_7_</span><span class="p">,</span><span class="w">
-</span><span class="w">       </span><span class="n">u</span><span class="p">.</span><span class="n">email</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">email5_7_</span><span class="p">,</span><span class="w">
-</span><span class="w">       </span><span class="n">u</span><span class="p">.</span><span class="n">external_id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">external6_7_</span><span class="p">,</span><span class="w">
-</span><span class="w">       </span><span class="n">u</span><span class="p">.</span><span class="n">first_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">first_na7_7_</span><span class="p">,</span><span class="w">
-</span><span class="w">       </span><span class="n">u</span><span class="p">.</span><span class="n">last_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">last_nam9_7_</span><span class="p">,</span><span class="w">
-</span><span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="n">u</span><span class="w">
-</span><span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">u</span><span class="p">.</span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span><span class="w">
-</span><span class="w">     
-</span><span class="w"></span><span class="n">o</span><span class="p">.</span><span class="n">h</span><span class="p">.</span><span class="n">t</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="k">sql</span><span class="p">.</span><span class="n">BasicBinder</span><span class="w"> </span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="n">binding</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="p">[</span><span class="nb">VARCHAR</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="n">john</span><span class="p">.</span><span class="n">doe</span><span class="o">@</span><span class="n">acme</span><span class="p">.</span><span class="n">com</span><span class="p">]</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">org</span><span class="p">.</span><span class="n">hibernate</span><span class="p">.</span><span class="k">SQL</span><span class="w"> </span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">SELECT</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="n">u</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">id1_7_</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="n">u</span><span class="p">.</span><span class="n">email</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">email5_7_</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="n">u</span><span class="p">.</span><span class="n">external_id</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">external6_7_</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="n">u</span><span class="p">.</span><span class="n">first_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">first_na7_7_</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">       </span><span class="n">u</span><span class="p">.</span><span class="n">last_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">last_nam9_7_</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="n">u</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">u</span><span class="p">.</span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">     
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">o</span><span class="p">.</span><span class="n">h</span><span class="p">.</span><span class="n">t</span><span class="p">.</span><span class="n">d</span><span class="p">.</span><span class="k">sql</span><span class="p">.</span><span class="n">BasicBinder</span><span class="w"> </span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">binding</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="p">[</span><span class="nb">VARCHAR</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">[</span><span class="n">john</span><span class="p">.</span><span class="n">doe</span><span class="o">@</span><span class="n">acme</span><span class="p">.</span><span class="n">com</span><span class="p">]</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>The <code>org.hibernate.SQL</code> log message is printed when the JDBC <code>PreparedStatement</code> is created, while the parameter binding log messages are printed when the <code>setParameter</code> query methods are executed.</p>
 <p>This Hibernate-based SQL logging option also has several drawbacks:</p>
@@ -524,12 +524,12 @@ logging.level.org.hibernate.type.descriptor.sql=trace
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>com.github.gavlyukovskiy<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>datasource-proxy-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>${ds-proxy-spring-boot-starter.version}<span class="nt">&lt;/version&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>com.github.gavlyukovskiy<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>datasource-proxy-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;version&gt;</span>${ds-proxy-spring-boot-starter.version}<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>And now Spring Boot can print meaningful SQL statements that were generated by any data access technology:</p>
 <div class="highlight"><div class="chroma">
@@ -551,22 +551,22 @@ logging.level.org.hibernate.type.descriptor.sql=trace
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">Name</span><span class="p">:</span><span class="n">dataSource</span><span class="p">,</span><span class="w"> </span><span class="k">Connection</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">Time</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">Success</span><span class="p">:</span><span class="k">True</span><span class="w">
-</span><span class="w"></span><span class="k">Type</span><span class="p">:</span><span class="n">Prepared</span><span class="p">,</span><span class="w"> </span><span class="n">Batch</span><span class="p">:</span><span class="k">False</span><span class="p">,</span><span class="w"> </span><span class="n">QuerySize</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">BatchSize</span><span class="p">:</span><span class="mi">0</span><span class="w">
-</span><span class="w"></span><span class="n">Query</span><span class="p">:[</span><span class="s2">&#34;
-</span><span class="s2">    SELECT
-</span><span class="s2">       u.id AS id1_7_,
-</span><span class="s2">       u.email AS email5_7_,
-</span><span class="s2">       u.external_id AS external6_7_,
-</span><span class="s2">       u.first_name AS first_na7_7_,
-</span><span class="s2">       u.last_name AS last_nam9_7_,
-</span><span class="s2">    FROM users u
-</span><span class="s2">    WHERE u.email = ?
-</span><span class="s2">&#34;</span><span class="p">]</span><span class="w">
-</span><span class="w"></span><span class="n">Params</span><span class="p">:[(</span><span class="w">
-</span><span class="w">    </span><span class="n">john</span><span class="p">.</span><span class="n">doe</span><span class="o">@</span><span class="n">acme</span><span class="p">.</span><span class="n">com</span><span class="w">
-</span><span class="w"></span><span class="p">)]</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">Name</span><span class="p">:</span><span class="n">dataSource</span><span class="p">,</span><span class="w"> </span><span class="k">Connection</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="n">Time</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">Success</span><span class="p">:</span><span class="k">True</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">Type</span><span class="p">:</span><span class="n">Prepared</span><span class="p">,</span><span class="w"> </span><span class="n">Batch</span><span class="p">:</span><span class="k">False</span><span class="p">,</span><span class="w"> </span><span class="n">QuerySize</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">BatchSize</span><span class="p">:</span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Query</span><span class="p">:[</span><span class="s2">&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    SELECT
+</span></span></span><span class="line"><span class="cl"><span class="s2">       u.id AS id1_7_,
+</span></span></span><span class="line"><span class="cl"><span class="s2">       u.email AS email5_7_,
+</span></span></span><span class="line"><span class="cl"><span class="s2">       u.external_id AS external6_7_,
+</span></span></span><span class="line"><span class="cl"><span class="s2">       u.first_name AS first_na7_7_,
+</span></span></span><span class="line"><span class="cl"><span class="s2">       u.last_name AS last_nam9_7_,
+</span></span></span><span class="line"><span class="cl"><span class="s2">    FROM users u
+</span></span></span><span class="line"><span class="cl"><span class="s2">    WHERE u.email = ?
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Params</span><span class="p">:[(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">john</span><span class="p">.</span><span class="n">doe</span><span class="o">@</span><span class="n">acme</span><span class="p">.</span><span class="n">com</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)]</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Cool, right?</p>
 <h2 id="conclusion">Conclusion</h2>

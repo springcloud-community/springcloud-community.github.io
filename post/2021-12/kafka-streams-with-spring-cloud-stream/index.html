@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2021-12/kafka-streams-with-spring-cloud-stream/" />
@@ -446,8 +446,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ rpk container start
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ rpk container start
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>After running, it will print the address of your node. For me, it is <code>127.0.0.1:50842</code> . So, now I can display a list of created topics using the following command:</p>
 <div class="highlight"><div class="chroma">
@@ -455,8 +455,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ rpk topic list --brokers 127.0.0.1:50842
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ rpk topic list --brokers 127.0.0.1:50842
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Currently, there are no topics created. We don’t need to do anything manually. Spring Cloud Stream automatically creates missing topics on the application startup. In case, you would like to remove the Redpanda instance after our exercise, you just need to run the following command:</p>
 <div class="highlight"><div class="chroma">
@@ -464,8 +464,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ rpk container purge
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ rpk container purge
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Perfectly! Our local instance of Kafka is running. After that, we may proceed to the development.</p>
 <h2 id="send-events-to-kafka-with-spring-cloud-stream">Send events to Kafka with Spring Cloud Stream</h2>
@@ -490,23 +490,23 @@
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@Getter
-@Setter
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
-public class Order {
-   private Long id;
-   private Integer customerId;
-   private Integer productId;
-   private int productCount;
-   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-   @JsonSerialize(using = LocalDateTimeSerializer.class)
-   private LocalDateTime creationDate;
-   private OrderType type;
-   private int amount;
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@Getter
+</span></span><span class="line"><span class="cl">@Setter
+</span></span><span class="line"><span class="cl">@ToString
+</span></span><span class="line"><span class="cl">@AllArgsConstructor
+</span></span><span class="line"><span class="cl">@NoArgsConstructor
+</span></span><span class="line"><span class="cl">public class Order {
+</span></span><span class="line"><span class="cl">   private Long id;
+</span></span><span class="line"><span class="cl">   private Integer customerId;
+</span></span><span class="line"><span class="cl">   private Integer productId;
+</span></span><span class="line"><span class="cl">   private int productCount;
+</span></span><span class="line"><span class="cl">   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+</span></span><span class="line"><span class="cl">   @JsonSerialize(using = LocalDateTimeSerializer.class)
+</span></span><span class="line"><span class="cl">   private LocalDateTime creationDate;
+</span></span><span class="line"><span class="cl">   private OrderType type;
+</span></span><span class="line"><span class="cl">   private int amount;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Our application uses Lombok and Jackson for messages serialization. Of course, we also need to include Spring Cloud Stream Kafka Binder. Opposite to the consumer side, the producer does not use Kafka Streams, because it is just generating and sending events.</p>
 <div class="highlight"><div class="chroma">
@@ -527,21 +527,21 @@ public class Order {
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">&lt;dependencies&gt;
-  &lt;dependency&gt;
-   &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-   &lt;artifactId&gt;spring-cloud-starter-stream-kafka&lt;/artifactId&gt;
-  &lt;/dependency&gt;
-  &lt;dependency&gt;
-    &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
-    &lt;artifactId&gt;lombok&lt;/artifactId&gt;
-  &lt;/dependency&gt;
-  &lt;dependency&gt;
-    &lt;groupId&gt;com.fasterxml.jackson.datatype&lt;/groupId&gt;
-    &lt;artifactId&gt;jackson-datatype-jsr310&lt;/artifactId&gt;
-  &lt;/dependency&gt;
-&lt;/dependencies&gt;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;dependencies&gt;
+</span></span><span class="line"><span class="cl">  &lt;dependency&gt;
+</span></span><span class="line"><span class="cl">   &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+</span></span><span class="line"><span class="cl">   &lt;artifactId&gt;spring-cloud-starter-stream-kafka&lt;/artifactId&gt;
+</span></span><span class="line"><span class="cl">  &lt;/dependency&gt;
+</span></span><span class="line"><span class="cl">  &lt;dependency&gt;
+</span></span><span class="line"><span class="cl">    &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+</span></span><span class="line"><span class="cl">    &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+</span></span><span class="line"><span class="cl">  &lt;/dependency&gt;
+</span></span><span class="line"><span class="cl">  &lt;dependency&gt;
+</span></span><span class="line"><span class="cl">    &lt;groupId&gt;com.fasterxml.jackson.datatype&lt;/groupId&gt;
+</span></span><span class="line"><span class="cl">    &lt;artifactId&gt;jackson-datatype-jsr310&lt;/artifactId&gt;
+</span></span><span class="line"><span class="cl">  &lt;/dependency&gt;
+</span></span><span class="line"><span class="cl">&lt;/dependencies&gt;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We have a predefined list of orders just to test our solution. We use <code>MessageBuilder</code> to build a message that contains the header <code>kafka_messageKey</code> and the <code>Order</code> payload.</p>
 <div class="highlight"><div class="chroma">
@@ -609,68 +609,68 @@ public class Order {
 </span><span class="lnt">61
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@SpringBootApplication
-@Slf4j
-public class OrderService {
-
-   private static long orderId = 0;
-   private static final Random r = new Random();
-
-   LinkedList&lt;Order&gt; buyOrders = new LinkedList&lt;&gt;(List.of(
-      new Order(++orderId, 1, 1, 100, LocalDateTime.now(), OrderType.BUY, 1000),
-      new Order(++orderId, 2, 1, 200, LocalDateTime.now(), OrderType.BUY, 1050),
-      new Order(++orderId, 3, 1, 100, LocalDateTime.now(), OrderType.BUY, 1030),
-      new Order(++orderId, 4, 1, 200, LocalDateTime.now(), OrderType.BUY, 1050),
-      new Order(++orderId, 5, 1, 200, LocalDateTime.now(), OrderType.BUY, 1000),
-      new Order(++orderId, 11, 1, 100, LocalDateTime.now(), OrderType.BUY, 1050)
-   ));
-
-   LinkedList&lt;Order&gt; sellOrders = new LinkedList&lt;&gt;(List.of(
-      new Order(++orderId, 6, 1, 200, LocalDateTime.now(), OrderType.SELL, 950),
-      new Order(++orderId, 7, 1, 100, LocalDateTime.now(), OrderType.SELL, 1000),
-      new Order(++orderId, 8, 1, 100, LocalDateTime.now(), OrderType.SELL, 1050),
-      new Order(++orderId, 9, 1, 300, LocalDateTime.now(), OrderType.SELL, 1000),
-      new Order(++orderId, 10, 1, 200, LocalDateTime.now(), OrderType.SELL, 1020)
-   ));
-
-   public static void main(String[] args) {
-      SpringApplication.run(OrderService.class, args);
-   }
-
-   @Bean
-   public Supplier&lt;Message&lt;Order&gt;&gt; orderBuySupplier() {
-      return () -&gt; {
-         if (buyOrders.peek() != null) {
-            Message&lt;Order&gt; o = MessageBuilder
-                  .withPayload(buyOrders.peek())
-                  .setHeader(KafkaHeaders.MESSAGE_KEY, Objects.requireNonNull(buyOrders.poll()).getId())
-                  .build();
-            log.info(&#34;Order: {}&#34;, o.getPayload());
-            return o;
-         } else {
-            return null;
-         }
-      };
-   }
-
-   @Bean
-   public Supplier&lt;Message&lt;Order&gt;&gt; orderSellSupplier() {
-      return () -&gt; {
-         if (sellOrders.peek() != null) {
-            Message&lt;Order&gt; o = MessageBuilder
-                  .withPayload(sellOrders.peek())
-                  .setHeader(KafkaHeaders.MESSAGE_KEY, Objects.requireNonNull(sellOrders.poll()).getId())
-                  .build();
-            log.info(&#34;Order: {}&#34;, o.getPayload());
-            return o;
-         } else {
-            return null;
-         }
-      };
-   }
-
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@SpringBootApplication
+</span></span><span class="line"><span class="cl">@Slf4j
+</span></span><span class="line"><span class="cl">public class OrderService {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   private static long orderId = 0;
+</span></span><span class="line"><span class="cl">   private static final Random r = new Random();
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   LinkedList&lt;Order&gt; buyOrders = new LinkedList&lt;&gt;(List.of(
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 1, 1, 100, LocalDateTime.now(), OrderType.BUY, 1000),
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 2, 1, 200, LocalDateTime.now(), OrderType.BUY, 1050),
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 3, 1, 100, LocalDateTime.now(), OrderType.BUY, 1030),
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 4, 1, 200, LocalDateTime.now(), OrderType.BUY, 1050),
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 5, 1, 200, LocalDateTime.now(), OrderType.BUY, 1000),
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 11, 1, 100, LocalDateTime.now(), OrderType.BUY, 1050)
+</span></span><span class="line"><span class="cl">   ));
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   LinkedList&lt;Order&gt; sellOrders = new LinkedList&lt;&gt;(List.of(
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 6, 1, 200, LocalDateTime.now(), OrderType.SELL, 950),
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 7, 1, 100, LocalDateTime.now(), OrderType.SELL, 1000),
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 8, 1, 100, LocalDateTime.now(), OrderType.SELL, 1050),
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 9, 1, 300, LocalDateTime.now(), OrderType.SELL, 1000),
+</span></span><span class="line"><span class="cl">      new Order(++orderId, 10, 1, 200, LocalDateTime.now(), OrderType.SELL, 1020)
+</span></span><span class="line"><span class="cl">   ));
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   public static void main(String[] args) {
+</span></span><span class="line"><span class="cl">      SpringApplication.run(OrderService.class, args);
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   @Bean
+</span></span><span class="line"><span class="cl">   public Supplier&lt;Message&lt;Order&gt;&gt; orderBuySupplier() {
+</span></span><span class="line"><span class="cl">      return () -&gt; {
+</span></span><span class="line"><span class="cl">         if (buyOrders.peek() != null) {
+</span></span><span class="line"><span class="cl">            Message&lt;Order&gt; o = MessageBuilder
+</span></span><span class="line"><span class="cl">                  .withPayload(buyOrders.peek())
+</span></span><span class="line"><span class="cl">                  .setHeader(KafkaHeaders.MESSAGE_KEY, Objects.requireNonNull(buyOrders.poll()).getId())
+</span></span><span class="line"><span class="cl">                  .build();
+</span></span><span class="line"><span class="cl">            log.info(&#34;Order: {}&#34;, o.getPayload());
+</span></span><span class="line"><span class="cl">            return o;
+</span></span><span class="line"><span class="cl">         } else {
+</span></span><span class="line"><span class="cl">            return null;
+</span></span><span class="line"><span class="cl">         }
+</span></span><span class="line"><span class="cl">      };
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   @Bean
+</span></span><span class="line"><span class="cl">   public Supplier&lt;Message&lt;Order&gt;&gt; orderSellSupplier() {
+</span></span><span class="line"><span class="cl">      return () -&gt; {
+</span></span><span class="line"><span class="cl">         if (sellOrders.peek() != null) {
+</span></span><span class="line"><span class="cl">            Message&lt;Order&gt; o = MessageBuilder
+</span></span><span class="line"><span class="cl">                  .withPayload(sellOrders.peek())
+</span></span><span class="line"><span class="cl">                  .setHeader(KafkaHeaders.MESSAGE_KEY, Objects.requireNonNull(sellOrders.poll()).getId())
+</span></span><span class="line"><span class="cl">                  .build();
+</span></span><span class="line"><span class="cl">            log.info(&#34;Order: {}&#34;, o.getPayload());
+</span></span><span class="line"><span class="cl">            return o;
+</span></span><span class="line"><span class="cl">         } else {
+</span></span><span class="line"><span class="cl">            return null;
+</span></span><span class="line"><span class="cl">         }
+</span></span><span class="line"><span class="cl">      };
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>After that, we need to provide some configuration settings inside the <code>application.yml</code> file. Since we use multiple binding beans (in our case <code>Supplier</code> beans) we have to define the property <code>spring.cloud.stream.function.definition</code> that contains a list of bindable functions. We need to pass the <code>Supplier</code> method names divided by a semicolon. In the next few lines, we are setting the name of the target topics on Kafka and the message key serializer. Of course, we also need to set the address of the Kafka broker.</p>
 <div class="highlight"><div class="chroma">
@@ -686,16 +686,16 @@ public class OrderService {
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.kafka.bootstrap-servers: ${KAFKA_URL}
-
-spring.cloud.stream.function.definition: orderBuySupplier;orderSellSupplier
-
-spring.cloud.stream.bindings.orderBuySupplier-out-0.destination: orders.buy
-spring.cloud.stream.kafka.bindings.orderBuySupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.LongSerializer
-
-spring.cloud.stream.bindings.orderSellSupplier-out-0.destination: orders.sell
-spring.cloud.stream.kafka.bindings.orderSellSupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.LongSerializer
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.kafka.bootstrap-servers: ${KAFKA_URL}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">spring.cloud.stream.function.definition: orderBuySupplier;orderSellSupplier
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">spring.cloud.stream.bindings.orderBuySupplier-out-0.destination: orders.buy
+</span></span><span class="line"><span class="cl">spring.cloud.stream.kafka.bindings.orderBuySupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.LongSerializer
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">spring.cloud.stream.bindings.orderSellSupplier-out-0.destination: orders.sell
+</span></span><span class="line"><span class="cl">spring.cloud.stream.kafka.bindings.orderSellSupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.LongSerializer
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Before running the application I need to create an environment variable containing the address of the Kafka broker.</p>
 <div class="highlight"><div class="chroma">
@@ -703,8 +703,8 @@ spring.cloud.stream.kafka.bindings.orderSellSupplier-out-0.producer.configuratio
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ export KAFKA_URL=127.0.0.1:50842
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ export KAFKA_URL=127.0.0.1:50842
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then, let’s run our Spring Cloud application using the following Maven command:</p>
 <div class="highlight"><div class="chroma">
@@ -712,8 +712,8 @@ spring.cloud.stream.kafka.bindings.orderSellSupplier-out-0.producer.configuratio
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ mvn clean spring-boot:run
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ mvn clean spring-boot:run
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Once you did that, it sent some test orders for the same product ( <code>productId=1</code> ) as shown below.</p>
 <p><img src="https://i2.wp.com/piotrminkowski.com/wp-content/uploads/2021/11/Screenshot-2021-11-10-at-13.50.42.png?resize=696%2C139&amp;ssl=1" alt="|696x139"></p>
@@ -747,29 +747,29 @@ spring.cloud.stream.kafka.bindings.orderSellSupplier-out-0.producer.configuratio
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">&lt;dependencies&gt;
-  &lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-cloud-stream-binder-kafka-streams&lt;/artifactId&gt;
-  &lt;/dependency&gt;
-  &lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-     &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
-  &lt;/dependency&gt;
-  &lt;dependency&gt;
-    &lt;groupId&gt;com.h2database&lt;/groupId&gt;
-    &lt;artifactId&gt;h2&lt;/artifactId&gt;
-  &lt;/dependency&gt;
-  &lt;dependency&gt;
-    &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
-    &lt;artifactId&gt;lombok&lt;/artifactId&gt;
-  &lt;/dependency&gt;
-  &lt;dependency&gt;
-    &lt;groupId&gt;com.fasterxml.jackson.datatype&lt;/groupId&gt;
-    &lt;artifactId&gt;jackson-datatype-jsr310&lt;/artifactId&gt;
-  &lt;/dependency&gt;
-&lt;/dependencies&gt;
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;dependencies&gt;
+</span></span><span class="line"><span class="cl">  &lt;dependency&gt;
+</span></span><span class="line"><span class="cl">    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
+</span></span><span class="line"><span class="cl">    &lt;artifactId&gt;spring-cloud-stream-binder-kafka-streams&lt;/artifactId&gt;
+</span></span><span class="line"><span class="cl">  &lt;/dependency&gt;
+</span></span><span class="line"><span class="cl">  &lt;dependency&gt;
+</span></span><span class="line"><span class="cl">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+</span></span><span class="line"><span class="cl">     &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+</span></span><span class="line"><span class="cl">  &lt;/dependency&gt;
+</span></span><span class="line"><span class="cl">  &lt;dependency&gt;
+</span></span><span class="line"><span class="cl">    &lt;groupId&gt;com.h2database&lt;/groupId&gt;
+</span></span><span class="line"><span class="cl">    &lt;artifactId&gt;h2&lt;/artifactId&gt;
+</span></span><span class="line"><span class="cl">  &lt;/dependency&gt;
+</span></span><span class="line"><span class="cl">  &lt;dependency&gt;
+</span></span><span class="line"><span class="cl">    &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+</span></span><span class="line"><span class="cl">    &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+</span></span><span class="line"><span class="cl">  &lt;/dependency&gt;
+</span></span><span class="line"><span class="cl">  &lt;dependency&gt;
+</span></span><span class="line"><span class="cl">    &lt;groupId&gt;com.fasterxml.jackson.datatype&lt;/groupId&gt;
+</span></span><span class="line"><span class="cl">    &lt;artifactId&gt;jackson-datatype-jsr310&lt;/artifactId&gt;
+</span></span><span class="line"><span class="cl">  &lt;/dependency&gt;
+</span></span><span class="line"><span class="cl">&lt;/dependencies&gt;
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In the first step, we are going to merge both streams of orders (buy and sell), insert the <code>Order</code> into the database, and print the event message. You could ask – why I use the database and ORM layer here since I have Kafka <code>KTable</code> ? Well, I need transactions with lock support in order to coordinate the status of order realization (refer to the description in the introduction – fully and partially realized orders). I will give you more details about it in the next sections.</p>
 <p>In order to process streams, we need to declare a functional bean that takes <code>KStream</code> as an input parameter. If there are two sources, we have to use <code>BiConsumer</code> (just for consumption) or <code>BiFunction</code> (to consume and send events to the new target stream) beans. In that case, we are not creating a new stream of events, so we can use <code>BiConsumer</code> .</p>
@@ -789,19 +789,19 @@ spring.cloud.stream.kafka.bindings.orderSellSupplier-out-0.producer.configuratio
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@Autowired
-OrderLogic logic;
-
-@Bean
-public BiConsumer&lt;KStream&lt;Long, Order&gt;, KStream&lt;Long, Order&gt;&gt; orders() {
-   return (orderBuy, orderSell) -&gt; orderBuy
-         .merge(orderSell)
-         .peek((k, v) -&gt; {
-            log.info(&#34;New({}): {}&#34;, k, v);
-            logic.add(v);
-         });
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@Autowired
+</span></span><span class="line"><span class="cl">OrderLogic logic;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@Bean
+</span></span><span class="line"><span class="cl">public BiConsumer&lt;KStream&lt;Long, Order&gt;, KStream&lt;Long, Order&gt;&gt; orders() {
+</span></span><span class="line"><span class="cl">   return (orderBuy, orderSell) -&gt; orderBuy
+</span></span><span class="line"><span class="cl">         .merge(orderSell)
+</span></span><span class="line"><span class="cl">         .peek((k, v) -&gt; {
+</span></span><span class="line"><span class="cl">            log.info(&#34;New({}): {}&#34;, k, v);
+</span></span><span class="line"><span class="cl">            logic.add(v);
+</span></span><span class="line"><span class="cl">         });
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>After that, we need to add some configuration settings. There are two input topics, so we need to map their names. Also, if we have more than one functional bean we need to set <code>applicationId</code> related to the particular function. For now, it is not required, since we have only a single function. But later, we are going to add other functions for some advanced operations.</p>
 <div class="highlight"><div class="chroma">
@@ -811,10 +811,10 @@ public BiConsumer&lt;KStream&lt;Long, Order&gt;, KStream&lt;Long, Order&gt;&gt; 
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.cloud.stream.bindings.orders-in-0.destination: orders.buy
-spring.cloud.stream.bindings.orders-in-1.destination: orders.sell
-spring.cloud.stream.kafka.streams.binder.functions.orders.applicationId: orders
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.cloud.stream.bindings.orders-in-0.destination: orders.buy
+</span></span><span class="line"><span class="cl">spring.cloud.stream.bindings.orders-in-1.destination: orders.sell
+</span></span><span class="line"><span class="cl">spring.cloud.stream.kafka.streams.binder.functions.orders.applicationId: orders
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>For now, that’s all. You can now run the instance of stock-service using the Maven command <code>mvn spring-boot:run</code> .</p>
 <h2 id="operations-on-kafka-streams">Operations on Kafka Streams</h2>
@@ -860,41 +860,41 @@ spring.cloud.stream.kafka.streams.binder.functions.orders.applicationId: orders
 </span><span class="lnt">34
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@Bean
-public BiFunction&lt;KStream&lt;Long, Order&gt;, KStream&lt;Long, Order&gt;, KStream&lt;Long, Transaction&gt;&gt; transactions() {
-   return (orderBuy, orderSell) -&gt; orderBuy
-         .selectKey((k, v) -&gt; v.getProductId())
-         .join(orderSell.selectKey((k, v) -&gt; v.getProductId()),
-               this::execute,
-               JoinWindows.of(Duration.ofSeconds(10)),
-               StreamJoined.with(Serdes.Integer(), 
-                                 new JsonSerde&lt;&gt;(Order.class), 
-                                 new JsonSerde&lt;&gt;(Order.class)))
-         .filterNot((k, v) -&gt; v == null)
-         .map((k, v) -&gt; new KeyValue&lt;&gt;(v.getId(), v))
-         .peek((k, v) -&gt; log.info(&#34;Done -&gt; {}&#34;, v));
-}
-
-private Transaction execute(Order orderBuy, Order orderSell) {
-   if (orderBuy.getAmount() &gt;= orderSell.getAmount()) {
-      int count = Math.min(orderBuy.getProductCount(), orderSell.getProductCount());
-      boolean allowed = logic.performUpdate(orderBuy.getId(), orderSell.getId(), count);
-      if (!allowed)
-         return null;
-      else
-         return new Transaction(
-            ++transactionId,
-            orderBuy.getId(),
-            orderSell.getId(),
-            Math.min(orderBuy.getProductCount(), orderSell.getProductCount()),
-            (orderBuy.getAmount() + orderSell.getAmount()) / 2,
-            LocalDateTime.now(),
-            &#34;NEW&#34;);
-   } else {
-      return null;
-   }
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@Bean
+</span></span><span class="line"><span class="cl">public BiFunction&lt;KStream&lt;Long, Order&gt;, KStream&lt;Long, Order&gt;, KStream&lt;Long, Transaction&gt;&gt; transactions() {
+</span></span><span class="line"><span class="cl">   return (orderBuy, orderSell) -&gt; orderBuy
+</span></span><span class="line"><span class="cl">         .selectKey((k, v) -&gt; v.getProductId())
+</span></span><span class="line"><span class="cl">         .join(orderSell.selectKey((k, v) -&gt; v.getProductId()),
+</span></span><span class="line"><span class="cl">               this::execute,
+</span></span><span class="line"><span class="cl">               JoinWindows.of(Duration.ofSeconds(10)),
+</span></span><span class="line"><span class="cl">               StreamJoined.with(Serdes.Integer(), 
+</span></span><span class="line"><span class="cl">                                 new JsonSerde&lt;&gt;(Order.class), 
+</span></span><span class="line"><span class="cl">                                 new JsonSerde&lt;&gt;(Order.class)))
+</span></span><span class="line"><span class="cl">         .filterNot((k, v) -&gt; v == null)
+</span></span><span class="line"><span class="cl">         .map((k, v) -&gt; new KeyValue&lt;&gt;(v.getId(), v))
+</span></span><span class="line"><span class="cl">         .peek((k, v) -&gt; log.info(&#34;Done -&gt; {}&#34;, v));
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">private Transaction execute(Order orderBuy, Order orderSell) {
+</span></span><span class="line"><span class="cl">   if (orderBuy.getAmount() &gt;= orderSell.getAmount()) {
+</span></span><span class="line"><span class="cl">      int count = Math.min(orderBuy.getProductCount(), orderSell.getProductCount());
+</span></span><span class="line"><span class="cl">      boolean allowed = logic.performUpdate(orderBuy.getId(), orderSell.getId(), count);
+</span></span><span class="line"><span class="cl">      if (!allowed)
+</span></span><span class="line"><span class="cl">         return null;
+</span></span><span class="line"><span class="cl">      else
+</span></span><span class="line"><span class="cl">         return new Transaction(
+</span></span><span class="line"><span class="cl">            ++transactionId,
+</span></span><span class="line"><span class="cl">            orderBuy.getId(),
+</span></span><span class="line"><span class="cl">            orderSell.getId(),
+</span></span><span class="line"><span class="cl">            Math.min(orderBuy.getProductCount(), orderSell.getProductCount()),
+</span></span><span class="line"><span class="cl">            (orderBuy.getAmount() + orderSell.getAmount()) / 2,
+</span></span><span class="line"><span class="cl">            LocalDateTime.now(),
+</span></span><span class="line"><span class="cl">            &#34;NEW&#34;);
+</span></span><span class="line"><span class="cl">   } else {
+</span></span><span class="line"><span class="cl">      return null;
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Let’s take a closer look at the <code>performUpdate()</code> method called inside the <code>execute()</code> method. It initiates a transaction and locks both <code>Order</code> entities. Then it verifies each order realization status and updates it with the current values if possible. Only if the <code>performUpdate()</code> method finishes successfully the stock-service application creates a new transaction.</p>
 <div class="highlight"><div class="chroma">
@@ -931,37 +931,37 @@ private Transaction execute(Order orderBuy, Order orderSell) {
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@Service
-public class OrderLogic {
-
-   private OrderRepository repository;
-
-   public OrderLogic(OrderRepository repository) {
-      this.repository = repository;
-   }
-
-   public Order add(Order order) {
-      return repository.save(order);
-   }
-
-   @Transactional
-   public boolean performUpdate(Long buyOrderId, Long sellOrderId, int amount) {
-      Order buyOrder = repository.findById(buyOrderId).orElseThrow();
-      Order sellOrder = repository.findById(sellOrderId).orElseThrow();
-      int buyAvailableCount = buyOrder.getProductCount() - buyOrder.getRealizedCount();
-      int sellAvailableCount = sellOrder.getProductCount() - sellOrder.getRealizedCount();
-      if (buyAvailableCount &gt;= amount &amp;&amp; sellAvailableCount &gt;= amount) {
-         buyOrder.setRealizedCount(buyOrder.getRealizedCount() + amount);
-         sellOrder.setRealizedCount(sellOrder.getRealizedCount() + amount);
-         repository.save(buyOrder);
-         repository.save(sellOrder);
-         return true;
-      } else {
-         return false;
-      }
-   }
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@Service
+</span></span><span class="line"><span class="cl">public class OrderLogic {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   private OrderRepository repository;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   public OrderLogic(OrderRepository repository) {
+</span></span><span class="line"><span class="cl">      this.repository = repository;
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   public Order add(Order order) {
+</span></span><span class="line"><span class="cl">      return repository.save(order);
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   @Transactional
+</span></span><span class="line"><span class="cl">   public boolean performUpdate(Long buyOrderId, Long sellOrderId, int amount) {
+</span></span><span class="line"><span class="cl">      Order buyOrder = repository.findById(buyOrderId).orElseThrow();
+</span></span><span class="line"><span class="cl">      Order sellOrder = repository.findById(sellOrderId).orElseThrow();
+</span></span><span class="line"><span class="cl">      int buyAvailableCount = buyOrder.getProductCount() - buyOrder.getRealizedCount();
+</span></span><span class="line"><span class="cl">      int sellAvailableCount = sellOrder.getProductCount() - sellOrder.getRealizedCount();
+</span></span><span class="line"><span class="cl">      if (buyAvailableCount &gt;= amount &amp;&amp; sellAvailableCount &gt;= amount) {
+</span></span><span class="line"><span class="cl">         buyOrder.setRealizedCount(buyOrder.getRealizedCount() + amount);
+</span></span><span class="line"><span class="cl">         sellOrder.setRealizedCount(sellOrder.getRealizedCount() + amount);
+</span></span><span class="line"><span class="cl">         repository.save(buyOrder);
+</span></span><span class="line"><span class="cl">         repository.save(sellOrder);
+</span></span><span class="line"><span class="cl">         return true;
+</span></span><span class="line"><span class="cl">      } else {
+</span></span><span class="line"><span class="cl">         return false;
+</span></span><span class="line"><span class="cl">      }
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Here’s our repository class with the <code>findById</code> method. It sets a pessimistic lock on the <code>Order</code> entity during the transaction.</p>
 <div class="highlight"><div class="chroma">
@@ -974,13 +974,13 @@ public class OrderLogic {
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">public interface OrderRepository extends CrudRepository&lt;Order, Long&gt; {
-
-  @Lock(LockModeType.PESSIMISTIC_WRITE)
-  Optional&lt;Order&gt; findById(Long id);
-
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">public interface OrderRepository extends CrudRepository&lt;Order, Long&gt; {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  @Lock(LockModeType.PESSIMISTIC_WRITE)
+</span></span><span class="line"><span class="cl">  Optional&lt;Order&gt; findById(Long id);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We also need to provide configuration settings for the <code>transaction</code> <code>BiFunction</code> .</p>
 <div class="highlight"><div class="chroma">
@@ -993,13 +993,13 @@ public class OrderLogic {
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.cloud.stream.bindings.transactions-in-0.destination: orders.buy
-spring.cloud.stream.bindings.transactions-in-1.destination: orders.sell
-spring.cloud.stream.bindings.transactions-out-0.destination: transactions
-spring.cloud.stream.kafka.streams.binder.functions.transactions.applicationId: transactions
-
-spring.cloud.stream.function.definition: orders;transactions
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.cloud.stream.bindings.transactions-in-0.destination: orders.buy
+</span></span><span class="line"><span class="cl">spring.cloud.stream.bindings.transactions-in-1.destination: orders.sell
+</span></span><span class="line"><span class="cl">spring.cloud.stream.bindings.transactions-out-0.destination: transactions
+</span></span><span class="line"><span class="cl">spring.cloud.stream.kafka.streams.binder.functions.transactions.applicationId: transactions
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">spring.cloud.stream.function.definition: orders;transactions
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="use-kafka-ktable-with-spring-cloud-stream">Use Kafka KTable with Spring Cloud Stream</h2>
 <p>We have already finished the implementation of the logic responsible for creating transactions from incoming orders. Now, we would like to examine data generated by our <code>stock-service</code> application. The most important things are how many transactions were generated, what was the volume of transactions globally, and per product. Three key statistics related to our transactions are: the number of transactions, the number of products sell/buy during transactions, and the total amount of transactions ( <code>price * productsCount</code> ). Here’s the definition of our object used for counting aggregations.</p>
@@ -1017,17 +1017,17 @@ spring.cloud.stream.function.definition: orders;transactions
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-public class TransactionTotal {
-   private int count;
-   private int productCount;
-   private int amount;
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@Getter
+</span></span><span class="line"><span class="cl">@Setter
+</span></span><span class="line"><span class="cl">@NoArgsConstructor
+</span></span><span class="line"><span class="cl">@AllArgsConstructor
+</span></span><span class="line"><span class="cl">@ToString
+</span></span><span class="line"><span class="cl">public class TransactionTotal {
+</span></span><span class="line"><span class="cl">   private int count;
+</span></span><span class="line"><span class="cl">   private int productCount;
+</span></span><span class="line"><span class="cl">   private int amount;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In order to call an aggregation method, we first need to group orders stream by the selected key. In the method visible below we use the <code>status</code> field as a grouping key. After that, we may invoke an aggregate method that allows us to perform some more complex calculations. In that particular case, we are calculating the number of all executed transactions, their volume of products, and total amount. The result <code>KTable</code> can be materialized as the state store. Thanks to that we will be able to query it by the name <code>all-transactions-store</code> .</p>
 <div class="highlight"><div class="chroma">
@@ -1055,28 +1055,28 @@ public class TransactionTotal {
 </span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@Bean
-public Consumer&lt;KStream&lt;Long, Transaction&gt;&gt; total() {
-   KeyValueBytesStoreSupplier storeSupplier = Stores.persistentKeyValueStore(
-                &#34;all-transactions-store&#34;);
-   return transactions -&gt; transactions
-         .groupBy((k, v) -&gt; v.getStatus(), 
-                  Grouped.with(Serdes.String(), new JsonSerde&lt;&gt;(Transaction.class)))
-         .aggregate(
-                 TransactionTotal::new,
-                 (k, v, a) -&gt; {
-                    a.setCount(a.getCount() + 1);
-                    a.setProductCount(a.getProductCount() + v.getAmount());
-                    a.setAmount(a.getAmount() + (v.getPrice() * v.getAmount()));
-                    return a;
-                 },
-                 Materialized.&lt;String, TransactionTotal&gt; as(storeSupplier)
-                    .withKeySerde(Serdes.String())
-                    .withValueSerde(new JsonSerde&lt;&gt;(TransactionTotal.class)))
-         .toStream()
-         .peek((k, v) -&gt; log.info(&#34;Total: {}&#34;, v));
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@Bean
+</span></span><span class="line"><span class="cl">public Consumer&lt;KStream&lt;Long, Transaction&gt;&gt; total() {
+</span></span><span class="line"><span class="cl">   KeyValueBytesStoreSupplier storeSupplier = Stores.persistentKeyValueStore(
+</span></span><span class="line"><span class="cl">                &#34;all-transactions-store&#34;);
+</span></span><span class="line"><span class="cl">   return transactions -&gt; transactions
+</span></span><span class="line"><span class="cl">         .groupBy((k, v) -&gt; v.getStatus(), 
+</span></span><span class="line"><span class="cl">                  Grouped.with(Serdes.String(), new JsonSerde&lt;&gt;(Transaction.class)))
+</span></span><span class="line"><span class="cl">         .aggregate(
+</span></span><span class="line"><span class="cl">                 TransactionTotal::new,
+</span></span><span class="line"><span class="cl">                 (k, v, a) -&gt; {
+</span></span><span class="line"><span class="cl">                    a.setCount(a.getCount() + 1);
+</span></span><span class="line"><span class="cl">                    a.setProductCount(a.getProductCount() + v.getAmount());
+</span></span><span class="line"><span class="cl">                    a.setAmount(a.getAmount() + (v.getPrice() * v.getAmount()));
+</span></span><span class="line"><span class="cl">                    return a;
+</span></span><span class="line"><span class="cl">                 },
+</span></span><span class="line"><span class="cl">                 Materialized.&lt;String, TransactionTotal&gt; as(storeSupplier)
+</span></span><span class="line"><span class="cl">                    .withKeySerde(Serdes.String())
+</span></span><span class="line"><span class="cl">                    .withValueSerde(new JsonSerde&lt;&gt;(TransactionTotal.class)))
+</span></span><span class="line"><span class="cl">         .toStream()
+</span></span><span class="line"><span class="cl">         .peek((k, v) -&gt; log.info(&#34;Total: {}&#34;, v));
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The next function performs a similar aggregate operation, but this time per each product. Because the <code>Transaction</code> object does not contain information about the product, we first need to join the order to access it. Then we produce a <code>KTable</code> by per <code>productId</code> grouping and aggregation. The same as before we are materializing aggregation as a state store.</p>
 <div class="highlight"><div class="chroma">
@@ -1111,35 +1111,35 @@ public Consumer&lt;KStream&lt;Long, Transaction&gt;&gt; total() {
 </span><span class="lnt">28
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@Bean
-public BiConsumer&lt;KStream&lt;Long, Transaction&gt;, KStream&lt;Long, Order&gt;&gt; totalPerProduct() {
-   KeyValueBytesStoreSupplier storeSupplier = Stores.persistentKeyValueStore(
-                &#34;transactions-per-product-store&#34;);
-   return (transactions, orders) -&gt; transactions
-         .selectKey((k, v) -&gt; v.getSellOrderId())
-         .join(orders.selectKey((k, v) -&gt; v.getId()),
-               (t, o) -&gt; new TransactionTotalWithProduct(t, o.getProductId()),
-               JoinWindows.of(Duration.ofSeconds(10)),
-               StreamJoined.with(Serdes.Long(), 
-                  new JsonSerde&lt;&gt;(Transaction.class), 
-                  new JsonSerde&lt;&gt;(Order.class)))
-         .groupBy((k, v) -&gt; v.getProductId(), 
-            Grouped.with(Serdes.Integer(), new JsonSerde&lt;&gt;(TransactionTotalWithProduct.class)))
-         .aggregate(
-               TransactionTotal::new,
-               (k, v, a) -&gt; {
-                  a.setCount(a.getCount() + 1);
-                  a.setProductCount(a.getProductCount() + v.getTransaction().getAmount());
-                  a.setAmount(a.getAmount() + (v.getTransaction().getPrice() * v.getTransaction().getAmount()));
-                  return a;
-               },
-               Materialized.&lt;Integer, TransactionTotal&gt; as(storeSupplier)
-                  .withKeySerde(Serdes.Integer())
-                  .withValueSerde(new JsonSerde&lt;&gt;(TransactionTotal.class)))
-         .toStream()
-         .peek((k, v) -&gt; log.info(&#34;Total per product({}): {}&#34;, k, v));
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@Bean
+</span></span><span class="line"><span class="cl">public BiConsumer&lt;KStream&lt;Long, Transaction&gt;, KStream&lt;Long, Order&gt;&gt; totalPerProduct() {
+</span></span><span class="line"><span class="cl">   KeyValueBytesStoreSupplier storeSupplier = Stores.persistentKeyValueStore(
+</span></span><span class="line"><span class="cl">                &#34;transactions-per-product-store&#34;);
+</span></span><span class="line"><span class="cl">   return (transactions, orders) -&gt; transactions
+</span></span><span class="line"><span class="cl">         .selectKey((k, v) -&gt; v.getSellOrderId())
+</span></span><span class="line"><span class="cl">         .join(orders.selectKey((k, v) -&gt; v.getId()),
+</span></span><span class="line"><span class="cl">               (t, o) -&gt; new TransactionTotalWithProduct(t, o.getProductId()),
+</span></span><span class="line"><span class="cl">               JoinWindows.of(Duration.ofSeconds(10)),
+</span></span><span class="line"><span class="cl">               StreamJoined.with(Serdes.Long(), 
+</span></span><span class="line"><span class="cl">                  new JsonSerde&lt;&gt;(Transaction.class), 
+</span></span><span class="line"><span class="cl">                  new JsonSerde&lt;&gt;(Order.class)))
+</span></span><span class="line"><span class="cl">         .groupBy((k, v) -&gt; v.getProductId(), 
+</span></span><span class="line"><span class="cl">            Grouped.with(Serdes.Integer(), new JsonSerde&lt;&gt;(TransactionTotalWithProduct.class)))
+</span></span><span class="line"><span class="cl">         .aggregate(
+</span></span><span class="line"><span class="cl">               TransactionTotal::new,
+</span></span><span class="line"><span class="cl">               (k, v, a) -&gt; {
+</span></span><span class="line"><span class="cl">                  a.setCount(a.getCount() + 1);
+</span></span><span class="line"><span class="cl">                  a.setProductCount(a.getProductCount() + v.getTransaction().getAmount());
+</span></span><span class="line"><span class="cl">                  a.setAmount(a.getAmount() + (v.getTransaction().getPrice() * v.getTransaction().getAmount()));
+</span></span><span class="line"><span class="cl">                  return a;
+</span></span><span class="line"><span class="cl">               },
+</span></span><span class="line"><span class="cl">               Materialized.&lt;Integer, TransactionTotal&gt; as(storeSupplier)
+</span></span><span class="line"><span class="cl">                  .withKeySerde(Serdes.Integer())
+</span></span><span class="line"><span class="cl">                  .withValueSerde(new JsonSerde&lt;&gt;(TransactionTotal.class)))
+</span></span><span class="line"><span class="cl">         .toStream()
+</span></span><span class="line"><span class="cl">         .peek((k, v) -&gt; log.info(&#34;Total per product({}): {}&#34;, k, v));
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>What if we would like to perform similar aggregations to described above, but only for a particular period of time? We need to invoke the <code>windowedBy</code> method and produce a dedicated state store for such operations.</p>
 <div class="highlight"><div class="chroma">
@@ -1171,32 +1171,32 @@ public BiConsumer&lt;KStream&lt;Long, Transaction&gt;, KStream&lt;Long, Order&gt
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@Bean
-public BiConsumer&lt;KStream&lt;Long, Transaction&gt;, KStream&lt;Long, Order&gt;&gt; latestPerProduct() {
-   WindowBytesStoreSupplier storeSupplier = Stores.persistentWindowStore(
-      &#34;latest-transactions-per-product-store&#34;, Duration.ofSeconds(30), Duration.ofSeconds(30), false);
-   return (transactions, orders) -&gt; transactions
-      .selectKey((k, v) -&gt; v.getSellOrderId())
-      .join(orders.selectKey((k, v) -&gt; v.getId()),
-            (t, o) -&gt; new TransactionTotalWithProduct(t, o.getProductId()),
-            JoinWindows.of(Duration.ofSeconds(10)),
-            StreamJoined.with(Serdes.Long(), new JsonSerde&lt;&gt;(Transaction.class), new JsonSerde&lt;&gt;(Order.class)))
-      .groupBy((k, v) -&gt; v.getProductId(), Grouped.with(Serdes.Integer(), new JsonSerde&lt;&gt;(TransactionTotalWithProduct.class)))
-      .windowedBy(TimeWindows.of(Duration.ofSeconds(30)))
-      .aggregate(
-            TransactionTotal::new,
-            (k, v, a) -&gt; {
-               a.setCount(a.getCount() + 1);
-               a.setAmount(a.getAmount() + v.getTransaction().getAmount());
-               return a;
-            },
-            Materialized.&lt;Integer, TransactionTotal&gt; as(storeSupplier)
-               .withKeySerde(Serdes.Integer())
-               .withValueSerde(new JsonSerde&lt;&gt;(TransactionTotal.class)))
-      .toStream()
-      .peek((k, v) -&gt; log.info(&#34;Total per product last 30s({}): {}&#34;, k, v));
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@Bean
+</span></span><span class="line"><span class="cl">public BiConsumer&lt;KStream&lt;Long, Transaction&gt;, KStream&lt;Long, Order&gt;&gt; latestPerProduct() {
+</span></span><span class="line"><span class="cl">   WindowBytesStoreSupplier storeSupplier = Stores.persistentWindowStore(
+</span></span><span class="line"><span class="cl">      &#34;latest-transactions-per-product-store&#34;, Duration.ofSeconds(30), Duration.ofSeconds(30), false);
+</span></span><span class="line"><span class="cl">   return (transactions, orders) -&gt; transactions
+</span></span><span class="line"><span class="cl">      .selectKey((k, v) -&gt; v.getSellOrderId())
+</span></span><span class="line"><span class="cl">      .join(orders.selectKey((k, v) -&gt; v.getId()),
+</span></span><span class="line"><span class="cl">            (t, o) -&gt; new TransactionTotalWithProduct(t, o.getProductId()),
+</span></span><span class="line"><span class="cl">            JoinWindows.of(Duration.ofSeconds(10)),
+</span></span><span class="line"><span class="cl">            StreamJoined.with(Serdes.Long(), new JsonSerde&lt;&gt;(Transaction.class), new JsonSerde&lt;&gt;(Order.class)))
+</span></span><span class="line"><span class="cl">      .groupBy((k, v) -&gt; v.getProductId(), Grouped.with(Serdes.Integer(), new JsonSerde&lt;&gt;(TransactionTotalWithProduct.class)))
+</span></span><span class="line"><span class="cl">      .windowedBy(TimeWindows.of(Duration.ofSeconds(30)))
+</span></span><span class="line"><span class="cl">      .aggregate(
+</span></span><span class="line"><span class="cl">            TransactionTotal::new,
+</span></span><span class="line"><span class="cl">            (k, v, a) -&gt; {
+</span></span><span class="line"><span class="cl">               a.setCount(a.getCount() + 1);
+</span></span><span class="line"><span class="cl">               a.setAmount(a.getAmount() + v.getTransaction().getAmount());
+</span></span><span class="line"><span class="cl">               return a;
+</span></span><span class="line"><span class="cl">            },
+</span></span><span class="line"><span class="cl">            Materialized.&lt;Integer, TransactionTotal&gt; as(storeSupplier)
+</span></span><span class="line"><span class="cl">               .withKeySerde(Serdes.Integer())
+</span></span><span class="line"><span class="cl">               .withValueSerde(new JsonSerde&lt;&gt;(TransactionTotal.class)))
+</span></span><span class="line"><span class="cl">      .toStream()
+</span></span><span class="line"><span class="cl">      .peek((k, v) -&gt; log.info(&#34;Total per product last 30s({}): {}&#34;, k, v));
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="interactive-queries">Interactive queries</h2>
 <p>We have already created and configured all required Kafka Streams with Spring Cloud. Finally, we can execute queries on state stores. This operation is called an interactive query. Let’s create a REST controller for exposing such endpoints with the results. In order to query Kafka Streams state stores with Spring Cloud, we need to inject the <code>InteractiveQueryService</code> bean into the controller.</p>
@@ -1253,56 +1253,56 @@ public BiConsumer&lt;KStream&lt;Long, Transaction&gt;, KStream&lt;Long, Order&gt
 </span><span class="lnt">49
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">@RestController
-@RequestMapping(&#34;/transactions&#34;)
-public class TransactionController {
-
-   private InteractiveQueryService queryService;
-
-   public TransactionController(InteractiveQueryService queryService) {
-      this.queryService = queryService;
-   }
-
-   @GetMapping(&#34;/all&#34;)
-   public TransactionTotal getAllTransactionsSummary() {
-      ReadOnlyKeyValueStore&lt;String, TransactionTotal&gt; keyValueStore =
-                queryService.getQueryableStore(&#34;all-transactions-store&#34;,
-                        QueryableStoreTypes.keyValueStore());
-      return keyValueStore.get(&#34;NEW&#34;);
-   }
-
-   @GetMapping(&#34;/product/{productId}&#34;)
-   public TransactionTotal getSummaryByProductId(@PathVariable(&#34;productId&#34;) Integer productId) {
-      ReadOnlyKeyValueStore&lt;Integer, TransactionTotal&gt; keyValueStore =
-                queryService.getQueryableStore(&#34;transactions-per-product-store&#34;,
-                        QueryableStoreTypes.keyValueStore());
-      return keyValueStore.get(productId);
-   }
-
-   @GetMapping(&#34;/product/latest/{productId}&#34;)
-   public TransactionTotal getLatestSummaryByProductId(@PathVariable(&#34;productId&#34;) Integer productId) {
-      ReadOnlyKeyValueStore&lt;Integer, TransactionTotal&gt; keyValueStore =
-                queryService.getQueryableStore(&#34;latest-transactions-per-product-store&#34;,
-                        QueryableStoreTypes.keyValueStore());
-      return keyValueStore.get(productId);
-   }
-
-   @GetMapping(&#34;/product&#34;)
-   public Map&lt;Integer, TransactionTotal&gt; getSummaryByAllProducts() {
-      Map&lt;Integer, TransactionTotal&gt; m = new HashMap&lt;&gt;();
-      ReadOnlyKeyValueStore&lt;Integer, TransactionTotal&gt; keyValueStore =
-                queryService.getQueryableStore(&#34;transactions-per-product-store&#34;,
-                        QueryableStoreTypes.keyValueStore());
-      KeyValueIterator&lt;Integer, TransactionTotal&gt; it = keyValueStore.all();
-      while (it.hasNext()) {
-         KeyValue&lt;Integer, TransactionTotal&gt; kv = it.next();
-         m.put(kv.key, kv.value);
-      }
-      return m;
-   }
-
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@RestController
+</span></span><span class="line"><span class="cl">@RequestMapping(&#34;/transactions&#34;)
+</span></span><span class="line"><span class="cl">public class TransactionController {
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   private InteractiveQueryService queryService;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   public TransactionController(InteractiveQueryService queryService) {
+</span></span><span class="line"><span class="cl">      this.queryService = queryService;
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   @GetMapping(&#34;/all&#34;)
+</span></span><span class="line"><span class="cl">   public TransactionTotal getAllTransactionsSummary() {
+</span></span><span class="line"><span class="cl">      ReadOnlyKeyValueStore&lt;String, TransactionTotal&gt; keyValueStore =
+</span></span><span class="line"><span class="cl">                queryService.getQueryableStore(&#34;all-transactions-store&#34;,
+</span></span><span class="line"><span class="cl">                        QueryableStoreTypes.keyValueStore());
+</span></span><span class="line"><span class="cl">      return keyValueStore.get(&#34;NEW&#34;);
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   @GetMapping(&#34;/product/{productId}&#34;)
+</span></span><span class="line"><span class="cl">   public TransactionTotal getSummaryByProductId(@PathVariable(&#34;productId&#34;) Integer productId) {
+</span></span><span class="line"><span class="cl">      ReadOnlyKeyValueStore&lt;Integer, TransactionTotal&gt; keyValueStore =
+</span></span><span class="line"><span class="cl">                queryService.getQueryableStore(&#34;transactions-per-product-store&#34;,
+</span></span><span class="line"><span class="cl">                        QueryableStoreTypes.keyValueStore());
+</span></span><span class="line"><span class="cl">      return keyValueStore.get(productId);
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   @GetMapping(&#34;/product/latest/{productId}&#34;)
+</span></span><span class="line"><span class="cl">   public TransactionTotal getLatestSummaryByProductId(@PathVariable(&#34;productId&#34;) Integer productId) {
+</span></span><span class="line"><span class="cl">      ReadOnlyKeyValueStore&lt;Integer, TransactionTotal&gt; keyValueStore =
+</span></span><span class="line"><span class="cl">                queryService.getQueryableStore(&#34;latest-transactions-per-product-store&#34;,
+</span></span><span class="line"><span class="cl">                        QueryableStoreTypes.keyValueStore());
+</span></span><span class="line"><span class="cl">      return keyValueStore.get(productId);
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   @GetMapping(&#34;/product&#34;)
+</span></span><span class="line"><span class="cl">   public Map&lt;Integer, TransactionTotal&gt; getSummaryByAllProducts() {
+</span></span><span class="line"><span class="cl">      Map&lt;Integer, TransactionTotal&gt; m = new HashMap&lt;&gt;();
+</span></span><span class="line"><span class="cl">      ReadOnlyKeyValueStore&lt;Integer, TransactionTotal&gt; keyValueStore =
+</span></span><span class="line"><span class="cl">                queryService.getQueryableStore(&#34;transactions-per-product-store&#34;,
+</span></span><span class="line"><span class="cl">                        QueryableStoreTypes.keyValueStore());
+</span></span><span class="line"><span class="cl">      KeyValueIterator&lt;Integer, TransactionTotal&gt; it = keyValueStore.all();
+</span></span><span class="line"><span class="cl">      while (it.hasNext()) {
+</span></span><span class="line"><span class="cl">         KeyValue&lt;Integer, TransactionTotal&gt; kv = it.next();
+</span></span><span class="line"><span class="cl">         m.put(kv.key, kv.value);
+</span></span><span class="line"><span class="cl">      }
+</span></span><span class="line"><span class="cl">      return m;
+</span></span><span class="line"><span class="cl">   }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Before you run the latest version of the <code>stock-service</code> application you should generate more differentiated random data. Let’s say we would like to generate orders for 5 different products with floating prices as shown below. Just uncomment the following fragment of code in the <code>order-service</code> and run the application once again to generate an infinitive stream of events.</p>
 <div class="highlight"><div class="chroma">
@@ -1339,37 +1339,37 @@ public class TransactionController {
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">private static long orderId = 0;
-private static final Random r = new Random();
-
-private Map&lt;Integer, Integer&gt; prices = Map.of(
-      1, 1000, 
-      2, 2000, 
-      3, 5000, 
-      4, 1500, 
-      5, 2500);
-
-@Bean
-public Supplier&lt;Message&lt;Order&gt;&gt; orderBuySupplier() {
-   return () -&gt; {
-      Integer productId = r.nextInt(1, 6);
-      int price = prices.get(productId) + r.nextInt(-100, 100);
-      Order o = new Order(
-         ++orderId,
-         r.nextInt(1, 6),
-         productId,
-         100,
-         LocalDateTime.now(),
-         OrderType.BUY,
-         price);
-      log.info(&#34;Order: {}&#34;, o);
-      return MessageBuilder
-         .withPayload(o)
-         .setHeader(KafkaHeaders.MESSAGE_KEY, orderId)
-         .build();
-   };
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">private static long orderId = 0;
+</span></span><span class="line"><span class="cl">private static final Random r = new Random();
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">private Map&lt;Integer, Integer&gt; prices = Map.of(
+</span></span><span class="line"><span class="cl">      1, 1000, 
+</span></span><span class="line"><span class="cl">      2, 2000, 
+</span></span><span class="line"><span class="cl">      3, 5000, 
+</span></span><span class="line"><span class="cl">      4, 1500, 
+</span></span><span class="line"><span class="cl">      5, 2500);
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@Bean
+</span></span><span class="line"><span class="cl">public Supplier&lt;Message&lt;Order&gt;&gt; orderBuySupplier() {
+</span></span><span class="line"><span class="cl">   return () -&gt; {
+</span></span><span class="line"><span class="cl">      Integer productId = r.nextInt(1, 6);
+</span></span><span class="line"><span class="cl">      int price = prices.get(productId) + r.nextInt(-100, 100);
+</span></span><span class="line"><span class="cl">      Order o = new Order(
+</span></span><span class="line"><span class="cl">         ++orderId,
+</span></span><span class="line"><span class="cl">         r.nextInt(1, 6),
+</span></span><span class="line"><span class="cl">         productId,
+</span></span><span class="line"><span class="cl">         100,
+</span></span><span class="line"><span class="cl">         LocalDateTime.now(),
+</span></span><span class="line"><span class="cl">         OrderType.BUY,
+</span></span><span class="line"><span class="cl">         price);
+</span></span><span class="line"><span class="cl">      log.info(&#34;Order: {}&#34;, o);
+</span></span><span class="line"><span class="cl">      return MessageBuilder
+</span></span><span class="line"><span class="cl">         .withPayload(o)
+</span></span><span class="line"><span class="cl">         .setHeader(KafkaHeaders.MESSAGE_KEY, orderId)
+</span></span><span class="line"><span class="cl">         .build();
+</span></span><span class="line"><span class="cl">   };
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>You may also want to generate more messages. To do that you need to decrease timeout for Spring Cloud Stream Kafka <code>Supplier</code> .</p>
 <div class="highlight"><div class="chroma">
@@ -1377,8 +1377,8 @@ public Supplier&lt;Message&lt;Order&gt;&gt; orderBuySupplier() {
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.cloud.stream.poller.fixedDelay: 100
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.cloud.stream.poller.fixedDelay: 100
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>After running both our sample applications you may verify the logs on the <code>stock-service</code> side.</p>
 <p><img src="https://i1.wp.com/piotrminkowski.com/wp-content/uploads/2021/11/Screenshot-2021-11-11-at-10.51.52.png?resize=696%2C198&amp;ssl=1" alt="|696x198"></p>
@@ -1390,10 +1390,10 @@ public Supplier&lt;Message&lt;Order&gt;&gt; orderBuySupplier() {
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ curl http://localhost:8080/transactions/all
-$ curl http://localhost:8080/transactions/product/3
-$ curl http://localhost:8080/transactions/product/latest/5
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ curl http://localhost:8080/transactions/all
+</span></span><span class="line"><span class="cl">$ curl http://localhost:8080/transactions/product/3
+</span></span><span class="line"><span class="cl">$ curl http://localhost:8080/transactions/product/latest/5
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>It looks simple? Well, under the hood it may look quite more complicated Here’s a final list of topics automatically created to the needs of our application.</p>
 <p><img src="https://i0.wp.com/piotrminkowski.com/wp-content/uploads/2021/11/Screenshot-2021-11-11-at-10.31.37.png?resize=621%2C344&amp;ssl=1" alt="kafka-streams-spring-cloud-topics|621x344"></p>

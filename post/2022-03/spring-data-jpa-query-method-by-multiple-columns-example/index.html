@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-03/spring-data-jpa-query-method-by-multiple-columns-example/" />
@@ -428,8 +428,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="nf">findByNameOrDescription</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">description</span><span class="o">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="nf">findByNameOrDescription</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">description</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Let&rsquo;s create a complete example to understand end to end.</p>
 <h2 id="maven-dependencies">Maven Dependencies</h2>
@@ -454,23 +454,23 @@
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-data-jpa<span class="nt">&lt;/artifactId&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-
-<span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>mysql<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>mysql-connector-java<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-
-<span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.projectlombok<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>lombok<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;optional&gt;</span>true<span class="nt">&lt;/optional&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-data-jpa<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>mysql<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>mysql-connector-java<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;scope&gt;</span>runtime<span class="nt">&lt;/scope&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.projectlombok<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>lombok<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;optional&gt;</span>true<span class="nt">&lt;/optional&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="product-entity">Product Entity</h2>
 <p>Let&rsquo;s first create a Product entity class and add the following content to it:</p>
@@ -529,58 +529,58 @@
 </span><span class="lnt">51
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.springdatajpa.springboot.entity</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">lombok.*</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.hibernate.annotations.CreationTimestamp</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.hibernate.annotations.UpdateTimestamp</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">javax.persistence.*</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.math.BigDecimal</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.time.LocalDateTime</span><span class="o">;</span>
-
-<span class="nd">@Entity</span>
-<span class="nd">@Getter</span>
-<span class="nd">@Setter</span>
-<span class="nd">@NoArgsConstructor</span>
-<span class="nd">@AllArgsConstructor</span>
-<span class="nd">@ToString</span>
-<span class="nd">@Table</span><span class="o">(</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;products&#34;</span><span class="o">,</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="s">&#34;ecommerce&#34;</span><span class="o">,</span>
-        <span class="n">uniqueConstraints</span> <span class="o">=</span> <span class="o">{</span>
-                <span class="nd">@UniqueConstraint</span><span class="o">(</span>
-                        <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;sku_unique&#34;</span><span class="o">,</span>
-                        <span class="n">columnNames</span> <span class="o">=</span> <span class="s">&#34;stock_keeping_unit&#34;</span>
-                <span class="o">)</span>
-        <span class="o">}</span>
-<span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Product</span> <span class="o">{</span>
-
-    <span class="nd">@Id</span>
-    <span class="nd">@GeneratedValue</span><span class="o">(</span>
-            <span class="n">strategy</span> <span class="o">=</span> <span class="n">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span>
-    <span class="o">)</span>
-    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
-
-    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;stock_keeping_unit&#34;</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">sku</span><span class="o">;</span>
-
-    <span class="nd">@Column</span><span class="o">(</span><span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
-
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">description</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">BigDecimal</span> <span class="n">price</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">active</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">imageUrl</span><span class="o">;</span>
-
-    <span class="nd">@CreationTimestamp</span>
-    <span class="kd">private</span> <span class="n">LocalDateTime</span> <span class="n">dateCreated</span><span class="o">;</span>
-
-    <span class="nd">@UpdateTimestamp</span>
-    <span class="kd">private</span> <span class="n">LocalDateTime</span> <span class="n">lastUpdated</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.springdatajpa.springboot.entity</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.*</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.hibernate.annotations.CreationTimestamp</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.hibernate.annotations.UpdateTimestamp</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.persistence.*</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.math.BigDecimal</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.time.LocalDateTime</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Entity</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Getter</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Setter</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@NoArgsConstructor</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@AllArgsConstructor</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ToString</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Table</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;products&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">schema</span> <span class="o">=</span> <span class="s">&#34;ecommerce&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">uniqueConstraints</span> <span class="o">=</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nd">@UniqueConstraint</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;sku_unique&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">columnNames</span> <span class="o">=</span> <span class="s">&#34;stock_keeping_unit&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Product</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Id</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@GeneratedValue</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">strategy</span> <span class="o">=</span> <span class="n">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span>
+</span></span><span class="line"><span class="cl">    <span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;stock_keeping_unit&#34;</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">sku</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Column</span><span class="o">(</span><span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">description</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">BigDecimal</span> <span class="n">price</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">active</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">imageUrl</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@CreationTimestamp</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">LocalDateTime</span> <span class="n">dateCreated</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@UpdateTimestamp</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">LocalDateTime</span> <span class="n">lastUpdated</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="productrepository">ProductRepository</h2>
 <p>Let&rsquo;s create ProductRepository which extends JpaRepository and add the following code to it:</p>
@@ -602,21 +602,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">net.javaguides.springdatajpacourse.entity.Product</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.jpa.repository.JpaRepository</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ProductRepository</span> <span class="kd">extends</span> <span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">,</span> <span class="n">Long</span><span class="o">&gt;</span> <span class="o">{</span>
-
-    <span class="cm">/**
-</span><span class="cm">        * Returns the found product entry whose title or description is given
-</span><span class="cm">        * as a method parameter. If no product entry is found, this method
-</span><span class="cm">        * returns an empty list.
-</span><span class="cm">        */</span>
-    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="nf">findByNameOrDescription</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">description</span><span class="o">);</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">net.javaguides.springdatajpacourse.entity.Product</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.jpa.repository.JpaRepository</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ProductRepository</span> <span class="kd">extends</span> <span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">,</span> <span class="n">Long</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * Returns the found product entry whose title or description is given
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * as a method parameter. If no product entry is found, this method
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * returns an empty list.
+</span></span></span><span class="line"><span class="cl"><span class="cm">        */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="nf">findByNameOrDescription</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">description</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Note that the below query method returns the found product entry whose title or description is given as a method parameter. If no product entry is found, this method returns an empty list.</p>
 <div class="highlight"><div class="chroma">
@@ -624,8 +624,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="nf">findByNameOrDescription</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">description</span><span class="o">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="nf">findByNameOrDescription</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">description</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="configure-mysql-and-hibernate-properties">Configure MySQL and Hibernate Properties</h2>
 <p>Let&rsquo;s use the MySQL database to store and retrieve the data in this example and we gonna use Hibernate properties to create and drop tables.</p>
@@ -644,17 +644,17 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce?useSSL=false
-spring.datasource.username=root
-spring.datasource.password=Mysql@123
-
-spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
-
-spring.jpa.hibernate.ddl-auto = create-drop
-
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce?useSSL=false
+</span></span><span class="line"><span class="cl">spring.datasource.username=root
+</span></span><span class="line"><span class="cl">spring.datasource.password=Mysql@123
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">spring.jpa.hibernate.ddl-auto = create-drop
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">spring.jpa.show-sql=true
+</span></span><span class="line"><span class="cl">spring.jpa.properties.hibernate.format_sql=true
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Make sure that you will create <strong>ecommerce</strong> database before running the Spring boot application.</p>
 <p>Also, change the MySQL username and password as per your MySQL installation on your machine.</p>
@@ -691,34 +691,34 @@ spring.jpa.properties.hibernate.format_sql=true
 </span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.springdatajpa.springboot.repository</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">com.springdatajpa.springboot.entity.Product</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.junit.jupiter.api.Test</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.boot.test.context.SpringBootTest</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-
-<span class="nd">@SpringBootTest</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">QueryMethodsTest</span> <span class="o">{</span>
-
-    <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="n">ProductRepository</span> <span class="n">productRepository</span><span class="o">;</span>
-
-    <span class="nd">@Test</span>
-    <span class="kt">void</span> <span class="nf">findByNameOrDescriptionMethod</span><span class="o">(){</span>
-
-        <span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="n">products</span> <span class="o">=</span> <span class="n">productRepository</span><span class="o">.</span><span class="na">findByNameOrDescription</span><span class="o">(</span><span class="s">&#34;product 1&#34;</span><span class="o">,</span>
-                <span class="s">&#34;product 1 description&#34;</span><span class="o">);</span>
-
-        <span class="n">products</span><span class="o">.</span><span class="na">forEach</span><span class="o">((</span><span class="n">p</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">getId</span><span class="o">());</span>
-            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
-        <span class="o">});</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.springdatajpa.springboot.repository</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.springdatajpa.springboot.entity.Product</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.junit.jupiter.api.Test</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.test.context.SpringBootTest</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@SpringBootTest</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">QueryMethodsTest</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">ProductRepository</span> <span class="n">productRepository</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">findByNameOrDescriptionMethod</span><span class="o">(){</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span> <span class="n">products</span> <span class="o">=</span> <span class="n">productRepository</span><span class="o">.</span><span class="na">findByNameOrDescription</span><span class="o">(</span><span class="s">&#34;product 1&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;product 1 description&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">products</span><span class="o">.</span><span class="na">forEach</span><span class="o">((</span><span class="n">p</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">getId</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="o">});</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Here is the output of the above JUnit test:</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/03/17/3e2e9b94cea44d929b4efe86539153f0.png" alt="spring data jpa junit test"></p>

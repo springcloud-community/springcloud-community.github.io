@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-boot-ffmpeg/" />
@@ -69,7 +69,7 @@
 <meta itemprop="name" content="SpringBoot &#43; FFmpeg to implement a simple M3U8 slicing transcoding system ">
 <meta itemprop="description" content="The client uploads the video to the server, the server slices the video, AES encrypts it, and returns the m3u8 index file, cover and other information. It can be played online. The server can do some simple processing of the video, such as cropping, cover interception time. Video folder layout 1 2 3 4 5 6 mymovie # The folder name is the video title |-index.m3u8 #the main m3u8 file,"><meta itemprop="datePublished" content="2022-02-18T15:30:08+08:00" />
 <meta itemprop="dateModified" content="2022-02-18T15:30:08+08:00" />
-<meta itemprop="wordCount" content="3279">
+<meta itemprop="wordCount" content="3278">
 <meta itemprop="keywords" content="spring-boot,ffmpeg," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="SpringBoot &#43; FFmpeg to implement a simple M3U8 slicing transcoding system "/>
 <meta name="twitter:description" content="The client uploads the video to the server, the server slices the video, AES encrypts it, and returns the m3u8 index file, cover and other information. It can be played online. The server can do some simple processing of the video, such as cropping, cover interception time. Video folder layout 1 2 3 4 5 6 mymovie # The folder name is the video title |-index.m3u8 #the main m3u8 file,"/>
@@ -392,7 +392,7 @@
             <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
             
           </div>
-        <span class="more-meta"> 3279 words </span>
+        <span class="more-meta"> 3278 words </span>
           <span class="more-meta"> 7 min read </span>
 
         
@@ -444,13 +444,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">mymovie         # The folder name is the video title
-  |-index.m3u8  #the main m3u8 file, which can be configured with multiple bitrates for playback
-  |-poster.jpg  # the cover image of the cutscene
-  |-ts          # directory of the cutscene
-    |-index.m3u8    # index of the cutscene
-    |-key           # the AES KEY to be decrypted for playback
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">mymovie         # The folder name is the video title
+</span></span><span class="line"><span class="cl">  |-index.m3u8  #the main m3u8 file, which can be configured with multiple bitrates for playback
+</span></span><span class="line"><span class="cl">  |-poster.jpg  # the cover image of the cutscene
+</span></span><span class="line"><span class="cl">  |-ts          # directory of the cutscene
+</span></span><span class="line"><span class="cl">    |-index.m3u8    # index of the cutscene
+</span></span><span class="line"><span class="cl">    |-key           # the AES KEY to be decrypted for playback
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="code-of-the-core">Code of the core</h2>
 <p>You need to install FFmpeg locally first and add it to the PATH environment variable, if you don&rsquo;t know how to do it, you can find the information through search engines first.</p>
@@ -527,73 +527,73 @@
 </span><span class="lnt">66
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&#34;http://maven.apache.org/POM/4.0.0&#34;</span>
- <span class="na">xmlns:xsi=</span><span class="s">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
- <span class="na">xsi:schemaLocation=</span><span class="s">&#34;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&#34;</span><span class="nt">&gt;</span>
- <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
- <span class="nt">&lt;groupId&gt;</span>com.demo<span class="nt">&lt;/groupId&gt;</span>
- <span class="nt">&lt;artifactId&gt;</span>demo<span class="nt">&lt;/artifactId&gt;</span>
- <span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
-
-
- <span class="nt">&lt;parent&gt;</span>
-  <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-  <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-parent<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>2.4.5<span class="nt">&lt;/version&gt;</span>
-  <span class="nt">&lt;relativePath</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- lookup parent from repository --&gt;</span>
- <span class="nt">&lt;/parent&gt;</span>
-
- <span class="nt">&lt;dependencies&gt;</span>
-  <span class="nt">&lt;dependency&gt;</span>
-   <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-   <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-test<span class="nt">&lt;/artifactId&gt;</span>
-   <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
-  <span class="nt">&lt;/dependency&gt;</span>
-  <span class="nt">&lt;dependency&gt;</span>
-   <span class="nt">&lt;groupId&gt;</span>org.junit.vintage<span class="nt">&lt;/groupId&gt;</span>
-   <span class="nt">&lt;artifactId&gt;</span>junit-vintage-engine<span class="nt">&lt;/artifactId&gt;</span>
-   <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
-  <span class="nt">&lt;/dependency&gt;</span>
-
-  <span class="nt">&lt;dependency&gt;</span>
-   <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-   <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="nt">&lt;/artifactId&gt;</span>
-   <span class="nt">&lt;exclusions&gt;</span>
-    <span class="nt">&lt;exclusion&gt;</span>
-     <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-     <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-tomcat<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;/exclusion&gt;</span>
-   <span class="nt">&lt;/exclusions&gt;</span>
-  <span class="nt">&lt;/dependency&gt;</span>
-  <span class="nt">&lt;dependency&gt;</span>
-   <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-   <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-undertow<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;/dependency&gt;</span>
-  <span class="nt">&lt;dependency&gt;</span>
-   <span class="nt">&lt;groupId&gt;</span>commons-codec<span class="nt">&lt;/groupId&gt;</span>
-   <span class="nt">&lt;artifactId&gt;</span>commons-codec<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;/dependency&gt;</span>
-  <span class="nt">&lt;dependency&gt;</span>
-   <span class="nt">&lt;groupId&gt;</span>com.google.code.gson<span class="nt">&lt;/groupId&gt;</span>
-   <span class="nt">&lt;artifactId&gt;</span>gson<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;/dependency&gt;</span>
-
- <span class="nt">&lt;/dependencies&gt;</span>
-
- <span class="nt">&lt;build&gt;</span>
-  <span class="nt">&lt;finalName&gt;</span>${project.artifactId}<span class="nt">&lt;/finalName&gt;</span>
-  <span class="nt">&lt;plugins&gt;</span>
-   <span class="nt">&lt;plugin&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;configuration&gt;</span>
-     <span class="nt">&lt;executable&gt;</span>true<span class="nt">&lt;/executable&gt;</span>
-    <span class="nt">&lt;/configuration&gt;</span>
-   <span class="nt">&lt;/plugin&gt;</span>
-  <span class="nt">&lt;/plugins&gt;</span>
- <span class="nt">&lt;/build&gt;</span>
-<span class="nt">&lt;/project&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">&#34;http://maven.apache.org/POM/4.0.0&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="na">xmlns:xsi=</span><span class="s">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+</span></span><span class="line"><span class="cl"> <span class="na">xsi:schemaLocation=</span><span class="s">&#34;http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;groupId&gt;</span>com.demo<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;artifactId&gt;</span>demo<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;version&gt;</span>0.0.1-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;parent&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-parent<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;version&gt;</span>2.4.5<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;relativePath</span> <span class="nt">/&gt;</span> <span class="c">&lt;!-- lookup parent from repository --&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;/parent&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;dependencies&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-test<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;groupId&gt;</span>org.junit.vintage<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;artifactId&gt;</span>junit-vintage-engine<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;exclusions&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;exclusion&gt;</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-tomcat<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/exclusion&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;/exclusions&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-undertow<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;groupId&gt;</span>commons-codec<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;artifactId&gt;</span>commons-codec<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;groupId&gt;</span>com.google.code.gson<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;artifactId&gt;</span>gson<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;/dependencies&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;build&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;finalName&gt;</span>${project.artifactId}<span class="nt">&lt;/finalName&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;plugins&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;plugin&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;configuration&gt;</span>
+</span></span><span class="line"><span class="cl">     <span class="nt">&lt;executable&gt;</span>true<span class="nt">&lt;/executable&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/configuration&gt;</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&lt;/plugin&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/plugins&gt;</span>
+</span></span><span class="line"><span class="cl"> <span class="nt">&lt;/build&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/project&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="applicationyaml">Application.yaml</h3>
 <div class="highlight"><div class="chroma">
@@ -627,34 +627,34 @@
 </span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">server</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">80</span><span class="w">
-</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="nt">app</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="c"># Folder for storing videos</span><span class="w">
-</span><span class="w">  </span><span class="nt">video-folder</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;C:\\Users\\Administrator\\Desktop\\tmp&#34;</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="nt">spring</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">servlet</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">multipart</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="w">      </span><span class="c"># 不限制文件大小</span><span class="w">
-</span><span class="w">      </span><span class="nt">max-file-size</span><span class="p">:</span><span class="w"> </span>-<span class="m">1</span><span class="w">
-</span><span class="w">      </span><span class="c"># 不限制请求体大小</span><span class="w">
-</span><span class="w">      </span><span class="nt">max-request-size</span><span class="p">:</span><span class="w"> </span>-<span class="m">1</span><span class="w">
-</span><span class="w">      </span><span class="c"># 临时IO目录</span><span class="w">
-</span><span class="w">      </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;${java.io.tmpdir}&#34;</span><span class="w">
-</span><span class="w">      </span><span class="c"># 不延迟解析</span><span class="w">
-</span><span class="w">      </span><span class="nt">resolve-lazily</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
-</span><span class="w">      </span><span class="c"># 超过1Mb，就IO到临时目录</span><span class="w">
-</span><span class="w">      </span><span class="nt">file-size-threshold</span><span class="p">:</span><span class="w"> </span><span class="l">1MB</span><span class="w">
-</span><span class="w">  </span><span class="nt">web</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">static-locations</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="s2">&#34;classpath:/static/&#34;</span><span class="w">
-</span><span class="w">        </span>- <span class="s2">&#34;file:${app.video-folder}&#34;</span><span class="w"> </span><span class="c"># 把视频文件夹目录，添加到静态资源目录列表</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">server</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">80</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">app</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># Folder for storing videos</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">video-folder</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;C:\\Users\\Administrator\\Desktop\\tmp&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">servlet</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">multipart</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 不限制文件大小</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">max-file-size</span><span class="p">:</span><span class="w"> </span>-<span class="m">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 不限制请求体大小</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">max-request-size</span><span class="p">:</span><span class="w"> </span>-<span class="m">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 临时IO目录</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;${java.io.tmpdir}&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 不延迟解析</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">resolve-lazily</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 超过1Mb，就IO到临时目录</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">file-size-threshold</span><span class="p">:</span><span class="w"> </span><span class="l">1MB</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">web</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">static-locations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="s2">&#34;classpath:/static/&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="s2">&#34;file:${app.video-folder}&#34;</span><span class="w"> </span><span class="c"># 把视频文件夹目录，添加到静态资源目录列表</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="transcodeconfig">TranscodeConfig</h3>
 <p>Used to control some parameters of the video slice, such as ts slice size, cover screenshot time, etc.</p>
@@ -707,52 +707,52 @@
 </span><span class="lnt">45
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.demo.ffmpeg</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TranscodeConfig</span> <span class="o">{</span>
- <span class="kd">private</span> <span class="n">String</span> <span class="n">poster</span><span class="o">;</span>    <span class="c1">// 截取封面的时间   HH:mm:ss.[SSS]
-</span><span class="c1"></span> <span class="kd">private</span> <span class="n">String</span> <span class="n">tsSeconds</span><span class="o">;</span>   <span class="c1">// ts分片大小，单位是秒
-</span><span class="c1"></span> <span class="kd">private</span> <span class="n">String</span> <span class="n">cutStart</span><span class="o">;</span>   <span class="c1">// 视频裁剪，开始时间  HH:mm:ss.[SSS]
-</span><span class="c1"></span> <span class="kd">private</span> <span class="n">String</span> <span class="n">cutEnd</span><span class="o">;</span>    <span class="c1">// 视频裁剪，结束时间  HH:mm:ss.[SSS]
-</span><span class="c1"></span> <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPoster</span><span class="o">()</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">poster</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPoster</span><span class="o">(</span><span class="n">String</span> <span class="n">poster</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">this</span><span class="o">.</span><span class="na">poster</span> <span class="o">=</span> <span class="n">poster</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="n">String</span> <span class="nf">getTsSeconds</span><span class="o">()</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">tsSeconds</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTsSeconds</span><span class="o">(</span><span class="n">String</span> <span class="n">tsSeconds</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">this</span><span class="o">.</span><span class="na">tsSeconds</span> <span class="o">=</span> <span class="n">tsSeconds</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="n">String</span> <span class="nf">getCutStart</span><span class="o">()</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">cutStart</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCutStart</span><span class="o">(</span><span class="n">String</span> <span class="n">cutStart</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">this</span><span class="o">.</span><span class="na">cutStart</span> <span class="o">=</span> <span class="n">cutStart</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="n">String</span> <span class="nf">getCutEnd</span><span class="o">()</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">cutEnd</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCutEnd</span><span class="o">(</span><span class="n">String</span> <span class="n">cutEnd</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">this</span><span class="o">.</span><span class="na">cutEnd</span> <span class="o">=</span> <span class="n">cutEnd</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="nd">@Override</span>
- <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="s">&#34;TranscodeConfig [poster=&#34;</span> <span class="o">+</span> <span class="n">poster</span> <span class="o">+</span> <span class="s">&#34;, tsSeconds=&#34;</span> <span class="o">+</span> <span class="n">tsSeconds</span> <span class="o">+</span> <span class="s">&#34;, cutStart=&#34;</span> <span class="o">+</span> <span class="n">cutStart</span> <span class="o">+</span> <span class="s">&#34;, cutEnd=&#34;</span>
-    <span class="o">+</span> <span class="n">cutEnd</span> <span class="o">+</span> <span class="s">&#34;]&#34;</span><span class="o">;</span>
- <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.demo.ffmpeg</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TranscodeConfig</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">private</span> <span class="n">String</span> <span class="n">poster</span><span class="o">;</span>    <span class="c1">// 截取封面的时间   HH:mm:ss.[SSS]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="kd">private</span> <span class="n">String</span> <span class="n">tsSeconds</span><span class="o">;</span>   <span class="c1">// ts分片大小，单位是秒
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="kd">private</span> <span class="n">String</span> <span class="n">cutStart</span><span class="o">;</span>   <span class="c1">// 视频裁剪，开始时间  HH:mm:ss.[SSS]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="kd">private</span> <span class="n">String</span> <span class="n">cutEnd</span><span class="o">;</span>    <span class="c1">// 视频裁剪，结束时间  HH:mm:ss.[SSS]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPoster</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">poster</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPoster</span><span class="o">(</span><span class="n">String</span> <span class="n">poster</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="o">.</span><span class="na">poster</span> <span class="o">=</span> <span class="n">poster</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">String</span> <span class="nf">getTsSeconds</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">tsSeconds</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTsSeconds</span><span class="o">(</span><span class="n">String</span> <span class="n">tsSeconds</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="o">.</span><span class="na">tsSeconds</span> <span class="o">=</span> <span class="n">tsSeconds</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">String</span> <span class="nf">getCutStart</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">cutStart</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCutStart</span><span class="o">(</span><span class="n">String</span> <span class="n">cutStart</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="o">.</span><span class="na">cutStart</span> <span class="o">=</span> <span class="n">cutStart</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">String</span> <span class="nf">getCutEnd</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">cutEnd</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCutEnd</span><span class="o">(</span><span class="n">String</span> <span class="n">cutEnd</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="o">.</span><span class="na">cutEnd</span> <span class="o">=</span> <span class="n">cutEnd</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="s">&#34;TranscodeConfig [poster=&#34;</span> <span class="o">+</span> <span class="n">poster</span> <span class="o">+</span> <span class="s">&#34;, tsSeconds=&#34;</span> <span class="o">+</span> <span class="n">tsSeconds</span> <span class="o">+</span> <span class="s">&#34;, cutStart=&#34;</span> <span class="o">+</span> <span class="n">cutStart</span> <span class="o">+</span> <span class="s">&#34;, cutEnd=&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">+</span> <span class="n">cutEnd</span> <span class="o">+</span> <span class="s">&#34;]&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="mediainfo">MediaInfo</h3>
 <p>defines some meta information about the video.</p>
@@ -816,63 +816,63 @@
 </span><span class="lnt">56
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.demo.ffmpeg</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">com.google.gson.annotations.SerializedName</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MediaInfo</span> <span class="o">{</span>
- <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Format</span> <span class="o">{</span>
-  <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;bit_rate&#34;</span><span class="o">)</span>
-  <span class="kd">private</span> <span class="n">String</span> <span class="n">bitRate</span><span class="o">;</span>
-  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getBitRate</span><span class="o">()</span> <span class="o">{</span>
-   <span class="k">return</span> <span class="n">bitRate</span><span class="o">;</span>
-  <span class="o">}</span>
-  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setBitRate</span><span class="o">(</span><span class="n">String</span> <span class="n">bitRate</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">this</span><span class="o">.</span><span class="na">bitRate</span> <span class="o">=</span> <span class="n">bitRate</span><span class="o">;</span>
-  <span class="o">}</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Stream</span> <span class="o">{</span>
-  <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;index&#34;</span><span class="o">)</span>
-  <span class="kd">private</span> <span class="kt">int</span> <span class="n">index</span><span class="o">;</span>
-
-  <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;codec_name&#34;</span><span class="o">)</span>
-  <span class="kd">private</span> <span class="n">String</span> <span class="n">codecName</span><span class="o">;</span>
-
-  <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;codec_long_name&#34;</span><span class="o">)</span>
-  <span class="kd">private</span> <span class="n">String</span> <span class="n">codecLongame</span><span class="o">;</span>
-
-  <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;profile&#34;</span><span class="o">)</span>
-  <span class="kd">private</span> <span class="n">String</span> <span class="n">profile</span><span class="o">;</span>
- <span class="o">}</span>
- 
- <span class="c1">// ----------------------------------
-</span><span class="c1"></span>
- <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;streams&#34;</span><span class="o">)</span>
- <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Stream</span><span class="o">&gt;</span> <span class="n">streams</span><span class="o">;</span>
-
- <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;format&#34;</span><span class="o">)</span>
- <span class="kd">private</span> <span class="n">Format</span> <span class="n">format</span><span class="o">;</span>
-
- <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Stream</span><span class="o">&gt;</span> <span class="nf">getStreams</span><span class="o">()</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">streams</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setStreams</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stream</span><span class="o">&gt;</span> <span class="n">streams</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">this</span><span class="o">.</span><span class="na">streams</span> <span class="o">=</span> <span class="n">streams</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="n">Format</span> <span class="nf">getFormat</span><span class="o">()</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">format</span><span class="o">;</span>
- <span class="o">}</span>
-
- <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFormat</span><span class="o">(</span><span class="n">Format</span> <span class="n">format</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">this</span><span class="o">.</span><span class="na">format</span> <span class="o">=</span> <span class="n">format</span><span class="o">;</span>
- <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.demo.ffmpeg</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.google.gson.annotations.SerializedName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MediaInfo</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Format</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;bit_rate&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">private</span> <span class="n">String</span> <span class="n">bitRate</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">public</span> <span class="n">String</span> <span class="nf">getBitRate</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">bitRate</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setBitRate</span><span class="o">(</span><span class="n">String</span> <span class="n">bitRate</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">this</span><span class="o">.</span><span class="na">bitRate</span> <span class="o">=</span> <span class="n">bitRate</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Stream</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;index&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">private</span> <span class="kt">int</span> <span class="n">index</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;codec_name&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">private</span> <span class="n">String</span> <span class="n">codecName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;codec_long_name&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">private</span> <span class="n">String</span> <span class="n">codecLongame</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;profile&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">private</span> <span class="n">String</span> <span class="n">profile</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="c1">// ----------------------------------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"> <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;streams&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Stream</span><span class="o">&gt;</span> <span class="n">streams</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="nd">@SerializedName</span><span class="o">(</span><span class="s">&#34;format&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">private</span> <span class="n">Format</span> <span class="n">format</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Stream</span><span class="o">&gt;</span> <span class="nf">getStreams</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">streams</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setStreams</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Stream</span><span class="o">&gt;</span> <span class="n">streams</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="o">.</span><span class="na">streams</span> <span class="o">=</span> <span class="n">streams</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">Format</span> <span class="nf">getFormat</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">format</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFormat</span><span class="o">(</span><span class="n">Format</span> <span class="n">format</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="o">.</span><span class="na">format</span> <span class="o">=</span> <span class="n">format</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="ffmpegutils">FFmpegUtils</h3>
 <p>A tool class that starts a new process and calls FFmpeg for video slicing.</p>
@@ -1143,276 +1143,274 @@
 </span><span class="lnt">263
 </span><span class="lnt">264
 </span><span class="lnt">265
-</span><span class="lnt">266
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.demo.ffmpeg</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.InputStreamReader</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Paths</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.StandardOpenOption</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.security.NoSuchAlgorithmException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">javax.crypto.KeyGenerator</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.apache.commons.codec.binary.Hex</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.util.StringUtils</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">com.google.gson.Gson</span><span class="o">;</span>
-
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FFmpegUtils</span> <span class="o">{</span>
- 
- <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">FFmpegUtils</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
- 
- 
- <span class="c1">// 跨平台换行符
-</span><span class="c1"></span> <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">LINE_SEPARATOR</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;line.separator&#34;</span><span class="o">);</span>
- 
- <span class="cm">/**
-</span><span class="cm">  * 生成随机16个字节的AESKEY
-</span><span class="cm">  * @return
-</span><span class="cm">  */</span>
- <span class="kd">private</span> <span class="kd">static</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">genAesKey</span> <span class="o">()</span>  <span class="o">{</span>
-  <span class="k">try</span> <span class="o">{</span>
-   <span class="n">KeyGenerator</span> <span class="n">keyGenerator</span> <span class="o">=</span> <span class="n">KeyGenerator</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="s">&#34;AES&#34;</span><span class="o">);</span>
-   <span class="n">keyGenerator</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">128</span><span class="o">);</span>
-   <span class="k">return</span> <span class="n">keyGenerator</span><span class="o">.</span><span class="na">generateKey</span><span class="o">().</span><span class="na">getEncoded</span><span class="o">();</span>
-  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NoSuchAlgorithmException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-  <span class="o">}</span>
- <span class="o">}</span>
- 
- <span class="cm">/**
-</span><span class="cm">  * 在指定的目录下生成key_info, key文件，返回key_info文件
-</span><span class="cm">  * @param folder
-</span><span class="cm">  * @throws IOException 
-</span><span class="cm">  */</span>
- <span class="kd">private</span> <span class="kd">static</span> <span class="n">Path</span> <span class="nf">genKeyInfo</span><span class="o">(</span><span class="n">String</span> <span class="n">folder</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-  <span class="c1">// AES 密钥
-</span><span class="c1"></span>  <span class="kt">byte</span><span class="o">[]</span> <span class="n">aesKey</span> <span class="o">=</span> <span class="n">genAesKey</span><span class="o">();</span>
-  <span class="c1">// AES 向量
-</span><span class="c1"></span>  <span class="n">String</span> <span class="n">iv</span> <span class="o">=</span> <span class="n">Hex</span><span class="o">.</span><span class="na">encodeHexString</span><span class="o">(</span><span class="n">genAesKey</span><span class="o">());</span>
-  
-  <span class="c1">// key 文件写入
-</span><span class="c1"></span>  <span class="n">Path</span> <span class="n">keyFile</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">folder</span><span class="o">,</span> <span class="s">&#34;key&#34;</span><span class="o">);</span>
-  <span class="n">Files</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">keyFile</span><span class="o">,</span> <span class="n">aesKey</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">CREATE</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">TRUNCATE_EXISTING</span><span class="o">);</span>
-
-  <span class="c1">// key_info 文件写入
-</span><span class="c1"></span>  <span class="n">StringBuilder</span> <span class="n">stringBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
-  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;key&#34;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">LINE_SEPARATOR</span><span class="o">);</span>     <span class="c1">// m3u8加载key文件网络路径
-</span><span class="c1"></span>  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">keyFile</span><span class="o">.</span><span class="na">toString</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="n">LINE_SEPARATOR</span><span class="o">);</span> <span class="c1">// FFmeg加载key_info文件路径
-</span><span class="c1"></span>  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">iv</span><span class="o">);</span>           <span class="c1">// ASE 向量
-</span><span class="c1"></span>  
-  <span class="n">Path</span> <span class="n">keyInfo</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">folder</span><span class="o">,</span> <span class="s">&#34;key_info&#34;</span><span class="o">);</span>
-  
-  <span class="n">Files</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">keyInfo</span><span class="o">,</span> <span class="n">stringBuilder</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">getBytes</span><span class="o">(),</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">CREATE</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">TRUNCATE_EXISTING</span><span class="o">);</span>
-  
-  <span class="k">return</span> <span class="n">keyInfo</span><span class="o">;</span>
- <span class="o">}</span>
- 
- <span class="cm">/**
-</span><span class="cm">  * 指定的目录下生成 master index.m3u8 文件
-</span><span class="cm">  * @param fileName   master m3u8文件地址
-</span><span class="cm">  * @param indexPath   访问子index.m3u8的路径
-</span><span class="cm">  * @param bandWidth   流码率
-</span><span class="cm">  * @throws IOException
-</span><span class="cm">  */</span>
- <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">genIndex</span><span class="o">(</span><span class="n">String</span> <span class="n">file</span><span class="o">,</span> <span class="n">String</span> <span class="n">indexPath</span><span class="o">,</span> <span class="n">String</span> <span class="n">bandWidth</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-  <span class="n">StringBuilder</span> <span class="n">stringBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
-  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;#EXTM3U&#34;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">LINE_SEPARATOR</span><span class="o">);</span>
-  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;#EXT-X-STREAM-INF:BANDWIDTH=&#34;</span> <span class="o">+</span> <span class="n">bandWidth</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">LINE_SEPARATOR</span><span class="o">);</span>  <span class="c1">// 码率
-</span><span class="c1"></span>  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">indexPath</span><span class="o">);</span>
-  <span class="n">Files</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">file</span><span class="o">),</span> <span class="n">stringBuilder</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">getBytes</span><span class="o">(</span><span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">),</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">CREATE</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">TRUNCATE_EXISTING</span><span class="o">);</span>
- <span class="o">}</span>
- 
- <span class="cm">/**
-</span><span class="cm">  * 转码视频为m3u8
-</span><span class="cm">  * @param source    源视频
-</span><span class="cm">  * @param destFolder   目标文件夹
-</span><span class="cm">  * @param config    配置信息
-</span><span class="cm">  * @throws IOException 
-</span><span class="cm">  * @throws InterruptedException 
-</span><span class="cm">  */</span>
- <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">transcodeToM3u8</span><span class="o">(</span><span class="n">String</span> <span class="n">source</span><span class="o">,</span> <span class="n">String</span> <span class="n">destFolder</span><span class="o">,</span> <span class="n">TranscodeConfig</span> <span class="n">config</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-  
-  <span class="c1">// 判断源视频是否存在
-</span><span class="c1"></span>  <span class="k">if</span> <span class="o">(!</span><span class="n">Files</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">source</span><span class="o">)))</span> <span class="o">{</span>
-   <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&#34;文件不存在：&#34;</span> <span class="o">+</span> <span class="n">source</span><span class="o">);</span>
-  <span class="o">}</span>
-  
-  <span class="c1">// 创建工作目录
-</span><span class="c1"></span>  <span class="n">Path</span> <span class="n">workDir</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">destFolder</span><span class="o">,</span> <span class="s">&#34;ts&#34;</span><span class="o">);</span>
-  <span class="n">Files</span><span class="o">.</span><span class="na">createDirectories</span><span class="o">(</span><span class="n">workDir</span><span class="o">);</span>
-  
-  <span class="c1">// 在工作目录生成KeyInfo文件
-</span><span class="c1"></span>  <span class="n">Path</span> <span class="n">keyInfo</span> <span class="o">=</span> <span class="n">genKeyInfo</span><span class="o">(</span><span class="n">workDir</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-  
-  <span class="c1">// 构建命令
-</span><span class="c1"></span>  <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">commands</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;ffmpeg&#34;</span><span class="o">);</span>   
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-i&#34;</span><span class="o">)</span>      <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>     <span class="c1">// 源文件
-</span><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-c:v&#34;</span><span class="o">)</span>     <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;libx264&#34;</span><span class="o">);</span>    <span class="c1">// 视频编码为H264
-</span><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-c:a&#34;</span><span class="o">)</span>     <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;copy&#34;</span><span class="o">);</span>     <span class="c1">// 音频直接copy
-</span><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-hls_key_info_file&#34;</span><span class="o">)</span>  <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">keyInfo</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>  <span class="c1">// 指定密钥文件路径
-</span><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-hls_time&#34;</span><span class="o">)</span>    <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">getTsSeconds</span><span class="o">());</span> <span class="c1">// ts切片大小
-</span><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-hls_playlist_type&#34;</span><span class="o">)</span>  <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;vod&#34;</span><span class="o">);</span>     <span class="c1">// 点播模式
-</span><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-hls_segment_filename&#34;</span><span class="o">)</span> <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;%06d.ts&#34;</span><span class="o">);</span>    <span class="c1">// ts切片文件名称
-</span><span class="c1"></span>  
-  <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">getCutStart</span><span class="o">()))</span> <span class="o">{</span>
-   <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-ss&#34;</span><span class="o">)</span>     <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">getCutStart</span><span class="o">());</span> <span class="c1">// 开始时间
-</span><span class="c1"></span>  <span class="o">}</span>
-  <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">getCutEnd</span><span class="o">()))</span> <span class="o">{</span>
-   <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-to&#34;</span><span class="o">)</span>     <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">getCutEnd</span><span class="o">());</span>  <span class="c1">// 结束时间
-</span><span class="c1"></span>  <span class="o">}</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;index.m3u8&#34;</span><span class="o">);</span>              <span class="c1">// 生成m3u8文件
-</span><span class="c1"></span>  
-  <span class="c1">// 构建进程
-</span><span class="c1"></span>  <span class="n">Process</span> <span class="n">process</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProcessBuilder</span><span class="o">()</span>
-   <span class="o">.</span><span class="na">command</span><span class="o">(</span><span class="n">commands</span><span class="o">)</span>
-   <span class="o">.</span><span class="na">directory</span><span class="o">(</span><span class="n">workDir</span><span class="o">.</span><span class="na">toFile</span><span class="o">())</span>
-   <span class="o">.</span><span class="na">start</span><span class="o">()</span>
-   <span class="o">;</span>
-  
-  <span class="c1">// 读取进程标准输出
-</span><span class="c1"></span>  <span class="k">new</span> <span class="n">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-   <span class="k">try</span> <span class="o">(</span><span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">())))</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">line</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-     <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
-    <span class="o">}</span>
-   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-   <span class="o">}</span>
-  <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
-  
-  <span class="c1">// 读取进程异常输出
-</span><span class="c1"></span>  <span class="k">new</span> <span class="n">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-   <span class="k">try</span> <span class="o">(</span><span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">getErrorStream</span><span class="o">())))</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">line</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-     <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
-    <span class="o">}</span>
-   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-   <span class="o">}</span>
-  <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
-  
-  
-  <span class="c1">// 阻塞直到任务结束
-</span><span class="c1"></span>  <span class="k">if</span> <span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">waitFor</span><span class="o">()</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;视频切片异常&#34;</span><span class="o">);</span>
-  <span class="o">}</span>
-  
-  <span class="c1">// 切出封面
-</span><span class="c1"></span>  <span class="k">if</span> <span class="o">(!</span><span class="n">screenShots</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">File</span><span class="o">.</span><span class="na">separator</span><span class="o">,</span> <span class="n">destFolder</span><span class="o">,</span> <span class="s">&#34;poster.jpg&#34;</span><span class="o">),</span> <span class="n">config</span><span class="o">.</span><span class="na">getPoster</span><span class="o">()))</span> <span class="o">{</span>
-   <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;封面截取异常&#34;</span><span class="o">);</span>
-  <span class="o">}</span>
-  
-  <span class="c1">// 获取视频信息
-</span><span class="c1"></span>  <span class="n">MediaInfo</span> <span class="n">mediaInfo</span> <span class="o">=</span> <span class="n">getMediaInfo</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
-  <span class="k">if</span> <span class="o">(</span><span class="n">mediaInfo</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;获取媒体信息异常&#34;</span><span class="o">);</span>
-  <span class="o">}</span>
-  
-  <span class="c1">// 生成index.m3u8文件
-</span><span class="c1"></span>  <span class="n">genIndex</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">File</span><span class="o">.</span><span class="na">separator</span><span class="o">,</span> <span class="n">destFolder</span><span class="o">,</span> <span class="s">&#34;index.m3u8&#34;</span><span class="o">),</span> <span class="s">&#34;ts/index.m3u8&#34;</span><span class="o">,</span> <span class="n">mediaInfo</span><span class="o">.</span><span class="na">getFormat</span><span class="o">().</span><span class="na">getBitRate</span><span class="o">());</span>
-  
-  <span class="c1">// 删除keyInfo文件
-</span><span class="c1"></span>  <span class="n">Files</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">keyInfo</span><span class="o">);</span>
- <span class="o">}</span>
- 
- <span class="cm">/**
-</span><span class="cm">  * 获取视频文件的媒体信息
-</span><span class="cm">  * @param source
-</span><span class="cm">  * @return
-</span><span class="cm">  * @throws IOException
-</span><span class="cm">  * @throws InterruptedException
-</span><span class="cm">  */</span>
- <span class="kd">public</span> <span class="kd">static</span> <span class="n">MediaInfo</span> <span class="nf">getMediaInfo</span><span class="o">(</span><span class="n">String</span> <span class="n">source</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-  <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">commands</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;ffprobe&#34;</span><span class="o">);</span> 
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-i&#34;</span><span class="o">)</span>    <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-show_format&#34;</span><span class="o">);</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-show_streams&#34;</span><span class="o">);</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-print_format&#34;</span><span class="o">)</span> <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;json&#34;</span><span class="o">);</span>
-  
-  <span class="n">Process</span> <span class="n">process</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProcessBuilder</span><span class="o">(</span><span class="n">commands</span><span class="o">)</span>
-    <span class="o">.</span><span class="na">start</span><span class="o">();</span>
-   
-  <span class="n">MediaInfo</span> <span class="n">mediaInfo</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-  
-  <span class="k">try</span> <span class="o">(</span><span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">())))</span> <span class="o">{</span>
-   <span class="n">mediaInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Gson</span><span class="o">().</span><span class="na">fromJson</span><span class="o">(</span><span class="n">bufferedReader</span><span class="o">,</span> <span class="n">MediaInfo</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-  <span class="o">}</span>
-  
-  <span class="k">if</span> <span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">waitFor</span><span class="o">()</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-  <span class="o">}</span>
-  
-  <span class="k">return</span> <span class="n">mediaInfo</span><span class="o">;</span>
- <span class="o">}</span>
- 
- <span class="cm">/**
-</span><span class="cm">  * 截取视频的指定时间帧，生成图片文件
-</span><span class="cm">  * @param source  源文件
-</span><span class="cm">  * @param file   图片文件
-</span><span class="cm">  * @param time   截图时间 HH:mm:ss.[SSS]  
-</span><span class="cm">  * @throws IOException 
-</span><span class="cm">  * @throws InterruptedException 
-</span><span class="cm">  */</span>
- <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">screenShots</span><span class="o">(</span><span class="n">String</span> <span class="n">source</span><span class="o">,</span> <span class="n">String</span> <span class="n">file</span><span class="o">,</span> <span class="n">String</span> <span class="n">time</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
-  
-  <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">commands</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;ffmpeg&#34;</span><span class="o">);</span> 
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-i&#34;</span><span class="o">)</span>    <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-ss&#34;</span><span class="o">)</span>    <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">time</span><span class="o">);</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-y&#34;</span><span class="o">);</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-q:v&#34;</span><span class="o">)</span>   <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;1&#34;</span><span class="o">);</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-frames:v&#34;</span><span class="o">)</span>  <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;1&#34;</span><span class="o">);</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-f&#34;</span><span class="o">);</span>    <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;image2&#34;</span><span class="o">);</span>
-  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
-  
-  <span class="n">Process</span> <span class="n">process</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProcessBuilder</span><span class="o">(</span><span class="n">commands</span><span class="o">)</span>
-     <span class="o">.</span><span class="na">start</span><span class="o">();</span>
-  
-  <span class="c1">// 读取进程标准输出
-</span><span class="c1"></span>  <span class="k">new</span> <span class="n">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-   <span class="k">try</span> <span class="o">(</span><span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">())))</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">line</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-     <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
-    <span class="o">}</span>
-   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-   <span class="o">}</span>
-  <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
-  
-  <span class="c1">// 读取进程异常输出
-</span><span class="c1"></span>  <span class="k">new</span> <span class="n">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-   <span class="k">try</span> <span class="o">(</span><span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">getErrorStream</span><span class="o">())))</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">line</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-     <span class="n">LOGGER</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
-    <span class="o">}</span>
-   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-   <span class="o">}</span>
-  <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
-  
-  <span class="k">return</span> <span class="n">process</span><span class="o">.</span><span class="na">waitFor</span><span class="o">()</span> <span class="o">==</span> <span class="n">0</span><span class="o">;</span>
- <span class="o">}</span>
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.demo.ffmpeg</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.BufferedReader</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.InputStreamReader</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Paths</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.StandardOpenOption</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.security.NoSuchAlgorithmException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.crypto.KeyGenerator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.codec.binary.Hex</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.util.StringUtils</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.google.gson.Gson</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FFmpegUtils</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">FFmpegUtils</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="c1">// 跨平台换行符
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">LINE_SEPARATOR</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;line.separator&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * 生成随机16个字节的AESKEY
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @return
+</span></span></span><span class="line"><span class="cl"><span class="cm">  */</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">private</span> <span class="kd">static</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">genAesKey</span> <span class="o">()</span>  <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">KeyGenerator</span> <span class="n">keyGenerator</span> <span class="o">=</span> <span class="n">KeyGenerator</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="s">&#34;AES&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="n">keyGenerator</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">128</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">keyGenerator</span><span class="o">.</span><span class="na">generateKey</span><span class="o">().</span><span class="na">getEncoded</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NoSuchAlgorithmException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * 在指定的目录下生成key_info, key文件，返回key_info文件
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param folder
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @throws IOException 
+</span></span></span><span class="line"><span class="cl"><span class="cm">  */</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">private</span> <span class="kd">static</span> <span class="n">Path</span> <span class="nf">genKeyInfo</span><span class="o">(</span><span class="n">String</span> <span class="n">folder</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// AES 密钥
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kt">byte</span><span class="o">[]</span> <span class="n">aesKey</span> <span class="o">=</span> <span class="n">genAesKey</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// AES 向量
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">String</span> <span class="n">iv</span> <span class="o">=</span> <span class="n">Hex</span><span class="o">.</span><span class="na">encodeHexString</span><span class="o">(</span><span class="n">genAesKey</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// key 文件写入
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">Path</span> <span class="n">keyFile</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">folder</span><span class="o">,</span> <span class="s">&#34;key&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Files</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">keyFile</span><span class="o">,</span> <span class="n">aesKey</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">CREATE</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">TRUNCATE_EXISTING</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// key_info 文件写入
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">StringBuilder</span> <span class="n">stringBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;key&#34;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">LINE_SEPARATOR</span><span class="o">);</span>     <span class="c1">// m3u8加载key文件网络路径
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">keyFile</span><span class="o">.</span><span class="na">toString</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="n">LINE_SEPARATOR</span><span class="o">);</span> <span class="c1">// FFmeg加载key_info文件路径
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">iv</span><span class="o">);</span>           <span class="c1">// ASE 向量
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  
+</span></span><span class="line"><span class="cl">  <span class="n">Path</span> <span class="n">keyInfo</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">folder</span><span class="o">,</span> <span class="s">&#34;key_info&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="n">Files</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">keyInfo</span><span class="o">,</span> <span class="n">stringBuilder</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">getBytes</span><span class="o">(),</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">CREATE</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">TRUNCATE_EXISTING</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">keyInfo</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * 指定的目录下生成 master index.m3u8 文件
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param fileName   master m3u8文件地址
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param indexPath   访问子index.m3u8的路径
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param bandWidth   流码率
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @throws IOException
+</span></span></span><span class="line"><span class="cl"><span class="cm">  */</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">genIndex</span><span class="o">(</span><span class="n">String</span> <span class="n">file</span><span class="o">,</span> <span class="n">String</span> <span class="n">indexPath</span><span class="o">,</span> <span class="n">String</span> <span class="n">bandWidth</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">StringBuilder</span> <span class="n">stringBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;#EXTM3U&#34;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">LINE_SEPARATOR</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;#EXT-X-STREAM-INF:BANDWIDTH=&#34;</span> <span class="o">+</span> <span class="n">bandWidth</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">LINE_SEPARATOR</span><span class="o">);</span>  <span class="c1">// 码率
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">stringBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">indexPath</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Files</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">file</span><span class="o">),</span> <span class="n">stringBuilder</span><span class="o">.</span><span class="na">toString</span><span class="o">().</span><span class="na">getBytes</span><span class="o">(</span><span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">),</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">CREATE</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">TRUNCATE_EXISTING</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * 转码视频为m3u8
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param source    源视频
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param destFolder   目标文件夹
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param config    配置信息
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @throws IOException 
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @throws InterruptedException 
+</span></span></span><span class="line"><span class="cl"><span class="cm">  */</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">transcodeToM3u8</span><span class="o">(</span><span class="n">String</span> <span class="n">source</span><span class="o">,</span> <span class="n">String</span> <span class="n">destFolder</span><span class="o">,</span> <span class="n">TranscodeConfig</span> <span class="n">config</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 判断源视频是否存在
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="o">(!</span><span class="n">Files</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">source</span><span class="o">)))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">&#34;文件不存在：&#34;</span> <span class="o">+</span> <span class="n">source</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 创建工作目录
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">Path</span> <span class="n">workDir</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">destFolder</span><span class="o">,</span> <span class="s">&#34;ts&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Files</span><span class="o">.</span><span class="na">createDirectories</span><span class="o">(</span><span class="n">workDir</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 在工作目录生成KeyInfo文件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">Path</span> <span class="n">keyInfo</span> <span class="o">=</span> <span class="n">genKeyInfo</span><span class="o">(</span><span class="n">workDir</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 构建命令
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">commands</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;ffmpeg&#34;</span><span class="o">);</span>   
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-i&#34;</span><span class="o">)</span>      <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>     <span class="c1">// 源文件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-c:v&#34;</span><span class="o">)</span>     <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;libx264&#34;</span><span class="o">);</span>    <span class="c1">// 视频编码为H264
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-c:a&#34;</span><span class="o">)</span>     <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;copy&#34;</span><span class="o">);</span>     <span class="c1">// 音频直接copy
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-hls_key_info_file&#34;</span><span class="o">)</span>  <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">keyInfo</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>  <span class="c1">// 指定密钥文件路径
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-hls_time&#34;</span><span class="o">)</span>    <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">getTsSeconds</span><span class="o">());</span> <span class="c1">// ts切片大小
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-hls_playlist_type&#34;</span><span class="o">)</span>  <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;vod&#34;</span><span class="o">);</span>     <span class="c1">// 点播模式
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-hls_segment_filename&#34;</span><span class="o">)</span> <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;%06d.ts&#34;</span><span class="o">);</span>    <span class="c1">// ts切片文件名称
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">getCutStart</span><span class="o">()))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-ss&#34;</span><span class="o">)</span>     <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">getCutStart</span><span class="o">());</span> <span class="c1">// 开始时间
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">getCutEnd</span><span class="o">()))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-to&#34;</span><span class="o">)</span>     <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">getCutEnd</span><span class="o">());</span>  <span class="c1">// 结束时间
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;index.m3u8&#34;</span><span class="o">);</span>              <span class="c1">// 生成m3u8文件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 构建进程
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">Process</span> <span class="n">process</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProcessBuilder</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">   <span class="o">.</span><span class="na">command</span><span class="o">(</span><span class="n">commands</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">   <span class="o">.</span><span class="na">directory</span><span class="o">(</span><span class="n">workDir</span><span class="o">.</span><span class="na">toFile</span><span class="o">())</span>
+</span></span><span class="line"><span class="cl">   <span class="o">.</span><span class="na">start</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">   <span class="o">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 读取进程标准输出
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">new</span> <span class="n">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">try</span> <span class="o">(</span><span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">())))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">line</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">     <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 读取进程异常输出
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">new</span> <span class="n">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">try</span> <span class="o">(</span><span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">getErrorStream</span><span class="o">())))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">line</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">     <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 阻塞直到任务结束
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">waitFor</span><span class="o">()</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;视频切片异常&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 切出封面
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="o">(!</span><span class="n">screenShots</span><span class="o">(</span><span class="n">source</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">File</span><span class="o">.</span><span class="na">separator</span><span class="o">,</span> <span class="n">destFolder</span><span class="o">,</span> <span class="s">&#34;poster.jpg&#34;</span><span class="o">),</span> <span class="n">config</span><span class="o">.</span><span class="na">getPoster</span><span class="o">()))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;封面截取异常&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 获取视频信息
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">MediaInfo</span> <span class="n">mediaInfo</span> <span class="o">=</span> <span class="n">getMediaInfo</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="o">(</span><span class="n">mediaInfo</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;获取媒体信息异常&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 生成index.m3u8文件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">genIndex</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">File</span><span class="o">.</span><span class="na">separator</span><span class="o">,</span> <span class="n">destFolder</span><span class="o">,</span> <span class="s">&#34;index.m3u8&#34;</span><span class="o">),</span> <span class="s">&#34;ts/index.m3u8&#34;</span><span class="o">,</span> <span class="n">mediaInfo</span><span class="o">.</span><span class="na">getFormat</span><span class="o">().</span><span class="na">getBitRate</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 删除keyInfo文件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">Files</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">keyInfo</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * 获取视频文件的媒体信息
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param source
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @return
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @throws IOException
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @throws InterruptedException
+</span></span></span><span class="line"><span class="cl"><span class="cm">  */</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kd">static</span> <span class="n">MediaInfo</span> <span class="nf">getMediaInfo</span><span class="o">(</span><span class="n">String</span> <span class="n">source</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">commands</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;ffprobe&#34;</span><span class="o">);</span> 
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-i&#34;</span><span class="o">)</span>    <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-show_format&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-show_streams&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-print_format&#34;</span><span class="o">)</span> <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;json&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="n">Process</span> <span class="n">process</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProcessBuilder</span><span class="o">(</span><span class="n">commands</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="o">.</span><span class="na">start</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">  <span class="n">MediaInfo</span> <span class="n">mediaInfo</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="o">(</span><span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">())))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">mediaInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Gson</span><span class="o">().</span><span class="na">fromJson</span><span class="o">(</span><span class="n">bufferedReader</span><span class="o">,</span> <span class="n">MediaInfo</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">waitFor</span><span class="o">()</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">mediaInfo</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * 截取视频的指定时间帧，生成图片文件
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param source  源文件
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param file   图片文件
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param time   截图时间 HH:mm:ss.[SSS]  
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @throws IOException 
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @throws InterruptedException 
+</span></span></span><span class="line"><span class="cl"><span class="cm">  */</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">screenShots</span><span class="o">(</span><span class="n">String</span> <span class="n">source</span><span class="o">,</span> <span class="n">String</span> <span class="n">file</span><span class="o">,</span> <span class="n">String</span> <span class="n">time</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">commands</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;ffmpeg&#34;</span><span class="o">);</span> 
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-i&#34;</span><span class="o">)</span>    <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">source</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-ss&#34;</span><span class="o">)</span>    <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">time</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-y&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-q:v&#34;</span><span class="o">)</span>   <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;1&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-frames:v&#34;</span><span class="o">)</span>  <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;1&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;-f&#34;</span><span class="o">);</span>    <span class="o">;</span><span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;image2&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">commands</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="n">Process</span> <span class="n">process</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ProcessBuilder</span><span class="o">(</span><span class="n">commands</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">     <span class="o">.</span><span class="na">start</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 读取进程标准输出
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">new</span> <span class="n">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">try</span> <span class="o">(</span><span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">())))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">line</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">     <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 读取进程异常输出
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">new</span> <span class="n">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">try</span> <span class="o">(</span><span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">process</span><span class="o">.</span><span class="na">getErrorStream</span><span class="o">())))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">line</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">     <span class="n">LOGGER</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}).</span><span class="na">start</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="n">process</span><span class="o">.</span><span class="na">waitFor</span><span class="o">()</span> <span class="o">==</span> <span class="n">0</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="uploadcontroller">UploadController</h3>
 <p>Process the video files uploaded by the client. Finish slicing and return the on-demand m3u8 index file to the client.</p>
@@ -1521,108 +1519,108 @@
 </span><span class="lnt">101
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.demo.web.controller</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Paths</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.time.LocalDate</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.time.format.DateTimeFormatter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.HttpStatus</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestPart</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.multipart.MultipartFile</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">com.demo.ffmpeg.FFmpegUtils</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.demo.ffmpeg.TranscodeConfig</span><span class="o">;</span>
-
-<span class="nd">@RestController</span>
-<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/upload&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UploadController</span> <span class="o">{</span>
- 
- <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">UploadController</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
- 
- <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${app.video-folder}&#34;</span><span class="o">)</span>
- <span class="kd">private</span> <span class="n">String</span> <span class="n">videoFolder</span><span class="o">;</span>
-
- <span class="kd">private</span> <span class="n">Path</span> <span class="n">tempDir</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;java.io.tmpdir&#34;</span><span class="o">));</span>
- 
- <span class="cm">/**
-</span><span class="cm">  * 上传视频进行切片处理，返回访问路径
-</span><span class="cm">  * @param video
-</span><span class="cm">  * @param transcodeConfig
-</span><span class="cm">  * @return
-</span><span class="cm">  * @throws IOException 
-</span><span class="cm">  */</span>
- <span class="nd">@PostMapping</span>
- <span class="kd">public</span> <span class="n">Object</span> <span class="nf">upload</span> <span class="o">(</span><span class="nd">@RequestPart</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;file&#34;</span><span class="o">,</span> <span class="n">required</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span> <span class="n">MultipartFile</span> <span class="n">video</span><span class="o">,</span>
-      <span class="nd">@RequestPart</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;config&#34;</span><span class="o">,</span> <span class="n">required</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span> <span class="n">TranscodeConfig</span> <span class="n">transcodeConfig</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-  
-  <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;文件信息：title={}, size={}&#34;</span><span class="o">,</span> <span class="n">video</span><span class="o">.</span><span class="na">getOriginalFilename</span><span class="o">(),</span> <span class="n">video</span><span class="o">.</span><span class="na">getSize</span><span class="o">());</span>
-  <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;转码配置：{}&#34;</span><span class="o">,</span> <span class="n">transcodeConfig</span><span class="o">);</span>
-  
-  <span class="c1">// 原始文件名称，也就是视频的标题
-</span><span class="c1"></span>  <span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">video</span><span class="o">.</span><span class="na">getOriginalFilename</span><span class="o">();</span>
-  
-  <span class="c1">// io到临时文件
-</span><span class="c1"></span>  <span class="n">Path</span> <span class="n">tempFile</span> <span class="o">=</span> <span class="n">tempDir</span><span class="o">.</span><span class="na">resolve</span><span class="o">(</span><span class="n">title</span><span class="o">);</span>
-  <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;io到临时文件：{}&#34;</span><span class="o">,</span> <span class="n">tempFile</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-  
-  <span class="k">try</span> <span class="o">{</span>
-   
-   <span class="n">video</span><span class="o">.</span><span class="na">transferTo</span><span class="o">(</span><span class="n">tempFile</span><span class="o">);</span>
-   
-   <span class="c1">// 删除后缀
-</span><span class="c1"></span>   <span class="n">title</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">0</span><span class="o">,</span> <span class="n">title</span><span class="o">.</span><span class="na">lastIndexOf</span><span class="o">(</span><span class="s">&#34;.&#34;</span><span class="o">));</span>
-   
-   <span class="c1">// 按照日期生成子目录
-</span><span class="c1"></span>   <span class="n">String</span> <span class="n">today</span> <span class="o">=</span> <span class="n">DateTimeFormatter</span><span class="o">.</span><span class="na">ofPattern</span><span class="o">(</span><span class="s">&#34;yyyyMMdd&#34;</span><span class="o">).</span><span class="na">format</span><span class="o">(</span><span class="n">LocalDate</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
-   
-   <span class="c1">// 尝试创建视频目录
-</span><span class="c1"></span>   <span class="n">Path</span> <span class="n">targetFolder</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">createDirectories</span><span class="o">(</span><span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">videoFolder</span><span class="o">,</span> <span class="n">today</span><span class="o">,</span> <span class="n">title</span><span class="o">));</span>
-   
-   <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;创建文件夹目录：{}&#34;</span><span class="o">,</span> <span class="n">targetFolder</span><span class="o">);</span>
-   <span class="n">Files</span><span class="o">.</span><span class="na">createDirectories</span><span class="o">(</span><span class="n">targetFolder</span><span class="o">);</span>
-   
-   <span class="c1">// 执行转码操作
-</span><span class="c1"></span>   <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;开始转码&#34;</span><span class="o">);</span>
-   <span class="k">try</span> <span class="o">{</span>
-    <span class="n">FFmpegUtils</span><span class="o">.</span><span class="na">transcodeToM3u8</span><span class="o">(</span><span class="n">tempFile</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="n">targetFolder</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="n">transcodeConfig</span><span class="o">);</span>
-   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">LOGGER</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;转码异常：{}&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
-    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
-    <span class="n">result</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;success&#34;</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
-    <span class="n">result</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;message&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
-    <span class="k">return</span> <span class="n">ResponseEntity</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">HttpStatus</span><span class="o">.</span><span class="na">INTERNAL_SERVER_ERROR</span><span class="o">).</span><span class="na">body</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
-   <span class="o">}</span>
-   
-   <span class="c1">// 封装结果
-</span><span class="c1"></span>   <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">videoInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
-   <span class="n">videoInfo</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;title&#34;</span><span class="o">,</span> <span class="n">title</span><span class="o">);</span>
-   <span class="n">videoInfo</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;m3u8&#34;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="s">&#34;/&#34;</span><span class="o">,</span> <span class="s">&#34;&#34;</span><span class="o">,</span> <span class="n">today</span><span class="o">,</span> <span class="n">title</span><span class="o">,</span> <span class="s">&#34;index.m3u8&#34;</span><span class="o">));</span>
-   <span class="n">videoInfo</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;poster&#34;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="s">&#34;/&#34;</span><span class="o">,</span> <span class="s">&#34;&#34;</span><span class="o">,</span> <span class="n">today</span><span class="o">,</span> <span class="n">title</span><span class="o">,</span> <span class="s">&#34;poster.jpg&#34;</span><span class="o">));</span>
-   
-   <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
-   <span class="n">result</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;success&#34;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
-   <span class="n">result</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;data&#34;</span><span class="o">,</span> <span class="n">videoInfo</span><span class="o">);</span>
-   <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-  <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-   <span class="c1">// 始终删除临时文件
-</span><span class="c1"></span>   <span class="n">Files</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">tempFile</span><span class="o">);</span>
-  <span class="o">}</span>
- <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.demo.web.controller</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Paths</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.time.LocalDate</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.time.format.DateTimeFormatter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.HttpStatus</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestPart</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.multipart.MultipartFile</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.demo.ffmpeg.FFmpegUtils</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.demo.ffmpeg.TranscodeConfig</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/upload&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UploadController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">UploadController</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${app.video-folder}&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">private</span> <span class="n">String</span> <span class="n">videoFolder</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="kd">private</span> <span class="n">Path</span> <span class="n">tempDir</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&#34;java.io.tmpdir&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * 上传视频进行切片处理，返回访问路径
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param video
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @param transcodeConfig
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @return
+</span></span></span><span class="line"><span class="cl"><span class="cm">  * @throws IOException 
+</span></span></span><span class="line"><span class="cl"><span class="cm">  */</span>
+</span></span><span class="line"><span class="cl"> <span class="nd">@PostMapping</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">Object</span> <span class="nf">upload</span> <span class="o">(</span><span class="nd">@RequestPart</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;file&#34;</span><span class="o">,</span> <span class="n">required</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span> <span class="n">MultipartFile</span> <span class="n">video</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nd">@RequestPart</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;config&#34;</span><span class="o">,</span> <span class="n">required</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span> <span class="n">TranscodeConfig</span> <span class="n">transcodeConfig</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;文件信息：title={}, size={}&#34;</span><span class="o">,</span> <span class="n">video</span><span class="o">.</span><span class="na">getOriginalFilename</span><span class="o">(),</span> <span class="n">video</span><span class="o">.</span><span class="na">getSize</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">  <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;转码配置：{}&#34;</span><span class="o">,</span> <span class="n">transcodeConfig</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// 原始文件名称，也就是视频的标题
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">String</span> <span class="n">title</span> <span class="o">=</span> <span class="n">video</span><span class="o">.</span><span class="na">getOriginalFilename</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// io到临时文件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">Path</span> <span class="n">tempFile</span> <span class="o">=</span> <span class="n">tempDir</span><span class="o">.</span><span class="na">resolve</span><span class="o">(</span><span class="n">title</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;io到临时文件：{}&#34;</span><span class="o">,</span> <span class="n">tempFile</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">   <span class="n">video</span><span class="o">.</span><span class="na">transferTo</span><span class="o">(</span><span class="n">tempFile</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">   <span class="c1">// 删除后缀
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">title</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">0</span><span class="o">,</span> <span class="n">title</span><span class="o">.</span><span class="na">lastIndexOf</span><span class="o">(</span><span class="s">&#34;.&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">   <span class="c1">// 按照日期生成子目录
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">String</span> <span class="n">today</span> <span class="o">=</span> <span class="n">DateTimeFormatter</span><span class="o">.</span><span class="na">ofPattern</span><span class="o">(</span><span class="s">&#34;yyyyMMdd&#34;</span><span class="o">).</span><span class="na">format</span><span class="o">(</span><span class="n">LocalDate</span><span class="o">.</span><span class="na">now</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">   <span class="c1">// 尝试创建视频目录
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">Path</span> <span class="n">targetFolder</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">createDirectories</span><span class="o">(</span><span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">videoFolder</span><span class="o">,</span> <span class="n">today</span><span class="o">,</span> <span class="n">title</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">   <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;创建文件夹目录：{}&#34;</span><span class="o">,</span> <span class="n">targetFolder</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Files</span><span class="o">.</span><span class="na">createDirectories</span><span class="o">(</span><span class="n">targetFolder</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">   <span class="c1">// 执行转码操作
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;开始转码&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">FFmpegUtils</span><span class="o">.</span><span class="na">transcodeToM3u8</span><span class="o">(</span><span class="n">tempFile</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="n">targetFolder</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="n">transcodeConfig</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">LOGGER</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;转码异常：{}&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;success&#34;</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;message&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">ResponseEntity</span><span class="o">.</span><span class="na">status</span><span class="o">(</span><span class="n">HttpStatus</span><span class="o">.</span><span class="na">INTERNAL_SERVER_ERROR</span><span class="o">).</span><span class="na">body</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">   <span class="c1">// 封装结果
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">videoInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">   <span class="n">videoInfo</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;title&#34;</span><span class="o">,</span> <span class="n">title</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="n">videoInfo</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;m3u8&#34;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="s">&#34;/&#34;</span><span class="o">,</span> <span class="s">&#34;&#34;</span><span class="o">,</span> <span class="n">today</span><span class="o">,</span> <span class="n">title</span><span class="o">,</span> <span class="s">&#34;index.m3u8&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">   <span class="n">videoInfo</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;poster&#34;</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="s">&#34;/&#34;</span><span class="o">,</span> <span class="s">&#34;&#34;</span><span class="o">,</span> <span class="n">today</span><span class="o">,</span> <span class="n">title</span><span class="o">,</span> <span class="s">&#34;poster.jpg&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">   
+</span></span><span class="line"><span class="cl">   <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">   <span class="n">result</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;success&#34;</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="n">result</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;data&#34;</span><span class="o">,</span> <span class="n">videoInfo</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="c1">// 始终删除临时文件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">Files</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">tempFile</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="indexhtml">index.html</h3>
 <div class="highlight"><div class="chroma">
@@ -1689,67 +1687,67 @@
 </span><span class="lnt">60
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
-        <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span><span class="p">&gt;</span>
-        <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Title<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
-        <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://cdn.jsdelivr.net/hls.js/latest/hls.min.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-    <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
-        选择转码文件： <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;file&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;file&#34;</span> <span class="na">accept</span><span class="o">=</span><span class="s">&#34;video/*&#34;</span> <span class="na">onchange</span><span class="o">=</span><span class="s">&#34;upload(event)&#34;</span><span class="p">&gt;</span>
-        <span class="p">&lt;</span><span class="nt">hr</span><span class="p">/&gt;</span>
-  <span class="p">&lt;</span><span class="nt">video</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;video&#34;</span>  <span class="na">width</span><span class="o">=</span><span class="s">&#34;500&#34;</span> <span class="na">height</span><span class="o">=</span><span class="s">&#34;400&#34;</span> <span class="na">controls</span><span class="o">=</span><span class="s">&#34;controls&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">video</span><span class="p">&gt;</span>
-    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
-    <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
-    
-     <span class="kr">const</span> <span class="nx">video</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">);</span>
-     
-        <span class="kd">function</span> <span class="nx">upload</span> <span class="p">(</span><span class="nx">e</span><span class="p">){</span>
-            <span class="kd">let</span> <span class="nx">files</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">files</span>
-            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">files</span><span class="p">)</span> <span class="p">{</span>
-                <span class="k">return</span>
-            <span class="p">}</span>
-            
-            <span class="c1">// TODO 转码配置这里固定死了
-</span><span class="c1"></span>            <span class="kd">var</span> <span class="nx">transCodeConfig</span> <span class="o">=</span> <span class="p">{</span>
-             <span class="nx">poster</span><span class="o">:</span> <span class="s2">&#34;00:00:00.001&#34;</span><span class="p">,</span> <span class="c1">// 截取第1毫秒作为封面
-</span><span class="c1"></span>             <span class="nx">tsSeconds</span><span class="o">:</span> <span class="mi">15</span><span class="p">,</span>    
-             <span class="nx">cutStart</span><span class="o">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
-             <span class="nx">cutEnd</span><span class="o">:</span> <span class="s2">&#34;&#34;</span>
-            <span class="p">}</span>
-            
-            <span class="c1">// 执行上传
-</span><span class="c1"></span>            <span class="kd">let</span> <span class="nx">formData</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FormData</span><span class="p">();</span>
-            <span class="nx">formData</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&#34;file&#34;</span><span class="p">,</span> <span class="nx">files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="nx">formData</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&#34;config&#34;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">transCodeConfig</span><span class="p">)],</span> <span class="p">{</span><span class="nx">type</span><span class="o">:</span> <span class="s2">&#34;application/json; charset=utf-8&#34;</span><span class="p">}))</span>
-
-            <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/upload&#39;</span><span class="p">,</span> <span class="p">{</span>
-                <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
-                <span class="nx">body</span><span class="o">:</span> <span class="nx">formData</span>
-            <span class="p">})</span>
-            <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">resp</span> <span class="p">=&gt;</span>  <span class="nx">resp</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
-            <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">message</span> <span class="p">=&gt;</span> <span class="p">{</span>
-             <span class="k">if</span> <span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">success</span><span class="p">){</span>
-              <span class="c1">// 设置封面
-</span><span class="c1"></span>              <span class="nx">video</span><span class="p">.</span><span class="nx">poster</span> <span class="o">=</span> <span class="nx">message</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">poster</span><span class="p">;</span>
-              
-              <span class="c1">// 渲染到播放器
-</span><span class="c1"></span>              <span class="kd">var</span> <span class="nx">hls</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hls</span><span class="p">();</span>
-              <span class="nx">hls</span><span class="p">.</span><span class="nx">loadSource</span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">m3u8</span><span class="p">);</span>
-              <span class="nx">hls</span><span class="p">.</span><span class="nx">attachMedia</span><span class="p">(</span><span class="nx">video</span><span class="p">);</span>
-             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-              <span class="nx">alert</span><span class="p">(</span><span class="s2">&#34;转码异常，详情查看控制台&#34;</span><span class="p">);</span>
-              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
-             <span class="p">}</span>
-            <span class="p">})</span>
-            <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">err</span> <span class="p">=&gt;</span> <span class="p">{</span>
-             <span class="nx">alert</span><span class="p">(</span><span class="s2">&#34;转码异常，详情查看控制台&#34;</span><span class="p">);</span>
-                <span class="k">throw</span> <span class="nx">err</span>
-            <span class="p">})</span>
-        <span class="p">}</span>
-    <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
-<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&#34;en&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&#34;UTF-8&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Title<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://cdn.jsdelivr.net/hls.js/latest/hls.min.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        选择转码文件： <span class="p">&lt;</span><span class="nt">input</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;file&#34;</span> <span class="na">type</span><span class="o">=</span><span class="s">&#34;file&#34;</span> <span class="na">accept</span><span class="o">=</span><span class="s">&#34;video/*&#34;</span> <span class="na">onchange</span><span class="o">=</span><span class="s">&#34;upload(event)&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">&lt;</span><span class="nt">hr</span><span class="p">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">video</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;video&#34;</span>  <span class="na">width</span><span class="o">=</span><span class="s">&#34;500&#34;</span> <span class="na">height</span><span class="o">=</span><span class="s">&#34;400&#34;</span> <span class="na">controls</span><span class="o">=</span><span class="s">&#34;controls&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">video</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">     <span class="kr">const</span> <span class="nx">video</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;video&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">     
+</span></span><span class="line"><span class="cl">        <span class="kd">function</span> <span class="nx">upload</span> <span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">let</span> <span class="nx">files</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">files</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">files</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1">// TODO 转码配置这里固定死了
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="kd">var</span> <span class="nx">transCodeConfig</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">             <span class="nx">poster</span><span class="o">:</span> <span class="s2">&#34;00:00:00.001&#34;</span><span class="p">,</span> <span class="c1">// 截取第1毫秒作为封面
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>             <span class="nx">tsSeconds</span><span class="o">:</span> <span class="mi">15</span><span class="p">,</span>    
+</span></span><span class="line"><span class="cl">             <span class="nx">cutStart</span><span class="o">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="nx">cutEnd</span><span class="o">:</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1">// 执行上传
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="kd">let</span> <span class="nx">formData</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FormData</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">formData</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&#34;file&#34;</span><span class="p">,</span> <span class="nx">files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">            <span class="nx">formData</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&#34;config&#34;</span><span class="p">,</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">transCodeConfig</span><span class="p">)],</span> <span class="p">{</span><span class="nx">type</span><span class="o">:</span> <span class="s2">&#34;application/json; charset=utf-8&#34;</span><span class="p">}))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/upload&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">body</span><span class="o">:</span> <span class="nx">formData</span>
+</span></span><span class="line"><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">resp</span> <span class="p">=&gt;</span>  <span class="nx">resp</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">message</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">             <span class="k">if</span> <span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">success</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">              <span class="c1">// 设置封面
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>              <span class="nx">video</span><span class="p">.</span><span class="nx">poster</span> <span class="o">=</span> <span class="nx">message</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">poster</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">              
+</span></span><span class="line"><span class="cl">              <span class="c1">// 渲染到播放器
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>              <span class="kd">var</span> <span class="nx">hls</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Hls</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">hls</span><span class="p">.</span><span class="nx">loadSource</span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">m3u8</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">hls</span><span class="p">.</span><span class="nx">attachMedia</span><span class="p">(</span><span class="nx">video</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">             <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">alert</span><span class="p">(</span><span class="s2">&#34;转码异常，详情查看控制台&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">              <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">message</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">             <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">err</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">             <span class="nx">alert</span><span class="p">(</span><span class="s2">&#34;转码异常，详情查看控制台&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">throw</span> <span class="nx">err</span>
+</span></span><span class="line"><span class="cl">            <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="full-source-code">Full Source Code</h2>
 <p><a href="https://github.com/KevinBlandy/springboot-ffmpeg-demo">https://github.com/KevinBlandy/springboot-ffmpeg-demo</a></p>

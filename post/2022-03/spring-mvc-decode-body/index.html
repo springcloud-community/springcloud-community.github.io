@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-03/spring-mvc-decode-body/" />
@@ -68,7 +68,7 @@
 <meta itemprop="name" content="Automatic decoding of request bodies via RequestBodyAdvice">
 <meta itemprop="description" content="The client encodes or encrypts the request body (e.g. AES encryption, Base64 encoding), and the server decodes the request body after receiving it. This is a very common requirement. Thanks to the RequestBodyAdvice interface provided by spring mvc. We can do this very easily and without modifying any code in the Controller."><meta itemprop="datePublished" content="2022-03-15T15:10:17+08:00" />
 <meta itemprop="dateModified" content="2022-03-15T15:10:17+08:00" />
-<meta itemprop="wordCount" content="998">
+<meta itemprop="wordCount" content="997">
 <meta itemprop="keywords" content="spring-boot," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Automatic decoding of request bodies via RequestBodyAdvice"/>
 <meta name="twitter:description" content="The client encodes or encrypts the request body (e.g. AES encryption, Base64 encoding), and the server decodes the request body after receiving it. This is a very common requirement. Thanks to the RequestBodyAdvice interface provided by spring mvc. We can do this very easily and without modifying any code in the Controller."/>
@@ -391,7 +391,7 @@
             <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
             
           </div>
-        <span class="more-meta"> 998 words </span>
+        <span class="more-meta"> 997 words </span>
           <span class="more-meta"> 2 min read </span>
 
         
@@ -454,24 +454,22 @@
 </span><span class="lnt">11
 </span><span class="lnt">12
 </span><span class="lnt">13
-</span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">io.springcloud.demo.annotation</span><span class="o">;</span>
-
-<span class="kn">import static</span> <span class="nn">java.lang.annotation.RetentionPolicy.RUNTIME</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.lang.annotation.ElementType</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.lang.annotation.Retention</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.lang.annotation.Target</span><span class="o">;</span>
-
-<span class="nd">@Retention</span><span class="o">(</span><span class="n">RUNTIME</span><span class="o">)</span>
-<span class="nd">@Target</span><span class="o">(</span><span class="n">ElementType</span><span class="o">.</span><span class="na">PARAMETER</span><span class="o">)</span>
-<span class="kd">public</span> <span class="nd">@interface</span> <span class="n">Base64Encoded</span> <span class="o">{</span>
-
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springcloud.demo.annotation</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import static</span> <span class="nn">java.lang.annotation.RetentionPolicy.RUNTIME</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.annotation.ElementType</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.annotation.Retention</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.annotation.Target</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Retention</span><span class="o">(</span><span class="n">RUNTIME</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Target</span><span class="o">(</span><span class="n">ElementType</span><span class="o">.</span><span class="na">PARAMETER</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">Base64Encoded</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="decodehttpinputmessage">DecodeHttpInputMessage</h3>
 <p><code>DecodeHttpInputMessage</code> is an implementation class of the <code>HttpInputMessage</code> interface. This class represents a complete Http request, including the body and header.</p>
@@ -509,37 +507,37 @@
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">io.springcloud.demo.advice</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.springframework.http.HttpHeaders</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.HttpInputMessage</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DecodeHttpInputMessage</span> <span class="kd">implements</span> <span class="n">HttpInputMessage</span> <span class="o">{</span>
-
-    <span class="kd">private</span> <span class="n">HttpHeaders</span> <span class="n">headers</span><span class="o">;</span>
-
-    <span class="kd">private</span> <span class="n">InputStream</span> <span class="n">body</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="nf">DecodeHttpInputMessage</span><span class="o">(</span><span class="n">HttpHeaders</span> <span class="n">headers</span><span class="o">,</span> <span class="n">InputStream</span> <span class="n">body</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kd">super</span><span class="o">();</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">body</span> <span class="o">=</span> <span class="n">body</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">HttpHeaders</span> <span class="nf">getHeaders</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">headers</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">InputStream</span> <span class="nf">getBody</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">body</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springcloud.demo.advice</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.HttpHeaders</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.HttpInputMessage</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DecodeHttpInputMessage</span> <span class="kd">implements</span> <span class="n">HttpInputMessage</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">HttpHeaders</span> <span class="n">headers</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">InputStream</span> <span class="n">body</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">DecodeHttpInputMessage</span><span class="o">(</span><span class="n">HttpHeaders</span> <span class="n">headers</span><span class="o">,</span> <span class="n">InputStream</span> <span class="n">body</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">super</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">headers</span> <span class="o">=</span> <span class="n">headers</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">body</span> <span class="o">=</span> <span class="n">body</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">HttpHeaders</span> <span class="nf">getHeaders</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">headers</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">InputStream</span> <span class="nf">getBody</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">body</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="base64decodebodyadvice">Base64DecodeBodyAdvice</h3>
 <p>Custom <code>RequestBodyAdvice</code> implementation class. This interface is so simple that the main points are in the code comments.</p>
@@ -603,63 +601,63 @@
 </span><span class="lnt">56
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">io.springcloud.demo.advice</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.io.ByteArrayInputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.lang.reflect.Type</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Base64</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.springframework.core.MethodParameter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.HttpInputMessage</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.converter.HttpMessageConverter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.util.StreamUtils</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestControllerAdvice</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">io.springcloud.demo.annotation.Base64Encoded</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
-
-<span class="nd">@RestControllerAdvice</span> <span class="c1">// Don&#39;t forget the @RestControllerAdvice annotation. It will take effect for all RestControllers.
-</span><span class="c1"></span><span class="nd">@Slf4j</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Base64DecodeBodyAdvice</span> <span class="kd">extends</span> <span class="n">RequestBodyAdviceAdapter</span> <span class="o">{</span>
-
-    <span class="cm">/**
-</span><span class="cm">        * If this method returns false, the `beforeBodyRead` method will not be executed. 
-</span><span class="cm">        */</span>
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">supports</span><span class="o">(</span><span class="n">MethodParameter</span> <span class="n">methodParameter</span><span class="o">,</span> <span class="n">Type</span> <span class="n">targetType</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">converterType</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// If the parameter is annotated with `@Base64Encoded` then it needs to be decoded.
-</span><span class="c1"></span>        <span class="k">return</span> <span class="n">methodParameter</span><span class="o">.</span><span class="na">hasParameterAnnotation</span><span class="o">(</span><span class="n">Base64Encoded</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">        * This method will be executed before spring mvc reads the request body. We can do some pre-processing of the request body here.
-</span><span class="cm">        */</span>
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">HttpInputMessage</span> <span class="nf">beforeBodyRead</span><span class="o">(</span><span class="n">HttpInputMessage</span> <span class="n">inputMessage</span><span class="o">,</span> <span class="n">MethodParameter</span> <span class="n">parameter</span><span class="o">,</span> <span class="n">Type</span> <span class="n">targetType</span><span class="o">,</span>
-            <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">converterType</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-
-        <span class="k">try</span> <span class="o">(</span><span class="n">InputStream</span> <span class="n">inputStream</span> <span class="o">=</span> <span class="n">inputMessage</span><span class="o">.</span><span class="na">getBody</span><span class="o">())</span> <span class="o">{</span>
-
-            <span class="c1">// Read request body
-</span><span class="c1"></span>            <span class="kt">byte</span><span class="o">[]</span> <span class="n">body</span> <span class="o">=</span> <span class="n">StreamUtils</span><span class="o">.</span><span class="na">copyToByteArray</span><span class="o">(</span><span class="n">inputStream</span><span class="o">);</span>
-            
-            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;raw: {}&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">body</span><span class="o">));</span>
-
-            <span class="c1">// Base64 Decode
-</span><span class="c1"></span>            <span class="kt">byte</span><span class="o">[]</span> <span class="n">decodedBody</span> <span class="o">=</span> <span class="n">Base64</span><span class="o">.</span><span class="na">getDecoder</span><span class="o">().</span><span class="na">decode</span><span class="o">(</span><span class="n">body</span><span class="o">);</span>
-            
-            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;decode: {}&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">decodedBody</span><span class="o">,</span> <span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
-
-            <span class="c1">// Return the decoded body
-</span><span class="c1"></span>            <span class="k">return</span> <span class="k">new</span> <span class="n">DecodeHttpInputMessage</span><span class="o">(</span><span class="n">inputMessage</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">(),</span> <span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">decodedBody</span><span class="o">));</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springcloud.demo.advice</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ByteArrayInputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.lang.reflect.Type</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Base64</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.core.MethodParameter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.HttpInputMessage</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.converter.HttpMessageConverter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.util.StreamUtils</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestControllerAdvice</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">io.springcloud.demo.annotation.Base64Encoded</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@RestControllerAdvice</span> <span class="c1">// Don&#39;t forget the @RestControllerAdvice annotation. It will take effect for all RestControllers.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nd">@Slf4j</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Base64DecodeBodyAdvice</span> <span class="kd">extends</span> <span class="n">RequestBodyAdviceAdapter</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * If this method returns false, the `beforeBodyRead` method will not be executed. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">        */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">supports</span><span class="o">(</span><span class="n">MethodParameter</span> <span class="n">methodParameter</span><span class="o">,</span> <span class="n">Type</span> <span class="n">targetType</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">converterType</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// If the parameter is annotated with `@Base64Encoded` then it needs to be decoded.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="n">methodParameter</span><span class="o">.</span><span class="na">hasParameterAnnotation</span><span class="o">(</span><span class="n">Base64Encoded</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * This method will be executed before spring mvc reads the request body. We can do some pre-processing of the request body here.
+</span></span></span><span class="line"><span class="cl"><span class="cm">        */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">HttpInputMessage</span> <span class="nf">beforeBodyRead</span><span class="o">(</span><span class="n">HttpInputMessage</span> <span class="n">inputMessage</span><span class="o">,</span> <span class="n">MethodParameter</span> <span class="n">parameter</span><span class="o">,</span> <span class="n">Type</span> <span class="n">targetType</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">converterType</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">(</span><span class="n">InputStream</span> <span class="n">inputStream</span> <span class="o">=</span> <span class="n">inputMessage</span><span class="o">.</span><span class="na">getBody</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// Read request body
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="kt">byte</span><span class="o">[]</span> <span class="n">body</span> <span class="o">=</span> <span class="n">StreamUtils</span><span class="o">.</span><span class="na">copyToByteArray</span><span class="o">(</span><span class="n">inputStream</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;raw: {}&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">body</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// Base64 Decode
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="kt">byte</span><span class="o">[]</span> <span class="n">decodedBody</span> <span class="o">=</span> <span class="n">Base64</span><span class="o">.</span><span class="na">getDecoder</span><span class="o">().</span><span class="na">decode</span><span class="o">(</span><span class="n">body</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;decode: {}&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">decodedBody</span><span class="o">,</span> <span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// Return the decoded body
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">return</span> <span class="k">new</span> <span class="n">DecodeHttpInputMessage</span><span class="o">(</span><span class="n">inputMessage</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">(),</span> <span class="k">new</span> <span class="n">ByteArrayInputStream</span><span class="o">(</span><span class="n">decodedBody</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="testcontroller">TestController</h3>
 <p>A very simple Controller used to verify that the request body has been successfully decoded.</p>
@@ -687,27 +685,27 @@
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">io.springcloud.demo.controller</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestBody</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">io.springcloud.demo.annotation.Base64Encoded</span><span class="o">;</span>
-
-<span class="nd">@RestController</span>
-<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/api/test&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestController</span> <span class="o">{</span>
-
-    <span class="nd">@PostMapping</span><span class="o">(</span><span class="n">consumes</span> <span class="o">=</span> <span class="s">&#34;text/plain&#34;</span><span class="o">,</span> <span class="n">produces</span> <span class="o">=</span> <span class="s">&#34;application/json; charset=utf-8&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">test</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nd">@Base64Encoded</span> <span class="n">String</span> <span class="n">content</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">Map</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&#34;success&#34;</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="s">&#34;cotent&#34;</span><span class="o">,</span> <span class="n">content</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springcloud.demo.controller</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestBody</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">io.springcloud.demo.annotation.Base64Encoded</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/api/test&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@PostMapping</span><span class="o">(</span><span class="n">consumes</span> <span class="o">=</span> <span class="s">&#34;text/plain&#34;</span><span class="o">,</span> <span class="n">produces</span> <span class="o">=</span> <span class="s">&#34;application/json; charset=utf-8&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">test</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="nd">@Base64Encoded</span> <span class="n">String</span> <span class="n">content</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">Map</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&#34;success&#34;</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="s">&#34;cotent&#34;</span><span class="o">,</span> <span class="n">content</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="testing">Testing</h2>
 <h3 id="client-side-encrypted-request-body">Client-side encrypted request body</h3>
@@ -728,19 +726,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">io.springcloud.demo.test</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Base64</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">String</span> <span class="n">content</span> <span class="o">=</span> <span class="n">Base64</span><span class="o">.</span><span class="na">getEncoder</span><span class="o">().</span><span class="na">encodeToString</span><span class="o">(</span><span class="s">&#34;你好 Spring&#34;</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(</span><span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">content</span><span class="o">);</span>
-        <span class="c1">// 5L2g5aW9IFNwcmluZw==
-</span><span class="c1"></span>    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springcloud.demo.test</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Base64</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">String</span> <span class="n">content</span> <span class="o">=</span> <span class="n">Base64</span><span class="o">.</span><span class="na">getEncoder</span><span class="o">().</span><span class="na">encodeToString</span><span class="o">(</span><span class="s">&#34;你好 Spring&#34;</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(</span><span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">content</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 5L2g5aW9IFNwcmluZw==
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="client-request-log">Client Request Log</h3>
 <div class="highlight"><div class="chroma">
@@ -766,26 +764,26 @@
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">POST /api/test HTTP/1.1
-Content-Type: text/plain
-User-Agent: PostmanRuntime/7.28.4
-Accept: */*
-Postman-Token: fbdd10ee-8975-4765-8f3d-2c5a25a9316e
-Host: localhost
-Accept-Encoding: gzip, deflate, br
-Connection: keep-alive
-Content-Length: 20
- 
-5L2g5aW9IFNwcmluZw==
- 
-HTTP/1.1 200 OK
-Connection: keep-alive
-Transfer-Encoding: chunked
-Content-Type: application/json;charset=utf-8
-Date: Tue, 15 Mar 2022 07:45:42 GMT
- 
-{&#34;success&#34;:true,&#34;cotent&#34;:&#34;你好 Spring&#34;}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">POST /api/test HTTP/1.1
+</span></span><span class="line"><span class="cl">Content-Type: text/plain
+</span></span><span class="line"><span class="cl">User-Agent: PostmanRuntime/7.28.4
+</span></span><span class="line"><span class="cl">Accept: */*
+</span></span><span class="line"><span class="cl">Postman-Token: fbdd10ee-8975-4765-8f3d-2c5a25a9316e
+</span></span><span class="line"><span class="cl">Host: localhost
+</span></span><span class="line"><span class="cl">Accept-Encoding: gzip, deflate, br
+</span></span><span class="line"><span class="cl">Connection: keep-alive
+</span></span><span class="line"><span class="cl">Content-Length: 20
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">5L2g5aW9IFNwcmluZw==
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">HTTP/1.1 200 OK
+</span></span><span class="line"><span class="cl">Connection: keep-alive
+</span></span><span class="line"><span class="cl">Transfer-Encoding: chunked
+</span></span><span class="line"><span class="cl">Content-Type: application/json;charset=utf-8
+</span></span><span class="line"><span class="cl">Date: Tue, 15 Mar 2022 07:45:42 GMT
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">{&#34;success&#34;:true,&#34;cotent&#34;:&#34;你好 Spring&#34;}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="server-console-output-log">Server console output log</h3>
 <div class="highlight"><div class="chroma">
@@ -803,18 +801,18 @@ Date: Tue, 15 Mar 2022 07:45:42 GMT
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">2022-03-15 15:45:42.845 DEBUG 14552 --- [  XNIO-1 task-1] io.undertow.request.security             : Attempting to authenticate /api/test, authentication required: false
-2022-03-15 15:45:42.845 DEBUG 14552 --- [  XNIO-1 task-1] io.undertow.request.security             : Authentication outcome was NOT_ATTEMPTED with method io.undertow.security.impl.CachedAuthenticatedSessionMechanism@75e9e4f1 for /api/test
-2022-03-15 15:45:42.845 DEBUG 14552 --- [  XNIO-1 task-1] io.undertow.request.security             : Authentication result was ATTEMPTED for /api/test
-2022-03-15 15:45:42.846 DEBUG 14552 --- [  XNIO-1 task-1] o.s.web.servlet.DispatcherServlet        : POST &#34;/api/test&#34;, parameters={}
-2022-03-15 15:45:42.846 DEBUG 14552 --- [  XNIO-1 task-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to io.springcloud.demo.controller.TestController#test(String)
-2022-03-15 15:45:42.847  INFO 14552 --- [  XNIO-1 task-1] i.s.demo.advice.Base64DecodeBodyAdvice   : raw: 5L2g5aW9IFNwcmluZw==
-2022-03-15 15:45:42.847  INFO 14552 --- [  XNIO-1 task-1] i.s.demo.advice.Base64DecodeBodyAdvice   : decode: 你好 Spring
-2022-03-15 15:45:42.848 DEBUG 14552 --- [  XNIO-1 task-1] m.m.a.RequestResponseBodyMethodProcessor : Read &#34;text/plain;charset=UTF-8&#34; to [&#34;你好 Spring&#34;]
-2022-03-15 15:45:42.848 DEBUG 14552 --- [  XNIO-1 task-1] m.m.a.RequestResponseBodyMethodProcessor : Using &#39;application/json;charset=utf-8&#39;, given [*/*] and supported [application/json;charset=utf-8]
-2022-03-15 15:45:42.849 DEBUG 14552 --- [  XNIO-1 task-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{success=true, cotent=你好 Spring}]
-2022-03-15 15:45:42.853 DEBUG 14552 --- [  XNIO-1 task-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">2022-03-15 15:45:42.845 DEBUG 14552 --- [  XNIO-1 task-1] io.undertow.request.security             : Attempting to authenticate /api/test, authentication required: false
+</span></span><span class="line"><span class="cl">2022-03-15 15:45:42.845 DEBUG 14552 --- [  XNIO-1 task-1] io.undertow.request.security             : Authentication outcome was NOT_ATTEMPTED with method io.undertow.security.impl.CachedAuthenticatedSessionMechanism@75e9e4f1 for /api/test
+</span></span><span class="line"><span class="cl">2022-03-15 15:45:42.845 DEBUG 14552 --- [  XNIO-1 task-1] io.undertow.request.security             : Authentication result was ATTEMPTED for /api/test
+</span></span><span class="line"><span class="cl">2022-03-15 15:45:42.846 DEBUG 14552 --- [  XNIO-1 task-1] o.s.web.servlet.DispatcherServlet        : POST &#34;/api/test&#34;, parameters={}
+</span></span><span class="line"><span class="cl">2022-03-15 15:45:42.846 DEBUG 14552 --- [  XNIO-1 task-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to io.springcloud.demo.controller.TestController#test(String)
+</span></span><span class="line"><span class="cl">2022-03-15 15:45:42.847  INFO 14552 --- [  XNIO-1 task-1] i.s.demo.advice.Base64DecodeBodyAdvice   : raw: 5L2g5aW9IFNwcmluZw==
+</span></span><span class="line"><span class="cl">2022-03-15 15:45:42.847  INFO 14552 --- [  XNIO-1 task-1] i.s.demo.advice.Base64DecodeBodyAdvice   : decode: 你好 Spring
+</span></span><span class="line"><span class="cl">2022-03-15 15:45:42.848 DEBUG 14552 --- [  XNIO-1 task-1] m.m.a.RequestResponseBodyMethodProcessor : Read &#34;text/plain;charset=UTF-8&#34; to [&#34;你好 Spring&#34;]
+</span></span><span class="line"><span class="cl">2022-03-15 15:45:42.848 DEBUG 14552 --- [  XNIO-1 task-1] m.m.a.RequestResponseBodyMethodProcessor : Using &#39;application/json;charset=utf-8&#39;, given [*/*] and supported [application/json;charset=utf-8]
+</span></span><span class="line"><span class="cl">2022-03-15 15:45:42.849 DEBUG 14552 --- [  XNIO-1 task-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [{success=true, cotent=你好 Spring}]
+</span></span><span class="line"><span class="cl">2022-03-15 15:45:42.853 DEBUG 14552 --- [  XNIO-1 task-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Everything is normal.</p>
 

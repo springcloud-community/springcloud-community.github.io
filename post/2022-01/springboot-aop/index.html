@@ -34,7 +34,7 @@ So, how is AOP implemented in Spring?" />
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-01/springboot-aop/" />
@@ -75,7 +75,7 @@ So, how is AOP implemented in Spring?" />
  JDK-based dynamic proxy Dynamic proxy based on Cglib  The biggest difference between these two is that JDK-based dynamic proxies require the object being proxied to implement an interface, while Cglib-based dynamic proxies do not require the object being proxied to implement an interface.
 So, how is AOP implemented in Spring?"><meta itemprop="datePublished" content="2022-01-13T21:38:20+08:00" />
 <meta itemprop="dateModified" content="2022-01-13T21:38:20+08:00" />
-<meta itemprop="wordCount" content="1028">
+<meta itemprop="wordCount" content="1025">
 <meta itemprop="keywords" content="spring-boot,cglib,spring," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="AOP in Spring Boot, is it a JDK dynamic proxy or a Cglib dynamic proxy?"/>
 <meta name="twitter:description" content="As we all know, the underlying AOP is dynamic proxies, and there are two ways to implement dynamic proxies in Java:
@@ -400,7 +400,7 @@ So, how is AOP implemented in Spring?"/>
             <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
             
           </div>
-        <span class="more-meta"> 1028 words </span>
+        <span class="more-meta"> 1025 words </span>
           <span class="more-meta"> 5 min read </span>
 
         
@@ -473,33 +473,31 @@ So, how is AOP implemented in Spring?"/>
 </span><span class="lnt">20
 </span><span class="lnt">21
 </span><span class="lnt">22
-</span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
-<span class="nd">@ConditionalOnClass</span><span class="o">({</span> <span class="n">EnableAspectJAutoProxy</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Aspect</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Advice</span><span class="o">.</span><span class="na">class</span> <span class="o">})</span>
-<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;auto&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AopAutoConfiguration</span> <span class="o">{</span>
-
-	<span class="nd">@Configuration</span>
-	<span class="nd">@EnableAspectJAutoProxy</span><span class="o">(</span><span class="n">proxyTargetClass</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
-	<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;proxy-target-class&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;false&#34;</span><span class="o">,</span>
-			<span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">JdkDynamicAutoProxyConfiguration</span> <span class="o">{</span>
-
-	<span class="o">}</span>
-
-	<span class="nd">@Configuration</span>
-	<span class="nd">@EnableAspectJAutoProxy</span><span class="o">(</span><span class="n">proxyTargetClass</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
-	<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;proxy-target-class&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span>
-			<span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">CglibAutoProxyConfiguration</span> <span class="o">{</span>
-
-	<span class="o">}</span>
-
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ConditionalOnClass</span><span class="o">({</span> <span class="n">EnableAspectJAutoProxy</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Aspect</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Advice</span><span class="o">.</span><span class="na">class</span> <span class="o">})</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;auto&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AopAutoConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl">	<span class="nd">@EnableAspectJAutoProxy</span><span class="o">(</span><span class="n">proxyTargetClass</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;proxy-target-class&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;false&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">			<span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">JdkDynamicAutoProxyConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl">	<span class="nd">@EnableAspectJAutoProxy</span><span class="o">(</span><span class="n">proxyTargetClass</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;proxy-target-class&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">			<span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">CglibAutoProxyConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As you can see, this automation configuration is mainly discussing the value of the <code>spring.aop.proxy-target-class</code> property in the application.properties configuration file.</p>
 <p>The <code>@ConditionalOnProperty</code> annotation is what does the trick. To illustrate a few of the properties in this annotation.</p>
@@ -540,32 +538,30 @@ So, how is AOP implemented in Spring?"/>
 </span><span class="lnt">19
 </span><span class="lnt">20
 </span><span class="lnt">21
-</span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
-<span class="nd">@ConditionalOnClass</span><span class="o">({</span> <span class="n">EnableAspectJAutoProxy</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Aspect</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Advice</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
-		<span class="n">AnnotatedElement</span><span class="o">.</span><span class="na">class</span> <span class="o">})</span>
-<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;auto&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AopAutoConfiguration</span> <span class="o">{</span>
-
-	<span class="nd">@Configuration</span>
-	<span class="nd">@EnableAspectJAutoProxy</span><span class="o">(</span><span class="n">proxyTargetClass</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
-	<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;proxy-target-class&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;false&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">JdkDynamicAutoProxyConfiguration</span> <span class="o">{</span>
-
-	<span class="o">}</span>
-
-	<span class="nd">@Configuration</span>
-	<span class="nd">@EnableAspectJAutoProxy</span><span class="o">(</span><span class="n">proxyTargetClass</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
-	<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;proxy-target-class&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
-	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">CglibAutoProxyConfiguration</span> <span class="o">{</span>
-
-	<span class="o">}</span>
-
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ConditionalOnClass</span><span class="o">({</span> <span class="n">EnableAspectJAutoProxy</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Aspect</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Advice</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">		<span class="n">AnnotatedElement</span><span class="o">.</span><span class="na">class</span> <span class="o">})</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;auto&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AopAutoConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl">	<span class="nd">@EnableAspectJAutoProxy</span><span class="o">(</span><span class="n">proxyTargetClass</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;proxy-target-class&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;false&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">JdkDynamicAutoProxyConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl">	<span class="nd">@EnableAspectJAutoProxy</span><span class="o">(</span><span class="n">proxyTargetClass</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;spring.aop&#34;</span><span class="o">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s">&#34;proxy-target-class&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">CglibAutoProxyConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As you can see, most of the configuration is the same, with one area that is not quite the same, and that is the value of the <code>matchIfMissing</code> property. <strong>As you can see, starting with Spring Boot 2.0, if the user does not configure anything, the Cglib proxy is used by default.</strong></p>
 <h2 id="3-practicing">3. Practicing</h2>
@@ -587,19 +583,19 @@ So, how is AOP implemented in Spring?"/>
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="nt">&lt;/artifactId&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-aop<span class="nt">&lt;/artifactId&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-aop<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Next we create an <code>IUserService</code> interface, as follows.</p>
 <div class="highlight"><div class="chroma">
@@ -609,10 +605,10 @@ So, how is AOP implemented in Spring?"/>
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">IUserService</span> <span class="o">{</span>
-    <span class="kt">void</span> <span class="nf">hello</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">IUserService</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">hello</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Let&rsquo;s then create an implementation class for that interface.</p>
 <div class="highlight"><div class="chroma">
@@ -626,42 +622,40 @@ So, how is AOP implemented in Spring?"/>
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Service</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserServiceImpl</span> <span class="kd">implements</span> <span class="n">IUserService</span> <span class="o">{</span>
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">hello</span><span class="o">()</span> <span class="o">{</span>
-
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserServiceImpl</span> <span class="kd">implements</span> <span class="n">IUserService</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">hello</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>method does not need to be implemented.</p>
 <p>Write another simple <code>Aspect</code>.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@EnableAspectJAutoProxy</span>
-<span class="nd">@Aspect</span>
-<span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogAspect</span> <span class="o">{</span>
-    <span class="nd">@Before</span><span class="o">(</span><span class="s">&#34;execution(* org.javaboy.demo.UserServiceImpl.*(..))&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">before</span><span class="o">(</span><span class="n">JoinPoint</span> <span class="n">jp</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;jp.getSignature().getName() = &#34;</span> <span class="o">+</span> <span class="n">jp</span><span class="o">.</span><span class="na">getSignature</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@EnableAspectJAutoProxy</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Aspect</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogAspect</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Before</span><span class="o">(</span><span class="s">&#34;execution(* org.javaboy.demo.UserServiceImpl.*(..))&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">before</span><span class="o">(</span><span class="n">JoinPoint</span> <span class="n">jp</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;jp.getSignature().getName() = &#34;</span> <span class="o">+</span> <span class="n">jp</span><span class="o">.</span><span class="na">getSignature</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Finally, write a simple test method that injects an instance of <code>IUserService</code>.</p>
 <div class="highlight"><div class="chroma">
@@ -677,16 +671,16 @@ So, how is AOP implemented in Spring?"/>
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RestController</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloController</span> <span class="o">{</span>
-    <span class="nd">@Autowired</span>
-    <span class="n">IUserService</span> <span class="n">iUserService</span><span class="o">;</span>
-    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/hello&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">hello</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">iUserService</span><span class="o">.</span><span class="na">hello</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="n">IUserService</span> <span class="n">iUserService</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/hello&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">hello</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">iUserService</span><span class="o">.</span><span class="na">hello</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Execute the test. With DBUEG, you can see that IUserService is proxied by Cglib.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/01/13/5a9f895d6e6c4854a966cd823a3d8c74.png" alt="aop test"></p>
@@ -696,8 +690,8 @@ So, how is AOP implemented in Spring?"/>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.aop.proxy-target-class=false
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.aop.proxy-target-class=false
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>After adding properties, re DEBUG. the result is as follows.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/01/13/7eacdfdc1c4d4c608b512696a1cfbcde.png" alt="aop test"></p>

@@ -34,7 +34,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-03/dynamically-modifying-logger-log-levels/" />
@@ -518,89 +518,89 @@
 </span><span class="lnt">82
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">io.springboot.log.controller</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.util.LinkedHashMap</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.stream.Collectors</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestParam</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">ch.qos.logback.classic.Level</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">ch.qos.logback.classic.Logger</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">ch.qos.logback.classic.LoggerContext</span><span class="o">;</span>
-
-<span class="nd">@RestController</span>
-<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/log&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogController</span> <span class="o">{</span>
-
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">org</span><span class="o">.</span><span class="na">slf4j</span><span class="o">.</span><span class="na">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">LogController</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-
-    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/test&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&#34;level -- debug&#34;</span><span class="o">);</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;level -- info&#34;</span><span class="o">);</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;level -- warn&#34;</span><span class="o">);</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;level -- warn&#34;</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">        * 
-</span><span class="cm">        * Get all loggers and the corresponding log levels.
-</span><span class="cm">        * 
-</span><span class="cm">        * @return
-</span><span class="cm">        */</span>
-    <span class="nd">@GetMapping</span><span class="o">(</span><span class="n">produces</span> <span class="o">=</span> <span class="s">&#34;application/json; charset=utf-8&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">log</span><span class="o">()</span> <span class="o">{</span>
-
-        <span class="c1">// Get the LoggerContext of the Logback
-</span><span class="c1"></span>        <span class="n">LoggerContext</span> <span class="n">loggerContext</span> <span class="o">=</span> <span class="o">(</span><span class="n">LoggerContext</span><span class="o">)</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getILoggerFactory</span><span class="o">();</span>
-        <span class="c1">// Get all loggers of the system
-</span><span class="c1"></span>        <span class="n">List</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">loggers</span> <span class="o">=</span> <span class="n">loggerContext</span><span class="o">.</span><span class="na">getLoggerList</span><span class="o">().</span><span class="na">stream</span><span class="o">()</span>
-                <span class="c1">// There are too many loggers, and they are filtered here for demonstration purposes. Only the logger of the current controller is returned.
-</span><span class="c1"></span>                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">logger</span> <span class="o">-&gt;</span> <span class="n">logger</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">LogController</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()))</span>
-                <span class="c1">// Mapping to map
-</span><span class="c1"></span>                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">logger</span> <span class="o">-&gt;</span> <span class="o">{</span>
-                    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">retVal</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashMap</span><span class="o">&lt;&gt;();</span>
-                    <span class="c1">// logger name &amp; logger validity level
-</span><span class="c1"></span>                    <span class="n">retVal</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">logger</span><span class="o">.</span><span class="na">getEffectiveLevel</span><span class="o">().</span><span class="na">levelStr</span><span class="o">);</span>
-                    <span class="k">return</span> <span class="n">retVal</span><span class="o">;</span>
-                <span class="o">}).</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
-        <span class="k">return</span> <span class="n">loggers</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">        * Setting the log level
-</span><span class="cm">        * 
-</span><span class="cm">        * @param loggerName Logger Name
-</span><span class="cm">        * @param level      Log level
-</span><span class="cm">        * @return
-</span><span class="cm">        */</span>
-    <span class="nd">@GetMapping</span><span class="o">(</span><span class="n">path</span> <span class="o">=</span> <span class="s">&#34;/set&#34;</span><span class="o">,</span> <span class="n">produces</span> <span class="o">=</span> <span class="s">&#34;text/plain; charset=utf-8&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">set</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;logger&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">loggerName</span><span class="o">,</span> <span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;level&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">level</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">LoggerContext</span> <span class="n">loggerContext</span> <span class="o">=</span> <span class="o">(</span><span class="n">LoggerContext</span><span class="o">)</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getILoggerFactory</span><span class="o">();</span>
-
-        <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">loggerContext</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">loggerName</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">logger</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="s">&#34;Logger does not exist.&#34;</span> <span class="o">+</span> <span class="n">loggerName</span><span class="o">;</span>
-        <span class="o">}</span>
-
-        <span class="n">Level</span> <span class="n">newLevel</span> <span class="o">=</span> <span class="n">Level</span><span class="o">.</span><span class="na">toLevel</span><span class="o">(</span><span class="n">level</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">newLevel</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="s">&#34;Not a legal log level:：&#34;</span> <span class="o">+</span> <span class="n">level</span><span class="o">;</span>
-        <span class="o">}</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="na">setLevel</span><span class="o">(</span><span class="n">newLevel</span><span class="o">);</span>
-
-        <span class="k">return</span> <span class="s">&#34;OK&#34;</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springboot.log.controller</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.LinkedHashMap</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.stream.Collectors</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestParam</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ch.qos.logback.classic.Level</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ch.qos.logback.classic.Logger</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ch.qos.logback.classic.LoggerContext</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/log&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">LogController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">org</span><span class="o">.</span><span class="na">slf4j</span><span class="o">.</span><span class="na">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">LogController</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/test&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">LOGGER</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&#34;level -- debug&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;level -- info&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">LOGGER</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;level -- warn&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">LOGGER</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;level -- warn&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * 
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * Get all loggers and the corresponding log levels.
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * 
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * @return
+</span></span></span><span class="line"><span class="cl"><span class="cm">        */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="n">produces</span> <span class="o">=</span> <span class="s">&#34;application/json; charset=utf-8&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">log</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Get the LoggerContext of the Logback
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">LoggerContext</span> <span class="n">loggerContext</span> <span class="o">=</span> <span class="o">(</span><span class="n">LoggerContext</span><span class="o">)</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getILoggerFactory</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Get all loggers of the system
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">List</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">loggers</span> <span class="o">=</span> <span class="n">loggerContext</span><span class="o">.</span><span class="na">getLoggerList</span><span class="o">().</span><span class="na">stream</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// There are too many loggers, and they are filtered here for demonstration purposes. Only the logger of the current controller is returned.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">logger</span> <span class="o">-&gt;</span> <span class="n">logger</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">LogController</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">()))</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Mapping to map
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">logger</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">retVal</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedHashMap</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">                    <span class="c1">// logger name &amp; logger validity level
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="n">retVal</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">logger</span><span class="o">.</span><span class="na">getEffectiveLevel</span><span class="o">().</span><span class="na">levelStr</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">return</span> <span class="n">retVal</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}).</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">loggers</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * Setting the log level
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * 
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * @param loggerName Logger Name
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * @param level      Log level
+</span></span></span><span class="line"><span class="cl"><span class="cm">        * @return
+</span></span></span><span class="line"><span class="cl"><span class="cm">        */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="n">path</span> <span class="o">=</span> <span class="s">&#34;/set&#34;</span><span class="o">,</span> <span class="n">produces</span> <span class="o">=</span> <span class="s">&#34;text/plain; charset=utf-8&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">set</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;logger&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">loggerName</span><span class="o">,</span> <span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;level&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">level</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">LoggerContext</span> <span class="n">loggerContext</span> <span class="o">=</span> <span class="o">(</span><span class="n">LoggerContext</span><span class="o">)</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getILoggerFactory</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">loggerContext</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">loggerName</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">logger</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="s">&#34;Logger does not exist.&#34;</span> <span class="o">+</span> <span class="n">loggerName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Level</span> <span class="n">newLevel</span> <span class="o">=</span> <span class="n">Level</span><span class="o">.</span><span class="na">toLevel</span><span class="o">(</span><span class="n">level</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">newLevel</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="s">&#34;Not a legal log level:：&#34;</span> <span class="o">+</span> <span class="n">level</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="na">setLevel</span><span class="o">(</span><span class="n">newLevel</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s">&#34;OK&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="test">Test</h2>
 <p>Get the logger&rsquo;s log level.</p>
@@ -615,14 +615,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">curl http://localhost:8080/log
-
-<span class="o">[</span>
-    <span class="o">{</span>
-        <span class="s2">&#34;io.springboot.log.controller.LogController&#34;</span>: <span class="s2">&#34;INFO&#34;</span>
-    <span class="o">}</span>
-<span class="o">]</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl http://localhost:8080/log
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>
+</span></span><span class="line"><span class="cl">    <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;io.springboot.log.controller.LogController&#34;</span>: <span class="s2">&#34;INFO&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">]</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Set the logger&rsquo;s log level.</p>
 <div class="highlight"><div class="chroma">
@@ -632,10 +632,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">curl http://localhost:8080/log/set?logger<span class="o">=</span>io.springboot.log.controller.LogController<span class="p">&amp;</span><span class="nv">level</span><span class="o">=</span>debug
-
-OK
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl http://localhost:8080/log/set?logger<span class="o">=</span>io.springboot.log.controller.LogController<span class="p">&amp;</span><span class="nv">level</span><span class="o">=</span>debug
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">OK
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Get the logging level of the logger again. The modification has taken effect.</p>
 <div class="highlight"><div class="chroma">
@@ -649,14 +649,14 @@ OK
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">curl http://localhost:8080/log
-
-<span class="o">[</span>
-    <span class="o">{</span>
-        <span class="s2">&#34;io.springboot.log.controller.LogController&#34;</span>: <span class="s2">&#34;DEBUG&#34;</span>
-    <span class="o">}</span>
-<span class="o">]</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl http://localhost:8080/log
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>
+</span></span><span class="line"><span class="cl">    <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;io.springboot.log.controller.LogController&#34;</span>: <span class="s2">&#34;DEBUG&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">]</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div>
     </div>

@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-01/feign-token-relay/" />
@@ -452,20 +452,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@FeignClient</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;foo-service&#34;</span><span class="o">,</span><span class="n">fallback</span> <span class="o">=</span> <span class="n">FooClient</span><span class="o">.</span><span class="na">Fallback</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FooClient</span> <span class="o">{</span>
-    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/foo/bar&#34;</span><span class="o">)</span>
-    <span class="n">Rest</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;</span> <span class="nf">bar</span><span class="o">();</span>
-
-    <span class="nd">@Component</span>
-    <span class="kd">class</span> <span class="nc">Fallback</span> <span class="kd">implements</span> <span class="n">FooClient</span> <span class="o">{</span>
-        <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="n">Rest</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;</span> <span class="nf">bar</span><span class="o">()</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">RestBody</span><span class="o">.</span><span class="na">fallback</span><span class="o">();</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@FeignClient</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;foo-service&#34;</span><span class="o">,</span><span class="n">fallback</span> <span class="o">=</span> <span class="n">FooClient</span><span class="o">.</span><span class="na">Fallback</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FooClient</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/foo/bar&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Rest</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;</span> <span class="nf">bar</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">class</span> <span class="nc">Fallback</span> <span class="kd">implements</span> <span class="n">FooClient</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">public</span> <span class="n">Rest</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;</span> <span class="nf">bar</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">RestBody</span><span class="o">.</span><span class="na">fallback</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>When we call the Feign interface, a dynamic proxy is used to generate the proxy class for the interface for us to call. If we don&rsquo;t turn on fault tolerance we can extract the authentication object <code>JwtAuthenticationToken</code> from the Spring Security provided <code>SecurityContext</code> object to the resource server which contains the JWT token and then we can implement Feign&rsquo;s interceptor interface <code>RequestInterceptor</code> to place the token in the request header, with the following pseudo-code.</p>
 <div class="highlight"><div class="chroma">
@@ -488,23 +488,23 @@
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
-</span><span class="cm"> * 需要注入Spring IoC
-</span><span class="cm"> **/</span>
-<span class="kd">static</span> <span class="kd">class</span> <span class="nc">BearerTokenRequestInterceptor</span> <span class="kd">implements</span> <span class="n">RequestInterceptor</span> <span class="o">{</span>
-        <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">RequestTemplate</span> <span class="n">template</span><span class="o">)</span> <span class="o">{</span>
-            <span class="kd">final</span> <span class="n">String</span> <span class="n">authorization</span> <span class="o">=</span> <span class="n">HttpHeaders</span><span class="o">.</span><span class="na">AUTHORIZATION</span><span class="o">;</span>
-            <span class="n">Authentication</span> <span class="n">authentication</span> <span class="o">=</span> <span class="n">SecurityContextHolder</span><span class="o">.</span><span class="na">getContext</span><span class="o">().</span><span class="na">getAuthentication</span><span class="o">();</span>
-
-            <span class="k">if</span> <span class="o">(</span><span class="n">authentication</span> <span class="k">instanceof</span> <span class="n">JwtAuthenticationToken</span><span class="o">){</span>
-                <span class="n">JwtAuthenticationToken</span> <span class="n">jwtAuthenticationToken</span> <span class="o">=</span> <span class="o">(</span><span class="n">JwtAuthenticationToken</span><span class="o">)</span> <span class="n">authentication</span><span class="o">;</span>
-                <span class="n">String</span> <span class="n">tokenValue</span> <span class="o">=</span> <span class="n">jwtAuthenticationToken</span><span class="o">.</span><span class="na">getToken</span><span class="o">().</span><span class="na">getTokenValue</span><span class="o">();</span>
-                <span class="n">template</span><span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="n">authorization</span><span class="o">,</span><span class="s">&#34;Bearer &#34;</span><span class="o">+</span><span class="n">tokenValue</span><span class="o">);</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 需要注入Spring IoC
+</span></span></span><span class="line"><span class="cl"><span class="cm"> **/</span>
+</span></span><span class="line"><span class="cl"><span class="kd">static</span> <span class="kd">class</span> <span class="nc">BearerTokenRequestInterceptor</span> <span class="kd">implements</span> <span class="n">RequestInterceptor</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">RequestTemplate</span> <span class="n">template</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">final</span> <span class="n">String</span> <span class="n">authorization</span> <span class="o">=</span> <span class="n">HttpHeaders</span><span class="o">.</span><span class="na">AUTHORIZATION</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Authentication</span> <span class="n">authentication</span> <span class="o">=</span> <span class="n">SecurityContextHolder</span><span class="o">.</span><span class="na">getContext</span><span class="o">().</span><span class="na">getAuthentication</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">authentication</span> <span class="k">instanceof</span> <span class="n">JwtAuthenticationToken</span><span class="o">){</span>
+</span></span><span class="line"><span class="cl">                <span class="n">JwtAuthenticationToken</span> <span class="n">jwtAuthenticationToken</span> <span class="o">=</span> <span class="o">(</span><span class="n">JwtAuthenticationToken</span><span class="o">)</span> <span class="n">authentication</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">String</span> <span class="n">tokenValue</span> <span class="o">=</span> <span class="n">jwtAuthenticationToken</span><span class="o">.</span><span class="na">getToken</span><span class="o">().</span><span class="na">getTokenValue</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">                <span class="n">template</span><span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="n">authorization</span><span class="o">,</span><span class="s">&#34;Bearer &#34;</span><span class="o">+</span><span class="n">tokenValue</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This wouldn&rsquo;t be a problem if we didn&rsquo;t turn on fault tolerance. Fault tolerance is basically turned on to prevent an avalanche of services in the call chain. At this point, we can&rsquo;t get <code>Authentication</code> from <code>SecurityContextHolder</code>. This is because the Feign call is then made in another sub-thread opened under the caller&rsquo;s call thread. Since the fault-tolerant component I&rsquo;m using is <strong>Resilience4J</strong> , the source code for the corresponding thread is in <code>Resilience4JCircuitBreaker</code>.</p>
 <div class="highlight"><div class="chroma">
@@ -512,8 +512,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Supplier</span><span class="o">&lt;</span><span class="n">Future</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">futureSupplier</span> <span class="o">=</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">executorService</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="n">toRun</span><span class="o">::</span><span class="n">get</span><span class="o">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Supplier</span><span class="o">&lt;</span><span class="n">Future</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">futureSupplier</span> <span class="o">=</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">executorService</span><span class="o">.</span><span class="na">submit</span><span class="o">(</span><span class="n">toRun</span><span class="o">::</span><span class="n">get</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>SecurityContextHolder</code> saves information by default through the <code>ThreadLocal</code> implementation, which we all know is not cross-threaded, and Feign&rsquo;s interceptor happens to be in the child thread at this time, <strong>so Feign with fault tolerance (circuitBreaker) turned on can not be directly token relay</strong> .</p>
 <blockquote>
@@ -543,25 +543,25 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">Supplier</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="nf">asSupplier</span><span class="o">(</span><span class="kd">final</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kd">final</span> <span class="n">RequestAttributes</span> <span class="n">requestAttributes</span> <span class="o">=</span> <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">getRequestAttributes</span><span class="o">();</span>
-        <span class="k">return</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-            <span class="k">try</span> <span class="o">{</span>
-                <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">setRequestAttributes</span><span class="o">(</span><span class="n">requestAttributes</span><span class="o">);</span>
-                <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">dispatch</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">method</span><span class="o">).</span><span class="na">invoke</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="k">catch</span> <span class="o">(</span><span class="n">RuntimeException</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">throw</span> <span class="n">throwable</span><span class="o">;</span>
-            <span class="o">}</span>
-            <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">throwable</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="k">finally</span> <span class="o">{</span>
-                <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">resetRequestAttributes</span><span class="o">();</span>
-            <span class="o">}</span>
-        <span class="o">};</span>
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">Supplier</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="nf">asSupplier</span><span class="o">(</span><span class="kd">final</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">final</span> <span class="n">RequestAttributes</span> <span class="n">requestAttributes</span> <span class="o">=</span> <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">getRequestAttributes</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">setRequestAttributes</span><span class="o">(</span><span class="n">requestAttributes</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">dispatch</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">method</span><span class="o">).</span><span class="na">invoke</span><span class="o">(</span><span class="n">args</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">catch</span> <span class="o">(</span><span class="n">RuntimeException</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">throw</span> <span class="n">throwable</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">throwable</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">throwable</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">finally</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">resetRequestAttributes</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This is the execution code of the Feign proxy class and we can see that before the execution :</p>
 <div class="highlight"><div class="chroma">
@@ -569,8 +569,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="n">RequestAttributes</span> <span class="n">requestAttributes</span> <span class="o">=</span> <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">getRequestAttributes</span><span class="o">();</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">final</span> <span class="n">RequestAttributes</span> <span class="n">requestAttributes</span> <span class="o">=</span> <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">getRequestAttributes</span><span class="o">();</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Here is to get information about the request in the calling thread, including <code>ServletHttpRequest</code>, <code>ServletHttpResponse</code> and other information. Immediately after the lambda code to Setter this information again into.</p>
 <div class="highlight"><div class="chroma">
@@ -578,8 +578,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">setRequestAttributes</span><span class="o">(</span><span class="n">requestAttributes</span><span class="o">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">setRequestAttributes</span><span class="o">(</span><span class="n">requestAttributes</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>If this were an operation performed in one thread, it would be redundant. In fact the <code>Supplier</code> return value is executed in another thread. The purpose of this is to preserve some request metadata across threads.</p>
 <h3 id="inheritablethreadlocal">InheritableThreadLocal</h3>
@@ -597,16 +597,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">RequestContextHolder</span>  <span class="o">{</span>
-
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">ThreadLocal</span><span class="o">&lt;</span><span class="n">RequestAttributes</span><span class="o">&gt;</span> <span class="n">requestAttributesHolder</span> <span class="o">=</span>
-            <span class="k">new</span> <span class="n">NamedThreadLocal</span><span class="o">&lt;&gt;(</span><span class="s">&#34;Request attributes&#34;</span><span class="o">);</span>
-
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">ThreadLocal</span><span class="o">&lt;</span><span class="n">RequestAttributes</span><span class="o">&gt;</span> <span class="n">inheritableRequestAttributesHolder</span> <span class="o">=</span>
-            <span class="k">new</span> <span class="n">NamedInheritableThreadLocal</span><span class="o">&lt;&gt;(</span><span class="s">&#34;Request context&#34;</span><span class="o">);</span>
-<span class="c1">// 省略
-</span><span class="c1"></span><span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">RequestContextHolder</span>  <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">ThreadLocal</span><span class="o">&lt;</span><span class="n">RequestAttributes</span><span class="o">&gt;</span> <span class="n">requestAttributesHolder</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="n">NamedThreadLocal</span><span class="o">&lt;&gt;(</span><span class="s">&#34;Request attributes&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">ThreadLocal</span><span class="o">&lt;</span><span class="n">RequestAttributes</span><span class="o">&gt;</span> <span class="n">inheritableRequestAttributesHolder</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">            <span class="k">new</span> <span class="n">NamedInheritableThreadLocal</span><span class="o">&lt;&gt;(</span><span class="s">&#34;Request context&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 省略
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The <code>RequestContextHolder</code> maintains two containers, a <code>ThreadLocal</code> that cannot cross threads and a <code>NamedInheritableThreadLocal</code> that implements the <code>InheritableThreadLocal</code>.</p>
 <p>The <code>InheritableThreadLocal</code> is able to pass data from the parent thread to the child thread, based on this principle the <code>RequestContextHolder</code> brings the caller&rsquo;s request information into the child thread, and with the help of this principle the token relay can be implemented.</p>
@@ -638,29 +638,29 @@
 </span><span class="lnt">22
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"> <span class="cm">/**
-</span><span class="cm">     * 令牌中继
-</span><span class="cm">     */</span>
-    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">BearerTokenRequestInterceptor</span> <span class="kd">implements</span> <span class="n">RequestInterceptor</span> <span class="o">{</span>
-        <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Pattern</span> <span class="n">BEARER_TOKEN_HEADER_PATTERN</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;^Bearer (?&lt;token&gt;[a-zA-Z0-9-._~+/]+=*)$&#34;</span><span class="o">,</span>
-                <span class="n">Pattern</span><span class="o">.</span><span class="na">CASE_INSENSITIVE</span><span class="o">);</span>
-
-        <span class="nd">@Override</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">RequestTemplate</span> <span class="n">template</span><span class="o">)</span> <span class="o">{</span>
-            <span class="kd">final</span> <span class="n">String</span> <span class="n">authorization</span> <span class="o">=</span> <span class="n">HttpHeaders</span><span class="o">.</span><span class="na">AUTHORIZATION</span><span class="o">;</span>
-            <span class="n">ServletRequestAttributes</span> <span class="n">requestAttributes</span> <span class="o">=</span> <span class="o">(</span><span class="n">ServletRequestAttributes</span><span class="o">)</span> <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">getRequestAttributes</span><span class="o">();</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">requestAttributes</span><span class="o">))</span> <span class="o">{</span>
-                <span class="n">String</span> <span class="n">authorizationHeader</span> <span class="o">=</span> <span class="n">requestAttributes</span><span class="o">.</span><span class="na">getRequest</span><span class="o">().</span><span class="na">getHeader</span><span class="o">(</span><span class="n">HttpHeaders</span><span class="o">.</span><span class="na">AUTHORIZATION</span><span class="o">);</span>
-                <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">BEARER_TOKEN_HEADER_PATTERN</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">authorizationHeader</span><span class="o">);</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">matches</span><span class="o">())</span> <span class="o">{</span>
-                    <span class="c1">// 清除token头 避免传染
-</span><span class="c1"></span>                    <span class="n">template</span><span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="n">authorization</span><span class="o">);</span>
-                    <span class="n">template</span><span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="n">authorization</span><span class="o">,</span> <span class="n">authorizationHeader</span><span class="o">);</span>
-                <span class="o">}</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 令牌中继
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">BearerTokenRequestInterceptor</span> <span class="kd">implements</span> <span class="n">RequestInterceptor</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Pattern</span> <span class="n">BEARER_TOKEN_HEADER_PATTERN</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&#34;^Bearer (?&lt;token&gt;[a-zA-Z0-9-._~+/]+=*)$&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">Pattern</span><span class="o">.</span><span class="na">CASE_INSENSITIVE</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">RequestTemplate</span> <span class="n">template</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">final</span> <span class="n">String</span> <span class="n">authorization</span> <span class="o">=</span> <span class="n">HttpHeaders</span><span class="o">.</span><span class="na">AUTHORIZATION</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ServletRequestAttributes</span> <span class="n">requestAttributes</span> <span class="o">=</span> <span class="o">(</span><span class="n">ServletRequestAttributes</span><span class="o">)</span> <span class="n">RequestContextHolder</span><span class="o">.</span><span class="na">getRequestAttributes</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">Objects</span><span class="o">.</span><span class="na">nonNull</span><span class="o">(</span><span class="n">requestAttributes</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">String</span> <span class="n">authorizationHeader</span> <span class="o">=</span> <span class="n">requestAttributes</span><span class="o">.</span><span class="na">getRequest</span><span class="o">().</span><span class="na">getHeader</span><span class="o">(</span><span class="n">HttpHeaders</span><span class="o">.</span><span class="na">AUTHORIZATION</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">BEARER_TOKEN_HEADER_PATTERN</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">authorizationHeader</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">matches</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="c1">// 清除token头 避免传染
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="n">template</span><span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="n">authorization</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">template</span><span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="n">authorization</span><span class="o">,</span> <span class="n">authorizationHeader</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This way when you call <code>FooClient.bar()</code>, the resource server (OAuth2 Resource Server) in <code>foo-service</code> can also get the caller&rsquo;s token and thus the user&rsquo;s information to handle resource permissions and operations.</p>
 <blockquote>

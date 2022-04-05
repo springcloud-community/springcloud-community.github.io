@@ -33,7 +33,7 @@ So how do we do this? We will create a git project which contains all your prope
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2021-12/spring-cloud-config-server-step-by-step-14fd/" />
@@ -472,10 +472,10 @@ Open up your main Spring boot class with @SpringBootApplication and add <code>@E
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">mkdir config-files
-<span class="nb">cd</span> config-files
-git init
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">mkdir config-files
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> config-files
+</span></span><span class="line"><span class="cl">git init
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>now create the property file that you will map to your config server. We will be naming our microservice : microservice-one
 File Name : miroservice-one.properties</p>
@@ -484,8 +484,8 @@ File Name : miroservice-one.properties</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">microservice-one.value=10
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">microservice-one.value=10
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now add and commit your changes. Else the spring boot app will not read it</p>
 <div class="highlight"><div class="chroma">
@@ -494,9 +494,9 @@ File Name : miroservice-one.properties</p>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">git add .
-git commit -m <span class="s2">&#34;created property file for microservice-one&#34;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">git add .
+</span></span><span class="line"><span class="cl">git commit -m <span class="s2">&#34;created property file for microservice-one&#34;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Note: you can also use yml files here</p>
 <h3 id="14-update-applicationproperties">1.4 Update application.properties</h3>
@@ -508,10 +508,10 @@ git commit -m <span class="s2">&#34;created property file for microservice-one&#
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.application.name = spring-cloud-config-server
-server.port=8888
-spring.cloud.config.server.git.uri = file:///c:/Users/madsouza/Desktop/blogPost/config-files
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.application.name = spring-cloud-config-server
+</span></span><span class="line"><span class="cl">server.port=8888
+</span></span><span class="line"><span class="cl">spring.cloud.config.server.git.uri = file:///c:/Users/madsouza/Desktop/blogPost/config-files
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The config server is generally set to port 8888.
 Windows users should make sure you are using the / and not \ when copying the path.</p>
@@ -536,11 +536,11 @@ where microservice-one is the name of the file we have created.</p>
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.application.name = microservice-one
-spring.config.import = optional:configserver:http://localhost:8888
-#backup value
-microservice-one.value=99
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.application.name = microservice-one
+</span></span><span class="line"><span class="cl">spring.config.import = optional:configserver:http://localhost:8888
+</span></span><span class="line"><span class="cl">#backup value
+</span></span><span class="line"><span class="cl">microservice-one.value=99
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Here, we are basically importing the config server and providing the URL for the microservice.
 We can also mention the backup value in case for some reason we cannot find the config server.</p>
@@ -567,24 +567,24 @@ We can also mention the backup value in case for some reason we cannot find the 
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.markbdsouza.com.microserviceone</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.springframework.boot.context.properties.ConfigurationProperties</span><span class="o">;</span>
-
-<span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="s">&#34;microservice-one&#34;</span><span class="o">)</span>
-<span class="nd">@org.springframework.context.annotation.Configuration</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Configuration</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">value</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getValue</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setValue</span><span class="o">(</span><span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.markbdsouza.com.microserviceone</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.context.properties.ConfigurationProperties</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="s">&#34;microservice-one&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@org.springframework.context.annotation.Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Configuration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">value</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getValue</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setValue</span><span class="o">(</span><span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Here we are setting the Configuration Properties annotation with the name of the file. This Class will automatically get set when the spring boot application is run and it would set the value that is present in the Spring Cloud Config Server</p>
 <h3 id="24-create-a-rest-controller">2.4 Create a Rest controller</h3>
@@ -610,24 +610,24 @@ We can also mention the backup value in case for some reason we cannot find the 
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.markbdsouza.com.microserviceone</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
-
-<span class="nd">@RestController</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MicroServiceController</span> <span class="o">{</span>
-
-    <span class="nd">@Autowired</span>
-    <span class="n">Configuration</span> <span class="n">configuration</span><span class="o">;</span>
-
-    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/endpoint&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">retrieveLimits</span><span class="o">(){</span>
-        <span class="k">return</span> <span class="n">configuration</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.markbdsouza.com.microserviceone</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MicroServiceController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Configuration</span> <span class="n">configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/endpoint&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">retrieveLimits</span><span class="o">(){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">configuration</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Here we are auto-wiring the configuration class we created in the previous step and setting it at the &lsquo;/endpoint&rsquo; endpoint.</p>
 <h3 id="25-test-it-out">2.5 Test it out</h3>
@@ -646,8 +646,8 @@ File Name: microservice-one-dev.properties</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">microservice-one.value=50
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">microservice-one.value=50
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>File Name: microservice-one-qa.properties</p>
 <div class="highlight"><div class="chroma">
@@ -655,8 +655,8 @@ File Name: microservice-one-dev.properties</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">microservice-one.value=75
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">microservice-one.value=75
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>make sure you do a git add and commit</p>
 <div class="highlight"><div class="chroma">
@@ -665,9 +665,9 @@ File Name: microservice-one-dev.properties</p>
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">git add .
-git commit -m <span class="s2">&#34;created additional dev qa property files&#34;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">git add .
+</span></span><span class="line"><span class="cl">git commit -m <span class="s2">&#34;created additional dev qa property files&#34;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>That&rsquo;s all you need to add new properties files. You don&rsquo;t need to touch the spring boot application we created as such. Just check in the files created.</p>
 <h3 id="32-test-the-profile-related-server-endpoints">3.2) Test the profile related server endpoints</h3>
@@ -693,13 +693,13 @@ The overall file would now look like</p>
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.application.name = microservice-one
-spring.config.import = optional:configserver:http://localhost:8888
-spring.profiles.active=dev
-
-#backup value
-microservice-one.value=99
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.application.name = microservice-one
+</span></span><span class="line"><span class="cl">spring.config.import = optional:configserver:http://localhost:8888
+</span></span><span class="line"><span class="cl">spring.profiles.active=dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">#backup value
+</span></span><span class="line"><span class="cl">microservice-one.value=99
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="34-one-last-test">3.4) One last Test</h3>
 <p>Now if we hit the same endpoint we did earlier : <code>http://localhost:8080/endpoint</code></p>

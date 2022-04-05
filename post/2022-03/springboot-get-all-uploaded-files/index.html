@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-03/springboot-get-all-uploaded-files/" />
@@ -428,12 +428,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@PostMapping</span><span class="o">(</span><span class="n">path</span> <span class="o">=</span> <span class="s">&#34;/upload&#34;</span><span class="o">,</span> <span class="n">consumes</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">MULTIPART_FORM_DATA_VALUE</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">upload</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;file1&#34;</span><span class="o">)</span> <span class="n">MultipartFile</span> <span class="n">file1</span><span class="o">,</span>
-        <span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;file2&#34;</span><span class="o">)</span> <span class="n">MultipartFile</span> <span class="n">file2</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
-    <span class="c1">// Processing of uploaded files...
-</span><span class="c1"></span><span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@PostMapping</span><span class="o">(</span><span class="n">path</span> <span class="o">=</span> <span class="s">&#34;/upload&#34;</span><span class="o">,</span> <span class="n">consumes</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">MULTIPART_FORM_DATA_VALUE</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">upload</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;file1&#34;</span><span class="o">)</span> <span class="n">MultipartFile</span> <span class="n">file1</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;file2&#34;</span><span class="o">)</span> <span class="n">MultipartFile</span> <span class="n">file2</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Processing of uploaded files...
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The code above the <code>upload</code> method declares 2 parameters (including the form name of the file), representing 2 files. If we don&rsquo;t know how many files are uploaded and the name of the file form. Then how to get all the uploaded files?</p>
 <p>Servlet 3.0 provides a new <code>Part</code> interface which describes each uploaded file in the <code>multipart/form-data</code> request.</p>
@@ -477,43 +477,43 @@
 </span><span class="lnt">36
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@PostMapping</span><span class="o">(</span><span class="n">path</span> <span class="o">=</span> <span class="s">&#34;/upload&#34;</span><span class="o">,</span> <span class="n">consumes</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">MULTIPART_FORM_DATA_VALUE</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">upload</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
-
-    <span class="c1">// Each file in a Multipart request
-</span><span class="c1"></span>    <span class="n">Collection</span><span class="o">&lt;</span><span class="n">Part</span><span class="o">&gt;</span> <span class="n">parts</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParts</span><span class="o">();</span>
-
-    <span class="k">for</span> <span class="o">(</span><span class="n">Part</span> <span class="n">part</span> <span class="o">:</span> <span class="n">parts</span><span class="o">)</span> <span class="o">{</span>
-        
-        <span class="c1">// Type of file
-</span><span class="c1"></span>        <span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getContentType</span><span class="o">();</span>
-        <span class="c1">// Form Name
-</span><span class="c1"></span>        <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
-        <span class="c1">// Original file name
-</span><span class="c1"></span>        <span class="n">String</span> <span class="n">fileName</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getSubmittedFileName</span><span class="o">();</span>
-        <span class="c1">// File Size
-</span><span class="c1"></span>        <span class="kt">long</span> <span class="n">size</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getSize</span><span class="o">();</span>
-
-        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;contentType={}, name={}, fileName={}, size={}&#34;</span><span class="o">,</span> <span class="n">contentType</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">fileName</span><span class="o">,</span> <span class="n">size</span><span class="o">);</span>
-        
-        
-        <span class="c1">// Read file contents
-</span><span class="c1"></span>        <span class="k">try</span><span class="o">(</span><span class="n">InputStream</span> <span class="n">inputStream</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()){</span>
-            
-        <span class="o">}</span>
-        
-        <span class="c1">// It is also possible to write directly to the specified file.
-</span><span class="c1"></span>        <span class="c1">// part.write(String fileName);
-</span><span class="c1"></span>        
-        <span class="c1">// Some other methods about header.
-</span><span class="c1"></span>        
-        <span class="c1">// part.getHeader(String name);
-</span><span class="c1"></span>        <span class="c1">// part.getHeaderNames();
-</span><span class="c1"></span>        <span class="c1">// part.getHeaders(String name);
-</span><span class="c1"></span>        
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@PostMapping</span><span class="o">(</span><span class="n">path</span> <span class="o">=</span> <span class="s">&#34;/upload&#34;</span><span class="o">,</span> <span class="n">consumes</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">MULTIPART_FORM_DATA_VALUE</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">upload</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Each file in a Multipart request
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Collection</span><span class="o">&lt;</span><span class="n">Part</span><span class="o">&gt;</span> <span class="n">parts</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParts</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="o">(</span><span class="n">Part</span> <span class="n">part</span> <span class="o">:</span> <span class="n">parts</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// Type of file
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getContentType</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Form Name
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Original file name
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">String</span> <span class="n">fileName</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getSubmittedFileName</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// File Size
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kt">long</span> <span class="n">size</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getSize</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;contentType={}, name={}, fileName={}, size={}&#34;</span><span class="o">,</span> <span class="n">contentType</span><span class="o">,</span> <span class="n">name</span><span class="o">,</span> <span class="n">fileName</span><span class="o">,</span> <span class="n">size</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// Read file contents
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">try</span><span class="o">(</span><span class="n">InputStream</span> <span class="n">inputStream</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">()){</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// It is also possible to write directly to the specified file.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// part.write(String fileName);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        
+</span></span><span class="line"><span class="cl">        <span class="c1">// Some other methods about header.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        
+</span></span><span class="line"><span class="cl">        <span class="c1">// part.getHeader(String name);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// part.getHeaderNames();
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// part.getHeaders(String name);
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Note that the contents of a file can only be read once. <code>part.getInputStream()</code> and <code>part.write(String fileName)</code> can only execute one of these methods.</p>
 <blockquote>

@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-security-oauth2-authorization-request/" />
@@ -449,16 +449,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
-<span class="kd">public</span> <span class="n">OAuth2AuthorizationRequest</span> <span class="nf">resolve</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// registrationId是通过uri路径参数/oauth2/authorization/{registrationId}获得的
-</span><span class="c1"></span>   <span class="n">String</span> <span class="n">registrationId</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">resolveRegistrationId</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
-    <span class="c1">// 然后去请求对象request中提取key为action的参数，默认值是login
-</span><span class="c1"></span>   <span class="n">String</span> <span class="n">redirectUriAction</span> <span class="o">=</span> <span class="n">getAction</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="s">&#34;login&#34;</span><span class="o">);</span>
-    <span class="c1">// 然后进入根本的解析方法
-</span><span class="c1"></span>   <span class="k">return</span> <span class="n">resolve</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">registrationId</span><span class="o">,</span> <span class="n">redirectUriAction</span><span class="o">);</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">OAuth2AuthorizationRequest</span> <span class="nf">resolve</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// registrationId是通过uri路径参数/oauth2/authorization/{registrationId}获得的
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">String</span> <span class="n">registrationId</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">resolveRegistrationId</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 然后去请求对象request中提取key为action的参数，默认值是login
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="n">String</span> <span class="n">redirectUriAction</span> <span class="o">=</span> <span class="n">getAction</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="s">&#34;login&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 然后进入根本的解析方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="k">return</span> <span class="n">resolve</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">registrationId</span><span class="o">,</span> <span class="n">redirectUriAction</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The <code>resolve(request, registrationId, redirectUriAction)</code> method inside the above method is the fundamental method to finally extract the <code>OAuth2AuthorizationRequest</code> from <code>/oauth2/authorization</code>. There&rsquo;s a lot of code but I&rsquo;ll try to diagram it in a way that&rsquo;s easy to understand. The <code>resolve</code> method assembles different <code>OAuth2AuthorizationRequest</code>s depending on the authorization type (<code>AuthorizationGrantType</code>).</p>
 <h2 id="3-oauth2authorizationrequest">3. OAuth2AuthorizationRequest</h2>
@@ -488,15 +488,15 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-  <span class="nt">&#34;authorizationGrantType&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;responseType&#34;</span><span class="p">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;additionalParameters&#34;</span><span class="p">:</span> <span class="p">{},</span>
-  <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&#34;registration_id&#34;</span><span class="p">:</span> <span class="s2">&#34;{registrationId}&#34;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;authorizationGrantType&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;responseType&#34;</span><span class="p">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;additionalParameters&#34;</span><span class="p">:</span> <span class="p">{},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;registration_id&#34;</span><span class="p">:</span> <span class="s2">&#34;{registrationId}&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The above four parameters when <code>scope</code> contains <code>openid</code> and <code>client-authentication-method</code> is not <code>none</code>.</p>
 <div class="highlight"><div class="chroma">
@@ -514,18 +514,18 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-  <span class="nt">&#34;authorizationGrantType&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;responseType&#34;</span><span class="p">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;additionalParameters&#34;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&#34;nonce&#34;</span><span class="p">:</span> <span class="s2">&#34;{nonce}的Hash值&#34;</span>
-  <span class="p">},</span>
-  <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&#34;registration_id&#34;</span><span class="p">:</span> <span class="s2">&#34;{registrationId}&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;nonce&#34;</span><span class="p">:</span> <span class="s2">&#34;{nonce}&#34;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;authorizationGrantType&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;responseType&#34;</span><span class="p">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;additionalParameters&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;nonce&#34;</span><span class="p">:</span> <span class="s2">&#34;{nonce}的Hash值&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;registration_id&#34;</span><span class="p">:</span> <span class="s2">&#34;{registrationId}&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;nonce&#34;</span><span class="p">:</span> <span class="s2">&#34;{nonce}&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The above four parameters when <code>scope</code> does not contain <code>openid</code> and <code>client-authentication-method</code> is <code>none</code>.</p>
 <div class="highlight"><div class="chroma">
@@ -545,20 +545,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-  <span class="nt">&#34;authorizationGrantType&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;responseType&#34;</span><span class="p">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;additionalParameters&#34;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&#34;code_challenge&#34;</span><span class="p">:</span> <span class="s2">&#34;{codeVerifier}的Hash值&#34;</span><span class="p">,</span>
-    <span class="c1">// code_challenge_method 当不是SHA256可能没有该key
-</span><span class="c1"></span>    <span class="nt">&#34;code_challenge_method&#34;</span><span class="p">:</span> <span class="s2">&#34;S256（如果是SHA256算法的话）&#34;</span>
-  <span class="p">},</span>
-  <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&#34;registration_id&#34;</span><span class="p">:</span> <span class="s2">&#34;{registrationId}&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;code_verifier&#34;</span><span class="p">:</span> <span class="s2">&#34;Base64生成的安全{codeVerifier}&#34;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;authorizationGrantType&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;responseType&#34;</span><span class="p">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;additionalParameters&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;code_challenge&#34;</span><span class="p">:</span> <span class="s2">&#34;{codeVerifier}的Hash值&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// code_challenge_method 当不是SHA256可能没有该key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nt">&#34;code_challenge_method&#34;</span><span class="p">:</span> <span class="s2">&#34;S256（如果是SHA256算法的话）&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;registration_id&#34;</span><span class="p">:</span> <span class="s2">&#34;{registrationId}&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;code_verifier&#34;</span><span class="p">:</span> <span class="s2">&#34;Base64生成的安全{codeVerifier}&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The above four parameters when <code>scope</code> contains <code>openid</code> and <code>client-authentication-method</code> is <code>none</code>.</p>
 <div class="highlight"><div class="chroma">
@@ -580,22 +580,22 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-  <span class="nt">&#34;authorizationGrantType&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;responseType&#34;</span><span class="p">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;additionalParameters&#34;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&#34;code_challenge&#34;</span><span class="p">:</span> <span class="s2">&#34;{codeVerifier}的Hash值&#34;</span><span class="p">,</span>
-    <span class="c1">// code_challenge_method 当不是SHA256可能没有该key
-</span><span class="c1"></span>    <span class="nt">&#34;code_challenge_method&#34;</span><span class="p">:</span> <span class="s2">&#34;S256（如果是SHA256算法的话）&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;nonce&#34;</span><span class="p">:</span> <span class="s2">&#34;{nonce}的Hash值&#34;</span>
-  <span class="p">},</span>
-  <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&#34;registration_id&#34;</span><span class="p">:</span> <span class="s2">&#34;{registrationId}&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;code_verifier&#34;</span><span class="p">:</span> <span class="s2">&#34;Base64生成的安全{codeVerifier}&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;nonce&#34;</span><span class="p">:</span> <span class="s2">&#34;{nonce}&#34;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;authorizationGrantType&#34;</span><span class="p">:</span> <span class="s2">&#34;authorization_code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;responseType&#34;</span><span class="p">:</span> <span class="s2">&#34;code&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;additionalParameters&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;code_challenge&#34;</span><span class="p">:</span> <span class="s2">&#34;{codeVerifier}的Hash值&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// code_challenge_method 当不是SHA256可能没有该key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nt">&#34;code_challenge_method&#34;</span><span class="p">:</span> <span class="s2">&#34;S256（如果是SHA256算法的话）&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;nonce&#34;</span><span class="p">:</span> <span class="s2">&#34;{nonce}的Hash值&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;registration_id&#34;</span><span class="p">:</span> <span class="s2">&#34;{registrationId}&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;code_verifier&#34;</span><span class="p">:</span> <span class="s2">&#34;Base64生成的安全{codeVerifier}&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;nonce&#34;</span><span class="p">:</span> <span class="s2">&#34;{nonce}&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>It is much simpler under <code>implicit</code>.</p>
 <div class="highlight"><div class="chroma">
@@ -607,12 +607,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-  <span class="nt">&#34;authorizationGrantType&#34;</span><span class="p">:</span> <span class="s2">&#34;implicit&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;responseType&#34;</span><span class="p">:</span> <span class="s2">&#34;token&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;authorizationGrantType&#34;</span><span class="p">:</span> <span class="s2">&#34;implicit&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;responseType&#34;</span><span class="p">:</span> <span class="s2">&#34;token&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;attributes&#34;</span><span class="p">:</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="32-fixed-rules-section">3.2 Fixed rules section</h3>
 <p>The above is the personalized value strategy for the member variables of <code>OAuth2AuthorizationRequest</code> under various <code>AuthorizationGrantType</code>, and there are several parameters whose rules are fixed</p>
@@ -639,8 +639,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">authorizationUri?response_type={responseType.getValue()}&amp;client_id={clientId}&amp;scope={scopes元素一个字符间隔}&amp;state={state}&amp;redirect_uri={redirectUri}&amp;{additionalParameter展开进行同样规则的KV参数串}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">authorizationUri?response_type={responseType.getValue()}&amp;client_id={clientId}&amp;scope={scopes元素一个字符间隔}&amp;state={state}&amp;redirect_uri={redirectUri}&amp;{additionalParameter展开进行同样规则的KV参数串}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then the <code>OAuth2AuthorizationRequestRedirectFilter</code> is responsible for redirecting to the <code>authorizationRequestUri</code> to request authorization from the third party.</p>
 <h4 id="redirecturi">redirectUri</h4>

@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2021-12/develop-spring-boot-app-with-hana-cloud-in-cloud-foundry/" />
@@ -498,13 +498,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- https://mvnrepository.com/artifact/com.sap.cloud.db.jdbc/ngdbc --&gt;</span>
-<span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>com.sap.cloud.db.jdbc<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>ngdbc<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>2.9.16<span class="nt">&lt;/version&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="c">&lt;!-- https://mvnrepository.com/artifact/com.sap.cloud.db.jdbc/ngdbc --&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>com.sap.cloud.db.jdbc<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>ngdbc<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;version&gt;</span>2.9.16<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><strong>3. Add model, service, and controller</strong></p>
 <p>Create a new package model under the main package com.sap.alicloud.hc.SpringBootHANADemo, and add a new class JobExecutionStatus:</p>
@@ -574,69 +574,69 @@
 </span><span class="lnt">62
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.model</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="kn">import</span> <span class="nn">javax.persistence.*</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="nd">@Entity</span>
-<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;ECM_JOB_EXECUTION_STATUS\&#34;&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JobExecutionStatus</span> <span class="o">{</span>
-<span class="err">​</span>
-    <span class="nd">@Id</span>
-    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;JOB_ID\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">200</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">jobId</span><span class="o">;</span>
-    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;JOB_NAME\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">190</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">jobName</span><span class="o">;</span>
-    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;START_TIME\&#34;&#34;</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="kt">long</span> <span class="n">startTime</span><span class="o">;</span>
-    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;STATUS\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">16</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">status</span><span class="o">;</span>
-    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;RESULT\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">250</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">result</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getJobId</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">jobId</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setJobId</span><span class="o">(</span><span class="n">String</span> <span class="n">jobId</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">jobId</span> <span class="o">=</span> <span class="n">jobId</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getJobName</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">jobName</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setJobName</span><span class="o">(</span><span class="n">String</span> <span class="n">jobName</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">jobName</span> <span class="o">=</span> <span class="n">jobName</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getStartTime</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">startTime</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setStartTime</span><span class="o">(</span><span class="kt">long</span> <span class="n">startTime</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">startTime</span> <span class="o">=</span> <span class="n">startTime</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getStatus</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setStatus</span><span class="o">(</span><span class="n">String</span> <span class="n">status</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">status</span> <span class="o">=</span> <span class="n">status</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getResult</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setResult</span><span class="o">(</span><span class="n">String</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.model</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.persistence.*</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Entity</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;ECM_JOB_EXECUTION_STATUS\&#34;&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JobExecutionStatus</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Id</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;JOB_ID\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">200</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">jobId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;JOB_NAME\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">190</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">jobName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;START_TIME\&#34;&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">long</span> <span class="n">startTime</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;STATUS\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">16</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">status</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;\&#34;RESULT\&#34;&#34;</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">250</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">result</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getJobId</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">jobId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setJobId</span><span class="o">(</span><span class="n">String</span> <span class="n">jobId</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">jobId</span> <span class="o">=</span> <span class="n">jobId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getJobName</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">jobName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setJobName</span><span class="o">(</span><span class="n">String</span> <span class="n">jobName</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">jobName</span> <span class="o">=</span> <span class="n">jobName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">long</span> <span class="nf">getStartTime</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">startTime</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setStartTime</span><span class="o">(</span><span class="kt">long</span> <span class="n">startTime</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">startTime</span> <span class="o">=</span> <span class="n">startTime</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getStatus</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">status</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setStatus</span><span class="o">(</span><span class="n">String</span> <span class="n">status</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">status</span> <span class="o">=</span> <span class="n">status</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getResult</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setResult</span><span class="o">(</span><span class="n">String</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Create a new package dao under the main package <code>com.sap.alicloud.hc.SpringBootHANADemo</code>, and add a new class <code>Database</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -679,43 +679,43 @@
 </span><span class="lnt">36
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.dao</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="kn">import</span> <span class="nn">org.springframework.boot.context.properties.ConfigurationProperties</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="nd">@Configuration</span>
-<span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;database&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Database</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">url</span><span class="o">;</span>
-    <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
-    <span class="n">String</span> <span class="n">password</span><span class="o">;</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUrl</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">url</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUrl</span><span class="o">(</span><span class="n">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">username</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPassword</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">password</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPassword</span><span class="o">(</span><span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.dao</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.context.properties.ConfigurationProperties</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;database&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Database</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">url</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">password</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUrl</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">url</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUrl</span><span class="o">(</span><span class="n">String</span> <span class="n">url</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUsername</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">username</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUsername</span><span class="o">(</span><span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">username</span> <span class="o">=</span> <span class="n">username</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPassword</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">password</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPassword</span><span class="o">(</span><span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">password</span> <span class="o">=</span> <span class="n">password</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Under the main package <code>com.sap.alicloud.hc.SpringBootHANADemo.dao</code>, add a new class <code>NativeSQL</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -870,155 +870,155 @@
 </span><span class="lnt">148
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.dao</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="kn">import</span> <span class="nn">java.sql.Connection</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.DriverManager</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.PreparedStatement</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.ResultSet</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.SQLException</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.model.JobExecutionStatus</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NativeSQL</span> <span class="o">{</span>
-<span class="err">​</span>
-    <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">NativeSQL</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-    <span class="kd">private</span> <span class="n">Connection</span> <span class="n">connection</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="nd">@Autowired</span> <span class="n">Database</span> <span class="n">db</span><span class="o">;</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">createConnection</span><span class="o">()</span> <span class="o">{</span>
-<span class="err">​</span>
-        <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-<span class="err">​</span>
-<span class="err">​</span>
-        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Java version: &#34;</span> <span class="o">+</span> <span class="n">com</span><span class="o">.</span><span class="na">sap</span><span class="o">.</span><span class="na">db</span><span class="o">.</span><span class="na">jdbc</span><span class="o">.</span><span class="na">Driver</span><span class="o">.</span><span class="na">getJavaVersion</span><span class="o">());</span>
-        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Minimum supported Java version and SAP driver version number: &#34;</span>
-                <span class="o">+</span> <span class="n">com</span><span class="o">.</span><span class="na">sap</span><span class="o">.</span><span class="na">db</span><span class="o">.</span><span class="na">jdbc</span><span class="o">.</span><span class="na">Driver</span><span class="o">.</span><span class="na">getVersionInfo</span><span class="o">());</span>
-<span class="err">​</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="n">connection</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">db</span><span class="o">.</span><span class="na">getUrl</span><span class="o">(),</span> <span class="n">db</span><span class="o">.</span><span class="na">getUsername</span><span class="o">(),</span> <span class="n">db</span><span class="o">.</span><span class="na">getPassword</span><span class="o">());</span>
-<span class="err">​</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-<span class="err">​</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Connection to HANA successful!&#34;</span><span class="o">);</span>
-            <span class="o">}</span>
-<span class="err">​</span>
-            <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-            <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
-<span class="err">​</span>
-            <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;HANA Connection Time:&#34;</span>  <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
-<span class="err">​</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Connection Failed:&#34;</span><span class="o">);</span>
-            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-            <span class="k">return</span><span class="o">;</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">insertJob</span><span class="o">(</span><span class="n">JobExecutionStatus</span> <span class="n">job</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">try</span> <span class="o">{</span>
-                <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-<span class="err">​</span>
-                <span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span>
-                        <span class="s">&#34;INSERT INTO \&#34;ECM_JOB_EXECUTION_STATUS\&#34; (\&#34;JOB_ID\&#34;, \&#34;JOB_NAME\&#34;, \&#34;RESULT\&#34;, \&#34;START_TIME\&#34;, \&#34;STATUS\&#34;) VALUES (?, ?, ?, ?, ?)&#34;</span><span class="o">);</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">());</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">2</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobName</span><span class="o">());</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">3</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getResult</span><span class="o">());</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">setLong</span><span class="o">(</span><span class="n">4</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getStartTime</span><span class="o">());</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">5</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getStatus</span><span class="o">());</span>
-<span class="err">​</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
-<span class="err">​</span>
-                <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-                <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
-<span class="err">​</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Insert Job:&#34;</span> <span class="o">+</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;:&#34;</span> <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
-<span class="err">​</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Insert failed!&#34;</span><span class="o">);</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateJob</span><span class="o">(</span><span class="n">JobExecutionStatus</span> <span class="n">job</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">try</span> <span class="o">{</span>
-                <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-<span class="err">​</span>
-                <span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span>
-                        <span class="s">&#34;UPDATE \&#34;ECM_JOB_EXECUTION_STATUS\&#34; SET \&#34;RESULT\&#34; = ?, \&#34;STATUS\&#34; = ? WHERE (\&#34;JOB_ID\&#34; = ?)&#34;</span><span class="o">);</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getResult</span><span class="o">());</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">2</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getStatus</span><span class="o">());</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">3</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">());</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
-<span class="err">​</span>
-                <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-                <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
-<span class="err">​</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Update Job:&#34;</span> <span class="o">+</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;:&#34;</span> <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
-<span class="err">​</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Update failed!&#34;</span><span class="o">);</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getJob</span><span class="o">(</span><span class="n">String</span> <span class="n">jobId</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">try</span> <span class="o">{</span>
-                <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-<span class="err">​</span>
-                <span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span>
-                        <span class="s">&#34;SELECT \&#34;JOB_ID\&#34;, \&#34;JOB_NAME\&#34;, \&#34;RESULT\&#34;, \&#34;START_TIME\&#34;, \&#34;STATUS\&#34; FROM \&#34;ECM_JOB_EXECUTION_STATUS\&#34; WHERE (\&#34;JOB_ID\&#34; = ?)&#34;</span><span class="o">);</span>
-                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="n">jobId</span><span class="o">);</span>
-<span class="err">​</span>
-                <span class="n">ResultSet</span> <span class="n">rs</span> <span class="o">=</span> <span class="n">pstmt</span><span class="o">.</span><span class="na">executeQuery</span><span class="o">();</span>
-<span class="err">​</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">rs</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">rs</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
-                    <span class="n">String</span> <span class="n">job_id</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;JOB_ID&#34;</span><span class="o">);</span>
-                    <span class="n">String</span> <span class="n">job_name</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;JOB_Name&#34;</span><span class="o">);</span>
-                    <span class="kt">long</span> <span class="n">start_time</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getLong</span><span class="o">(</span><span class="s">&#34;START_TIME&#34;</span><span class="o">);</span>
-                    <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;STATUS&#34;</span><span class="o">);</span>
-                    <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;RESULT&#34;</span><span class="o">);</span>
-<span class="err">​</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">job_id</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">job_name</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">start_time</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">status</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">result</span><span class="o">);</span>
-                <span class="o">}</span>
-<span class="err">​</span>
-                <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-                <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
-<span class="err">​</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Query Job:&#34;</span> <span class="o">+</span> <span class="n">jobId</span> <span class="o">+</span> <span class="s">&#34;:&#34;</span> <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
-<span class="err">​</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Query failed!&#34;</span><span class="o">);</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">closeConnection</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">try</span> <span class="o">{</span>
-                <span class="n">connection</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-                <span class="n">connection</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-            <span class="o">}</span>
-<span class="err">​</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.dao</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.sql.Connection</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.sql.DriverManager</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.sql.PreparedStatement</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.sql.ResultSet</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.sql.SQLException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.slf4j.Logger</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.slf4j.LoggerFactory</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.model.JobExecutionStatus</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NativeSQL</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">NativeSQL</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Connection</span> <span class="n">connection</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span> <span class="n">Database</span> <span class="n">db</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">createConnection</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Java version: &#34;</span> <span class="o">+</span> <span class="n">com</span><span class="o">.</span><span class="na">sap</span><span class="o">.</span><span class="na">db</span><span class="o">.</span><span class="na">jdbc</span><span class="o">.</span><span class="na">Driver</span><span class="o">.</span><span class="na">getJavaVersion</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Minimum supported Java version and SAP driver version number: &#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">+</span> <span class="n">com</span><span class="o">.</span><span class="na">sap</span><span class="o">.</span><span class="na">db</span><span class="o">.</span><span class="na">jdbc</span><span class="o">.</span><span class="na">Driver</span><span class="o">.</span><span class="na">getVersionInfo</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">connection</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">db</span><span class="o">.</span><span class="na">getUrl</span><span class="o">(),</span> <span class="n">db</span><span class="o">.</span><span class="na">getUsername</span><span class="o">(),</span> <span class="n">db</span><span class="o">.</span><span class="na">getPassword</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Connection to HANA successful!&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">            <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;HANA Connection Time:&#34;</span>  <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Connection Failed:&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">insertJob</span><span class="o">(</span><span class="n">JobExecutionStatus</span> <span class="n">job</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                        <span class="s">&#34;INSERT INTO \&#34;ECM_JOB_EXECUTION_STATUS\&#34; (\&#34;JOB_ID\&#34;, \&#34;JOB_NAME\&#34;, \&#34;RESULT\&#34;, \&#34;START_TIME\&#34;, \&#34;STATUS\&#34;) VALUES (?, ?, ?, ?, ?)&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">2</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobName</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">3</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getResult</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">setLong</span><span class="o">(</span><span class="n">4</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getStartTime</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">5</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getStatus</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Insert Job:&#34;</span> <span class="o">+</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;:&#34;</span> <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Insert failed!&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">updateJob</span><span class="o">(</span><span class="n">JobExecutionStatus</span> <span class="n">job</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                        <span class="s">&#34;UPDATE \&#34;ECM_JOB_EXECUTION_STATUS\&#34; SET \&#34;RESULT\&#34; = ?, \&#34;STATUS\&#34; = ? WHERE (\&#34;JOB_ID\&#34; = ?)&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getResult</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">2</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getStatus</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">3</span><span class="o">,</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Update Job:&#34;</span> <span class="o">+</span> <span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;:&#34;</span> <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Update failed!&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">getJob</span><span class="o">(</span><span class="n">String</span> <span class="n">jobId</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="n">PreparedStatement</span> <span class="n">pstmt</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                        <span class="s">&#34;SELECT \&#34;JOB_ID\&#34;, \&#34;JOB_NAME\&#34;, \&#34;RESULT\&#34;, \&#34;START_TIME\&#34;, \&#34;STATUS\&#34; FROM \&#34;ECM_JOB_EXECUTION_STATUS\&#34; WHERE (\&#34;JOB_ID\&#34; = ?)&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">pstmt</span><span class="o">.</span><span class="na">setNString</span><span class="o">(</span><span class="n">1</span><span class="o">,</span> <span class="n">jobId</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ResultSet</span> <span class="n">rs</span> <span class="o">=</span> <span class="n">pstmt</span><span class="o">.</span><span class="na">executeQuery</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="o">(</span><span class="n">rs</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">rs</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">String</span> <span class="n">job_id</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;JOB_ID&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">String</span> <span class="n">job_name</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;JOB_Name&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                    <span class="kt">long</span> <span class="n">start_time</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getLong</span><span class="o">(</span><span class="s">&#34;START_TIME&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;STATUS&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">&#34;RESULT&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="n">job_id</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">job_name</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">start_time</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">status</span> <span class="o">+</span> <span class="s">&#34;-&#34;</span> <span class="o">+</span> <span class="n">result</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">long</span> <span class="n">endTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">long</span> <span class="n">executeTime</span> <span class="o">=</span> <span class="n">endTime</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Query Job:&#34;</span> <span class="o">+</span> <span class="n">jobId</span> <span class="o">+</span> <span class="s">&#34;:&#34;</span> <span class="o">+</span> <span class="n">executeTime</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Query failed!&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="n">e</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">closeConnection</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">connection</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">                <span class="n">connection</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Create a new package <code>service</code> under the main package <code>com.sap.alicloud.hc.SpringBootHANADemo</code>, and add a new class <code>NativeSQLRunner</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -1066,48 +1066,48 @@
 </span><span class="lnt">41
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.service</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="kn">import</span> <span class="nn">java.util.UUID</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.scheduling.annotation.Async</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.dao.NativeSQL</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.model.JobExecutionStatus</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="nd">@Service</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NativeSQLRunner</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">MAX_RUM</span> <span class="o">=</span> <span class="n">100</span><span class="o">;</span>
-<span class="err">​</span>
-    <span class="nd">@Autowired</span>
-    <span class="n">NativeSQL</span> <span class="n">nativeSQL</span><span class="o">;</span>
-<span class="err">​</span>
-    <span class="nd">@Async</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">startTest</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">nativeSQL</span><span class="o">.</span><span class="na">createConnection</span><span class="o">();</span>
-        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MAX_RUM</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-            <span class="n">JobExecutionStatus</span> <span class="n">job</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JobExecutionStatus</span><span class="o">();</span>
-            <span class="n">job</span><span class="o">.</span><span class="na">setJobId</span><span class="o">(</span><span class="n">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
-            <span class="n">job</span><span class="o">.</span><span class="na">setJobName</span><span class="o">(</span><span class="s">&#34;InstanceCreationJob&#34;</span><span class="o">);</span>
-            <span class="n">job</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="s">&#34;&#34;</span><span class="o">);</span>
-            <span class="n">job</span><span class="o">.</span><span class="na">setStartTime</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
-            <span class="n">job</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="s">&#34;In Progress&#34;</span><span class="o">);</span>
-<span class="err">​</span>
-            <span class="n">nativeSQL</span><span class="o">.</span><span class="na">insertJob</span><span class="o">(</span><span class="n">job</span><span class="o">);</span>
-<span class="err">​</span>
-            <span class="n">job</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="s">&#34;Instance creation successfully completed&#34;</span><span class="o">);</span>
-            <span class="n">job</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="s">&#34;Succeeded&#34;</span><span class="o">);</span>
-<span class="err">​</span>
-            <span class="n">nativeSQL</span><span class="o">.</span><span class="na">updateJob</span><span class="o">(</span><span class="n">job</span><span class="o">);</span>
-<span class="err">​</span>
-            <span class="n">nativeSQL</span><span class="o">.</span><span class="na">getJob</span><span class="o">(</span><span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">());</span>
-        <span class="o">}</span>
-        <span class="n">nativeSQL</span><span class="o">.</span><span class="na">closeConnection</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.service</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.UUID</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.scheduling.annotation.Async</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.dao.NativeSQL</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.model.JobExecutionStatus</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Service</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NativeSQLRunner</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">MAX_RUM</span> <span class="o">=</span> <span class="n">100</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="n">NativeSQL</span> <span class="n">nativeSQL</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Async</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">startTest</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">nativeSQL</span><span class="o">.</span><span class="na">createConnection</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MAX_RUM</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">JobExecutionStatus</span> <span class="n">job</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JobExecutionStatus</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">job</span><span class="o">.</span><span class="na">setJobId</span><span class="o">(</span><span class="n">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="n">job</span><span class="o">.</span><span class="na">setJobName</span><span class="o">(</span><span class="s">&#34;InstanceCreationJob&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">job</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="s">&#34;&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">job</span><span class="o">.</span><span class="na">setStartTime</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="n">job</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="s">&#34;In Progress&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nativeSQL</span><span class="o">.</span><span class="na">insertJob</span><span class="o">(</span><span class="n">job</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">            <span class="n">job</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="s">&#34;Instance creation successfully completed&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">job</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="s">&#34;Succeeded&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nativeSQL</span><span class="o">.</span><span class="na">updateJob</span><span class="o">(</span><span class="n">job</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nativeSQL</span><span class="o">.</span><span class="na">getJob</span><span class="o">(</span><span class="n">job</span><span class="o">.</span><span class="na">getJobId</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">nativeSQL</span><span class="o">.</span><span class="na">closeConnection</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Create a new package <code>controller</code> under the main package <code>com.sap.alicloud.hc.SpringBootHANADemo</code>, and add a new class <code>TestController</code>:</p>
 <div class="highlight"><div class="chroma">
@@ -1142,35 +1142,35 @@
 </span><span class="lnt">28
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.controller</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.service.NativeSQLRunner</span><span class="o">;</span>
-<span class="err">​</span>
-<span class="nd">@RestController</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestController</span> <span class="o">{</span>
-    <span class="nd">@Autowired</span>
-    <span class="n">NativeSQLRunner</span> <span class="n">runner_native_sql</span><span class="o">;</span>
-<span class="err">​</span>
-    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">hello</span><span class="o">()</span> <span class="o">{</span>
-<span class="err">​</span>
-        <span class="k">return</span> <span class="s">&#34;Hello!&#34;</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/test_native_sql&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">test_native_sql</span><span class="o">()</span> <span class="o">{</span>
-<span class="err">​</span>
-        <span class="n">runner_native_sql</span><span class="o">.</span><span class="na">startTest</span><span class="o">();</span>
-<span class="err">​</span>
-        <span class="k">return</span> <span class="s">&#34;Test Native SQL Started!&#34;</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="err">​</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.controller</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.sap.alicloud.hc.SpringBootHANADemo.service.NativeSQLRunner</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="n">NativeSQLRunner</span> <span class="n">runner_native_sql</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">hello</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s">&#34;Hello!&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/test_native_sql&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">test_native_sql</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">        <span class="n">runner_native_sql</span><span class="o">.</span><span class="na">startTest</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s">&#34;Test Native SQL Started!&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">​</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><strong>4. Configure application properties</strong></p>
 <div class="highlight"><div class="chroma">
@@ -1186,16 +1186,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="l">database.url=jdbc:sap://&lt;hana-instance-host&gt;:443?encrypt=true&amp;validateCertificate=true&amp;traceFile=stdout&amp;traceOptions=CONNECTIONS,API,STATISTICS,CLEANERS,TIMESTAMPS,ELAPSEDTIMES</span><span class="w">
-</span><span class="w"></span><span class="l">database.username=&lt;username&gt;</span><span class="w">
-</span><span class="w"></span><span class="l">database.password=&lt;password&gt;</span><span class="w">
-</span><span class="w"></span><span class="l">​</span><span class="w">
-</span><span class="w"></span><span class="c">#Spring Boot JPA</span><span class="w">
-</span><span class="w"></span><span class="l">spring.datasource.driver-class-name=com.sap.db.jdbc.Driver</span><span class="w">
-</span><span class="w"></span><span class="l">spring.datasource.url=jdbc:sap://&lt;hana-instance-host&gt;:443?encrypt=true&amp;validateCertificate=true&amp;traceFile=stdout&amp;traceOptions=CONNECTIONS,API,STATISTICS,CLEANERS,TIMESTAMPS,ELAPSEDTIMES</span><span class="w">
-</span><span class="w"></span><span class="l">spring.datasource.username=&lt;username&gt;</span><span class="w">
-</span><span class="w"></span><span class="l">spring.datasource.password=&lt;password&gt;</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="l">database.url=jdbc:sap://&lt;hana-instance-host&gt;:443?encrypt=true&amp;validateCertificate=true&amp;traceFile=stdout&amp;traceOptions=CONNECTIONS,API,STATISTICS,CLEANERS,TIMESTAMPS,ELAPSEDTIMES</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">database.username=&lt;username&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">database.password=&lt;password&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">​</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c">#Spring Boot JPA</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">spring.datasource.driver-class-name=com.sap.db.jdbc.Driver</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">spring.datasource.url=jdbc:sap://&lt;hana-instance-host&gt;:443?encrypt=true&amp;validateCertificate=true&amp;traceFile=stdout&amp;traceOptions=CONNECTIONS,API,STATISTICS,CLEANERS,TIMESTAMPS,ELAPSEDTIMES</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">spring.datasource.username=&lt;username&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="l">spring.datasource.password=&lt;password&gt;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="step-2-create-hana-cloud-instance-on-sap-btpalicloud">Step 2: Create HANA Cloud Instance on SAP BTP@AliCloud</h2>
 <p>Please follow this guide to <a href="https://developers.sap.com/tutorials/hana-cloud-deploying.html">Provision HANA Cloud instance</a>.</p>
@@ -1212,14 +1212,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ECM_JOB_EXECUTION_STATUS</span><span class="p">(</span><span class="w">
-</span><span class="w">  </span><span class="n">JOB_ID</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
-</span><span class="w">  </span><span class="n">JOB_NAME</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
-</span><span class="w">  </span><span class="n">START_TIME</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
-</span><span class="w">  </span><span class="n">STATUS</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
-</span><span class="w">  </span><span class="k">RESULT</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="p">)</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ECM_JOB_EXECUTION_STATUS</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">JOB_ID</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">JOB_NAME</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">START_TIME</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">STATUS</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">RESULT</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915113159324.png" alt="image"></p>
 <p>Or, you can create the table with JDBC command, for more details, please read <a href="https://help.sap.com/viewer/db19c7071e5f4101837e23f06e576495/hanacloud/en-US/030a162d380b4ec0bc6a284954c8256d.html?q=jdbc">Connect to SAP HANA Cloud via JDBC</a>:</p>
@@ -1228,8 +1228,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">java -jar ngdbc-2.9.16.jar -u &lt;username&gt;,&lt;password&gt; -n &lt;hana-instance-host&gt;:443 -o <span class="nv">encrypt</span><span class="o">=</span><span class="nb">true</span> -c <span class="s2">&#34;CREATE TABLE ECM_JOB_EXECUTION_STATUS(JOB_ID VARCHAR(500),JOB_NAME VARCHAR(500),START_TIME VARCHAR(500),STATUS VARCHAR(500),RESULT VARCHAR(500))&#34;</span><span class="p">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">java -jar ngdbc-2.9.16.jar -u &lt;username&gt;,&lt;password&gt; -n &lt;hana-instance-host&gt;:443 -o <span class="nv">encrypt</span><span class="o">=</span><span class="nb">true</span> -c <span class="s2">&#34;CREATE TABLE ECM_JOB_EXECUTION_STATUS(JOB_ID VARCHAR(500),JOB_NAME VARCHAR(500),START_TIME VARCHAR(500),STATUS VARCHAR(500),RESULT VARCHAR(500))&#34;</span><span class="p">;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Check the new table in the HANA Database Explorer</p>
 <p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915125512834.png" alt="image"></p>
@@ -1241,9 +1241,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">mvn clean install package
-java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">mvn clean install package
+</span></span><span class="line"><span class="cl">java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Access <code>http://localhost:8080/</code> in the browser, it would return a hello message:</p>
 <p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915125117043.png" alt="image"></p>
@@ -1264,14 +1264,14 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">---</span><span class="w">
-</span><span class="w"></span><span class="nt">applications</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
-</span><span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;host&gt;</span><span class="w">
-</span><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar</span><span class="w">
-</span><span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;custom-domain&gt;</span><span class="w">
-</span><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">1G</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nn">---</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">applications</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;host&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;custom-domain&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">1G</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>Replace <strong>host</strong> with a unique name, so it does not clash with other deployed applications.</p>
@@ -1290,14 +1290,14 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">---</span><span class="w">
-</span><span class="w"></span><span class="nt">applications</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
-</span><span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
-</span><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar</span><span class="w">
-</span><span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l">exercise.sap-samples.cn40.apps.platform.sapcloud.cn</span><span class="w">
-</span><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">1G</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nn">---</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">applications</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l">exercise.sap-samples.cn40.apps.platform.sapcloud.cn</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">1G</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Under the root directory of the project, execute:</p>
 <div class="highlight"><div class="chroma">
@@ -1305,8 +1305,8 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cf push
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">cf push
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>This command will deploy the <code>springboothanademo</code> application into your Cloud Foundry environment. When you push an app, Cloud Foundry automatically detects an appropriate buildpack for it. This buildpack is used to compile or prepare your app for launch. In our case, is <code>Java Buildpack</code> .</p>
@@ -1319,8 +1319,8 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cf logs springboothanademo --recent
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">cf logs springboothanademo --recent
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>When the staging and deployment steps are complete, you can check the state and URL of your application through Cockpit or CF command:</p>
 <div class="highlight"><div class="chroma">
@@ -1328,8 +1328,8 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cf apps
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">cf apps
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915133312161.png" alt="image"></p>
 <p>Open a browser window and enter the URL of the <code>springboothanademo</code> application, for example:</p>
@@ -1352,14 +1352,14 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-    <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;jdbc:sap://02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn:443?encrypt=true&amp;validateCertificate=true&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;certificate&#34;</span><span class="p">:</span> <span class="s2">&#34;-----BEGIN CERTIFICATE-----\nMIIDrzCCApegAwIBAgIQCDvgVpBCRrGhd...bQk\nCAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=\n-----END CERTIFICATE-----&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;driver&#34;</span><span class="p">:</span> <span class="s2">&#34;com.sap.db.jdbc.Driver&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="s2">&#34;443&#34;</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;jdbc:sap://02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn:443?encrypt=true&amp;validateCertificate=true&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;certificate&#34;</span><span class="p">:</span> <span class="s2">&#34;-----BEGIN CERTIFICATE-----\nMIIDrzCCApegAwIBAgIQCDvgVpBCRrGhd...bQk\nCAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=\n-----END CERTIFICATE-----&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;driver&#34;</span><span class="p">:</span> <span class="s2">&#34;com.sap.db.jdbc.Driver&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="s2">&#34;443&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>However, let’s create a new <code>hdi-shared</code> instance and a new key for it, and have a look at the content in the key:</p>
 <p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915145319479.png" alt="image"></p>
@@ -1379,19 +1379,19 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-    <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;jdbc:sap://02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn:443?encrypt=true&amp;validateCertificate=true&amp;currentschema=738720F9AFD34B7CAE1338E937A9F550&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;certificate&#34;</span><span class="p">:</span> <span class="s2">&#34;-----BEGIN CERTIFICATE-----\nMIIDrzCCApegAwI...7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=\n-----END CERTIFICATE-----&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;driver&#34;</span><span class="p">:</span> <span class="s2">&#34;com.sap.db.jdbc.Driver&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;hdi_password&#34;</span><span class="p">:</span> <span class="s2">&#34;Gg3NquSSlSMN9H1c...5Z20jrGhBQAin.67IAeMfFGq_1&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;hdi_user&#34;</span><span class="p">:</span> <span class="s2">&#34;738720F9AFD34B7CAE1338E937A9F550_2HMTZ3RWEJUW0QG35AE4IMD89_DT&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;password&#34;</span><span class="p">:</span> <span class="s2">&#34;Ff53CjMoNmj_hOaeFm...FuV5S-ThZCO9h7.aux&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="s2">&#34;443&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;schema&#34;</span><span class="p">:</span> <span class="s2">&#34;738720F9AFD34B7CAE1338E937A9F550&#34;</span><span class="p">,</span>
-    <span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="s2">&#34;738720F9AFD34B7CAE1338E937A9F550_2HMTZ3RWEJUW0QG35AE4IMD89_RT&#34;</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;url&#34;</span><span class="p">:</span> <span class="s2">&#34;jdbc:sap://02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn:443?encrypt=true&amp;validateCertificate=true&amp;currentschema=738720F9AFD34B7CAE1338E937A9F550&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;certificate&#34;</span><span class="p">:</span> <span class="s2">&#34;-----BEGIN CERTIFICATE-----\nMIIDrzCCApegAwI...7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=\n-----END CERTIFICATE-----&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;driver&#34;</span><span class="p">:</span> <span class="s2">&#34;com.sap.db.jdbc.Driver&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;hdi_password&#34;</span><span class="p">:</span> <span class="s2">&#34;Gg3NquSSlSMN9H1c...5Z20jrGhBQAin.67IAeMfFGq_1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;hdi_user&#34;</span><span class="p">:</span> <span class="s2">&#34;738720F9AFD34B7CAE1338E937A9F550_2HMTZ3RWEJUW0QG35AE4IMD89_DT&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;02e...00d.hana.prod-cn40.hanacloud.sapcloud.cn&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;password&#34;</span><span class="p">:</span> <span class="s2">&#34;Ff53CjMoNmj_hOaeFm...FuV5S-ThZCO9h7.aux&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="s2">&#34;443&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;schema&#34;</span><span class="p">:</span> <span class="s2">&#34;738720F9AFD34B7CAE1338E937A9F550&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;user&#34;</span><span class="p">:</span> <span class="s2">&#34;738720F9AFD34B7CAE1338E937A9F550_2HMTZ3RWEJUW0QG35AE4IMD89_RT&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><strong>Explore <code>hdi-shared</code> and its users</strong></p>
 <p>The deployment of database objects with SAP HANA Deployment Infrastructure (HDI) is based on a container model where each container corresponds roughly to a database schema. Each schema, and the database objects deployed into the schema, are owned by a dedicated technical database user.</p>
@@ -1488,12 +1488,12 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-  <span class="nt">&lt;groupId&gt;</span>io.pivotal.cfenv<span class="nt">&lt;/groupId&gt;</span>
-  <span class="nt">&lt;artifactId&gt;</span>java-cfenv-boot<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>2.2.2.RELEASE<span class="nt">&lt;/version&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;groupId&gt;</span>io.pivotal.cfenv<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;artifactId&gt;</span>java-cfenv-boot<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;version&gt;</span>2.2.2.RELEASE<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>And add a code snippet:</p>
 <div class="highlight"><div class="chroma">
@@ -1518,25 +1518,25 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">	<span class="nd">@Bean</span>
-	<span class="nd">@Primary</span>
-	<span class="nd">@Profile</span><span class="o">(</span><span class="s">&#34;cloud&#34;</span><span class="o">)</span>
-	<span class="kd">public</span> <span class="n">DataSourceProperties</span> <span class="nf">dataSourceProperties</span><span class="o">()</span> <span class="o">{</span>
-		<span class="n">CfJdbcEnv</span> <span class="n">cfJdbcEnv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CfJdbcEnv</span><span class="o">();</span>
-		<span class="n">DataSourceProperties</span> <span class="n">properties</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataSourceProperties</span><span class="o">();</span>
-		<span class="n">CfCredentials</span> <span class="n">hanaCredentials</span> <span class="o">=</span> <span class="n">cfJdbcEnv</span><span class="o">.</span><span class="na">findCredentialsByTag</span><span class="o">(</span><span class="s">&#34;hana&#34;</span><span class="o">);</span>
-
-		<span class="k">if</span> <span class="o">(</span><span class="n">hanaCredentials</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-
-			<span class="n">String</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">hanaCredentials</span><span class="o">.</span><span class="na">getUri</span><span class="o">(</span><span class="s">&#34;hana&#34;</span><span class="o">);</span>
-			<span class="n">properties</span><span class="o">.</span><span class="na">setUrl</span><span class="o">(</span><span class="n">uri</span><span class="o">);</span>
-			<span class="n">properties</span><span class="o">.</span><span class="na">setUsername</span><span class="o">(</span><span class="n">hanaCredentials</span><span class="o">.</span><span class="na">getUsername</span><span class="o">());</span>
-			<span class="n">properties</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="n">hanaCredentials</span><span class="o">.</span><span class="na">getPassword</span><span class="o">());</span>
-		<span class="o">}</span>
-
-		<span class="k">return</span> <span class="n">properties</span><span class="o">;</span>
-	<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">	<span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">	<span class="nd">@Primary</span>
+</span></span><span class="line"><span class="cl">	<span class="nd">@Profile</span><span class="o">(</span><span class="s">&#34;cloud&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="n">DataSourceProperties</span> <span class="nf">dataSourceProperties</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">CfJdbcEnv</span> <span class="n">cfJdbcEnv</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CfJdbcEnv</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">		<span class="n">DataSourceProperties</span> <span class="n">properties</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataSourceProperties</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">		<span class="n">CfCredentials</span> <span class="n">hanaCredentials</span> <span class="o">=</span> <span class="n">cfJdbcEnv</span><span class="o">.</span><span class="na">findCredentialsByTag</span><span class="o">(</span><span class="s">&#34;hana&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(</span><span class="n">hanaCredentials</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="n">String</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">hanaCredentials</span><span class="o">.</span><span class="na">getUri</span><span class="o">(</span><span class="s">&#34;hana&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="n">properties</span><span class="o">.</span><span class="na">setUrl</span><span class="o">(</span><span class="n">uri</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="n">properties</span><span class="o">.</span><span class="na">setUsername</span><span class="o">(</span><span class="n">hanaCredentials</span><span class="o">.</span><span class="na">getUsername</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">			<span class="n">properties</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="n">hanaCredentials</span><span class="o">.</span><span class="na">getPassword</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">properties</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><strong>Modify <code>mainifest.yml</code> file</strong></p>
 <p>Add the service instance in the <code>mainifest.yml</code> file, Cloud Foundry automatically bind the service instance to your app <code>springboothanademo</code> so that your app can get the environment variables.</p>
@@ -1553,16 +1553,16 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">---</span><span class="w">
-</span><span class="w"></span><span class="nt">applications</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
-</span><span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
-</span><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar</span><span class="w">
-</span><span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l">exercise.sap-samples.cn40.apps.platform.sapcloud.cn</span><span class="w">
-</span><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">1G</span><span class="w">
-</span><span class="w">    </span><span class="nt">services</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="l">hana-hdi-shared</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nn">---</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">applications</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l">springboothanademo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">domain</span><span class="p">:</span><span class="w"> </span><span class="l">exercise.sap-samples.cn40.apps.platform.sapcloud.cn</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l">1G</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">hana-hdi-shared</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p><strong>Deploy app to Cloud Foundry again</strong></p>
 <div class="highlight"><div class="chroma">
@@ -1570,8 +1570,8 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cf push
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">cf push
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><strong>Check app environment variables</strong></p>
 <p>You can check the app environment variables via executing the command:</p>
@@ -1580,8 +1580,8 @@ java -jar target/SpringBootHANADemo-0.0.1-SNAPSHOT.jar
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">cf env springboothanademo
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">cf env springboothanademo
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://blogs.sap.com/wp-content/uploads/2021/09/image-20210915153544901.png" alt="image"></p>
 <h2 id="comparison-between-jdbc-and-jpa">Comparison between JDBC and JPA</h2>

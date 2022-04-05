@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-04/spring-threadpool/" />
@@ -451,20 +451,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Service</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DelayService</span> <span class="o">{</span>
-    <span class="nd">@Async</span>
-    <span class="kd">public</span> <span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">delayFoo</span><span class="o">(</span><span class="n">String</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">1000L</span><span class="o">);</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="o">}</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">v</span> <span class="o">+</span> <span class="s">&#34; runs in thread: &#34;</span> <span class="o">+</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
-        <span class="k">return</span> <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">completedFuture</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DelayService</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Async</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">delayFoo</span><span class="o">(</span><span class="n">String</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="n">1000L</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">v</span> <span class="o">+</span> <span class="s">&#34; runs in thread: &#34;</span> <span class="o">+</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">completedFuture</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Set the thread pool size to 2 and the queue to a value larger than the thread pool, in this case 10. When the queue size is larger than or equal to the thread pool size, the program will block as in this article.</p>
 <div class="highlight"><div class="chroma">
@@ -484,20 +484,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">Executor</span> <span class="nf">taskExecutor</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">ThreadPoolTaskExecutor</span> <span class="n">executor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadPoolTaskExecutor</span><span class="o">();</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setCorePoolSize</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setMaxPoolSize</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setQueueCapacity</span><span class="o">(</span><span class="n">10</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setThreadNamePrefix</span><span class="o">(</span><span class="s">&#34;taskExecutor-&#34;</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setRejectedExecutionHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">ThreadPoolExecutor</span><span class="o">.</span><span class="na">CallerRunsPolicy</span><span class="o">());</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">setWaitForTasksToCompleteOnShutdown</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-        <span class="n">executor</span><span class="o">.</span><span class="na">initialize</span><span class="o">();</span>
-        <span class="k">return</span> <span class="n">executor</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Executor</span> <span class="nf">taskExecutor</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ThreadPoolTaskExecutor</span> <span class="n">executor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ThreadPoolTaskExecutor</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">executor</span><span class="o">.</span><span class="na">setCorePoolSize</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">executor</span><span class="o">.</span><span class="na">setMaxPoolSize</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">executor</span><span class="o">.</span><span class="na">setQueueCapacity</span><span class="o">(</span><span class="n">10</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">executor</span><span class="o">.</span><span class="na">setThreadNamePrefix</span><span class="o">(</span><span class="s">&#34;taskExecutor-&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">executor</span><span class="o">.</span><span class="na">setRejectedExecutionHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">ThreadPoolExecutor</span><span class="o">.</span><span class="na">CallerRunsPolicy</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="n">executor</span><span class="o">.</span><span class="na">setWaitForTasksToCompleteOnShutdown</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">executor</span><span class="o">.</span><span class="na">initialize</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">executor</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Concurrency processing.</p>
 <div class="highlight"><div class="chroma">
@@ -515,18 +515,18 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">runAsync</span><span class="o">(</span>
-                <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">allOf</span><span class="o">(</span><span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&#34;1&#34;</span><span class="o">,</span> <span class="s">&#34;2&#34;</span><span class="o">,</span> <span class="s">&#34;3&#34;</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">v</span> <span class="o">-&gt;</span> <span class="n">delayService</span><span class="o">.</span><span class="na">delayFoo</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="n">CompletableFuture</span><span class="o">[]::</span><span class="k">new</span><span class="o">))</span> <span class="c1">// 将数组中的任务提交到线程池中
-</span><span class="c1"></span>                <span class="o">.</span><span class="na">join</span><span class="o">(),</span> <span class="n">taskExecutor</span><span class="o">);</span> <span class="c1">// 通过join方法等待任务完成
-</span><span class="c1"></span>            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">runAsync</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">CompletableFuture</span><span class="o">.</span><span class="na">allOf</span><span class="o">(</span><span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&#34;1&#34;</span><span class="o">,</span> <span class="s">&#34;2&#34;</span><span class="o">,</span> <span class="s">&#34;3&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">v</span> <span class="o">-&gt;</span> <span class="n">delayService</span><span class="o">.</span><span class="na">delayFoo</span><span class="o">(</span><span class="n">v</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="n">CompletableFuture</span><span class="o">[]::</span><span class="k">new</span><span class="o">))</span> <span class="c1">// 将数组中的任务提交到线程池中
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="o">.</span><span class="na">join</span><span class="o">(),</span> <span class="n">taskExecutor</span><span class="o">);</span> <span class="c1">// 通过join方法等待任务完成
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="3-problem-analysis">3. Problem Analysis</h2>
 <p>After the program starts, it blocks soon. Checking the thread status through jstack, we find that taskExecutor-1, taskExecutor-2 and main are in WAITING state, waiting for the execution of <code>CompletableFuture.join</code> method to finish.</p>
@@ -544,17 +544,17 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">priority:5 - threadId:0x00007f7f8eb36800 - nativeId:0x3e03 - nativeId (decimal):15875 - state:WAITING
-stackTrace:
-java.lang.Thread.State: WAITING (parking)
-at sun.misc.Unsafe.park(Native Method)
-- parking to wait for &lt;0x00000007961fe548&gt; (a java.util.concurrent.CompletableFuture$Signaller)
-at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
-at java.util.concurrent.CompletableFuture$Signaller.block(CompletableFuture.java:1693)
-at java.util.concurrent.ForkJoinPool.managedBlock(ForkJoinPool.java:3323)
-at java.util.concurrent.CompletableFuture.waitingGet(CompletableFuture.java:1729)
-at java.util.concurrent.CompletableFuture.join(CompletableFuture.java:1934)
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">priority:5 - threadId:0x00007f7f8eb36800 - nativeId:0x3e03 - nativeId (decimal):15875 - state:WAITING
+</span></span><span class="line"><span class="cl">stackTrace:
+</span></span><span class="line"><span class="cl">java.lang.Thread.State: WAITING (parking)
+</span></span><span class="line"><span class="cl">at sun.misc.Unsafe.park(Native Method)
+</span></span><span class="line"><span class="cl">- parking to wait for &lt;0x00000007961fe548&gt; (a java.util.concurrent.CompletableFuture$Signaller)
+</span></span><span class="line"><span class="cl">at java.util.concurrent.locks.LockSupport.park(LockSupport.java:175)
+</span></span><span class="line"><span class="cl">at java.util.concurrent.CompletableFuture$Signaller.block(CompletableFuture.java:1693)
+</span></span><span class="line"><span class="cl">at java.util.concurrent.ForkJoinPool.managedBlock(ForkJoinPool.java:3323)
+</span></span><span class="line"><span class="cl">at java.util.concurrent.CompletableFuture.waitingGet(CompletableFuture.java:1729)
+</span></span><span class="line"><span class="cl">at java.util.concurrent.CompletableFuture.join(CompletableFuture.java:1934)
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>By analyzing the execution process of the program, it is not difficult to find the reason of blocking. As the size of the Queue set by the thread pool is larger than the size of the thread pool, when the thread pool is full, the delayFoo method will be in the queue, and as the program is executed, there will always be a situation where the thread pool is full of <code>CompletableFuture.join</code> methods and the queue is full of delayFoo methods.</p>
 <p>At this time, the join method in the thread is waiting for the execution of the delayFoo method in the queue to complete, and the delayFoo method in the queue cannot be executed because it cannot wait for the available threads, and the whole program is in a deadlock state.</p>

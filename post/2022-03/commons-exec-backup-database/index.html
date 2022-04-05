@@ -36,7 +36,7 @@ Use in spring boot applications Start a new subprocess via commons-exec to execu
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-03/commons-exec-backup-database/" />
@@ -445,8 +445,8 @@ Use in spring boot applications Start a new subprocess via commons-exec to execu
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">mysqldump -u<span class="o">[</span>username<span class="o">]</span> -p<span class="o">[</span>password<span class="o">]</span> <span class="o">[</span>database<span class="o">]</span> &gt; <span class="o">[</span>sql file<span class="o">]</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">mysqldump -u<span class="o">[</span>username<span class="o">]</span> -p<span class="o">[</span>password<span class="o">]</span> <span class="o">[</span>database<span class="o">]</span> &gt; <span class="o">[</span>sql file<span class="o">]</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>The <code>&gt;</code> symbol is a redirector under linux, redirecting the standard output to a file.</p>
@@ -467,13 +467,13 @@ Use in spring boot applications Start a new subprocess via commons-exec to execu
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- https://mvnrepository.com/artifact/org.apache.commons/commons-exec --&gt;</span>
-<span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.apache.commons<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>commons-exec<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>1.3<span class="nt">&lt;/version&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="c">&lt;!-- https://mvnrepository.com/artifact/org.apache.commons/commons-exec --&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.apache.commons<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>commons-exec<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;version&gt;</span>1.3<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="databasebackuptest">DataBaseBackUpTest</h3>
 <div class="highlight"><div class="chroma">
@@ -578,105 +578,105 @@ Use in spring boot applications Start a new subprocess via commons-exec to execu
 </span><span class="lnt">98
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">io.springcloud.test</span><span class="o">;</span>
-
-
-
-<span class="kn">import</span> <span class="nn">java.io.BufferedOutputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.ByteArrayOutputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.OutputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Paths</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.StandardOpenOption</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.Connection</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.ResultSet</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.SQLException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.concurrent.TimeUnit</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.apache.commons.exec.CommandLine</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.apache.commons.exec.DefaultExecutor</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.apache.commons.exec.ExecuteWatchdog</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.apache.commons.exec.PumpStreamHandler</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.junit.Test</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.junit.runner.RunWith</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.springcloud.BackUpTestApplication</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.boot.test.context.SpringBootTest</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.boot.test.context.SpringBootTest.WebEnvironment</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.test.context.junit4.SpringRunner</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">com.zaxxer.hikari.HikariDataSource</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
-
-
-<span class="nd">@RunWith</span><span class="o">(</span><span class="n">SpringRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-<span class="nd">@SpringBootTest</span><span class="o">(</span><span class="n">classes</span> <span class="o">=</span> <span class="n">BackUpTestApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">webEnvironment</span> <span class="o">=</span> <span class="n">WebEnvironment</span><span class="o">.</span><span class="na">RANDOM_PORT</span><span class="o">)</span>
-<span class="nd">@Slf4j</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataBaseBackUpTest</span> <span class="o">{</span>
-
-    <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="n">HikariDataSource</span> <span class="n">hikariDataSource</span><span class="o">;</span>
-
-    <span class="nd">@Test</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span> <span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        
-        <span class="c1">// sql file
-</span><span class="c1"></span>        <span class="n">Path</span> <span class="n">sqlFile</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;C:\\Users\\KevinBlandy\\Desktop\\db.sql&#34;</span><span class="o">);</span>
-        
-        <span class="n">String</span> <span class="n">database</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-
-        <span class="c1">// Execute SQL to get the name of the current database
-</span><span class="c1"></span>        <span class="k">try</span> <span class="o">(</span><span class="n">Connection</span> <span class="n">connection</span> <span class="o">=</span> <span class="n">hikariDataSource</span><span class="o">.</span><span class="na">getConnection</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">try</span> <span class="o">(</span><span class="n">ResultSet</span> <span class="n">resultSet</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">createStatement</span><span class="o">().</span><span class="na">executeQuery</span><span class="o">(</span><span class="s">&#34;SELECT DATABASE();&#34;</span><span class="o">))</span> <span class="o">{</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">resultSet</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
-                    <span class="n">database</span> <span class="o">=</span> <span class="n">resultSet</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="n">1</span><span class="o">);</span>
-                <span class="o">}</span>
-            <span class="o">}</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
-        <span class="o">}</span>
-
-        <span class="c1">// stdErr
-</span><span class="c1"></span>        <span class="n">ByteArrayOutputStream</span> <span class="n">stdErr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
-        
-        
-        <span class="c1">// stdOut
-</span><span class="c1"></span>        <span class="n">OutputStream</span> <span class="n">stdOut</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedOutputStream</span><span class="o">(</span><span class="n">Files</span><span class="o">.</span><span class="na">newOutputStream</span><span class="o">(</span><span class="n">sqlFile</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">CREATE</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">TRUNCATE_EXISTING</span><span class="o">));</span>
-        
-        <span class="k">try</span> <span class="o">(</span><span class="n">stdErr</span><span class="o">;</span> <span class="n">stdOut</span><span class="o">)</span> <span class="o">{</span>
-
-            <span class="c1">// Watchdog. The execution timeout is 1 hour.
-</span><span class="c1"></span>            <span class="n">ExecuteWatchdog</span> <span class="n">watchdog</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExecuteWatchdog</span><span class="o">(</span><span class="n">TimeUnit</span><span class="o">.</span><span class="na">HOURS</span><span class="o">.</span><span class="na">toMillis</span><span class="o">(</span><span class="n">1</span><span class="o">));</span>
-            
-            <span class="n">DefaultExecutor</span> <span class="n">defaultExecutor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultExecutor</span><span class="o">();</span>
-            <span class="n">defaultExecutor</span><span class="o">.</span><span class="na">setWatchdog</span><span class="o">(</span><span class="n">watchdog</span><span class="o">);</span>
-            <span class="n">defaultExecutor</span><span class="o">.</span><span class="na">setStreamHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">PumpStreamHandler</span><span class="o">(</span><span class="n">stdOut</span><span class="o">,</span> <span class="n">stdErr</span><span class="o">));</span>
-
-            <span class="n">CommandLine</span> <span class="n">commandLine</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommandLine</span><span class="o">(</span><span class="s">&#34;mysqldump&#34;</span><span class="o">);</span>
-            <span class="n">commandLine</span><span class="o">.</span><span class="na">addArgument</span><span class="o">(</span><span class="s">&#34;-u&#34;</span> <span class="o">+</span> <span class="n">hikariDataSource</span><span class="o">.</span><span class="na">getUsername</span><span class="o">());</span> <span class="c1">// username
-</span><span class="c1"></span>            <span class="n">commandLine</span><span class="o">.</span><span class="na">addArgument</span><span class="o">(</span><span class="s">&#34;-p&#34;</span> <span class="o">+</span> <span class="n">hikariDataSource</span><span class="o">.</span><span class="na">getPassword</span><span class="o">());</span> <span class="c1">// password
-</span><span class="c1"></span>            <span class="n">commandLine</span><span class="o">.</span><span class="na">addArgument</span><span class="o">(</span><span class="n">database</span><span class="o">);</span> <span class="c1">// database
-</span><span class="c1"></span>
-            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Exporting SQL data...&#34;</span><span class="o">);</span>
-            
-            <span class="c1">// Synchronous execution. Blocking until the execution of the child process is complete.
-</span><span class="c1"></span>            <span class="kt">int</span> <span class="n">exitCode</span> <span class="o">=</span> <span class="n">defaultExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">commandLine</span><span class="o">);</span>
-            
-            <span class="k">if</span><span class="o">(</span><span class="n">defaultExecutor</span><span class="o">.</span><span class="na">isFailure</span><span class="o">(</span><span class="n">exitCode</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">watchdog</span><span class="o">.</span><span class="na">killedProcess</span><span class="o">())</span> <span class="o">{</span>
-                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;timeout...&#34;</span><span class="o">);</span>
-            <span class="o">}</span>
-            
-            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;SQL data export completed: exitCode={}, sqlFile={}&#34;</span><span class="o">,</span> <span class="n">exitCode</span><span class="o">,</span> <span class="n">sqlFile</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;SQL data export exception: {}&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
-            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;std err: {}{}&#34;</span><span class="o">,</span> <span class="n">System</span><span class="o">.</span><span class="na">lineSeparator</span><span class="o">(),</span> <span class="n">stdErr</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springcloud.test</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.BufferedOutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.ByteArrayOutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.OutputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Paths</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.StandardOpenOption</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.sql.Connection</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.sql.ResultSet</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.sql.SQLException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.concurrent.TimeUnit</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.exec.CommandLine</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.exec.DefaultExecutor</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.exec.ExecuteWatchdog</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.apache.commons.exec.PumpStreamHandler</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.junit.Test</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.junit.runner.RunWith</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">io.springcloud.BackUpTestApplication</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.test.context.SpringBootTest</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.test.context.SpringBootTest.WebEnvironment</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.test.context.junit4.SpringRunner</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.zaxxer.hikari.HikariDataSource</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@RunWith</span><span class="o">(</span><span class="n">SpringRunner</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@SpringBootTest</span><span class="o">(</span><span class="n">classes</span> <span class="o">=</span> <span class="n">BackUpTestApplication</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">webEnvironment</span> <span class="o">=</span> <span class="n">WebEnvironment</span><span class="o">.</span><span class="na">RANDOM_PORT</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Slf4j</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataBaseBackUpTest</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">HikariDataSource</span> <span class="n">hikariDataSource</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span> <span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// sql file
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">Path</span> <span class="n">sqlFile</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;C:\\Users\\KevinBlandy\\Desktop\\db.sql&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">String</span> <span class="n">database</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Execute SQL to get the name of the current database
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">try</span> <span class="o">(</span><span class="n">Connection</span> <span class="n">connection</span> <span class="o">=</span> <span class="n">hikariDataSource</span><span class="o">.</span><span class="na">getConnection</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span> <span class="o">(</span><span class="n">ResultSet</span> <span class="n">resultSet</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">createStatement</span><span class="o">().</span><span class="na">executeQuery</span><span class="o">(</span><span class="s">&#34;SELECT DATABASE();&#34;</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="o">(</span><span class="n">resultSet</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">database</span> <span class="o">=</span> <span class="n">resultSet</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="n">1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">e</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// stdErr
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">ByteArrayOutputStream</span> <span class="n">stdErr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ByteArrayOutputStream</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// stdOut
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">OutputStream</span> <span class="n">stdOut</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedOutputStream</span><span class="o">(</span><span class="n">Files</span><span class="o">.</span><span class="na">newOutputStream</span><span class="o">(</span><span class="n">sqlFile</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">CREATE</span><span class="o">,</span> <span class="n">StandardOpenOption</span><span class="o">.</span><span class="na">TRUNCATE_EXISTING</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">(</span><span class="n">stdErr</span><span class="o">;</span> <span class="n">stdOut</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// Watchdog. The execution timeout is 1 hour.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">ExecuteWatchdog</span> <span class="n">watchdog</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExecuteWatchdog</span><span class="o">(</span><span class="n">TimeUnit</span><span class="o">.</span><span class="na">HOURS</span><span class="o">.</span><span class="na">toMillis</span><span class="o">(</span><span class="n">1</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="n">DefaultExecutor</span> <span class="n">defaultExecutor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultExecutor</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">defaultExecutor</span><span class="o">.</span><span class="na">setWatchdog</span><span class="o">(</span><span class="n">watchdog</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">defaultExecutor</span><span class="o">.</span><span class="na">setStreamHandler</span><span class="o">(</span><span class="k">new</span> <span class="n">PumpStreamHandler</span><span class="o">(</span><span class="n">stdOut</span><span class="o">,</span> <span class="n">stdErr</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">CommandLine</span> <span class="n">commandLine</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CommandLine</span><span class="o">(</span><span class="s">&#34;mysqldump&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">commandLine</span><span class="o">.</span><span class="na">addArgument</span><span class="o">(</span><span class="s">&#34;-u&#34;</span> <span class="o">+</span> <span class="n">hikariDataSource</span><span class="o">.</span><span class="na">getUsername</span><span class="o">());</span> <span class="c1">// username
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">commandLine</span><span class="o">.</span><span class="na">addArgument</span><span class="o">(</span><span class="s">&#34;-p&#34;</span> <span class="o">+</span> <span class="n">hikariDataSource</span><span class="o">.</span><span class="na">getPassword</span><span class="o">());</span> <span class="c1">// password
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">commandLine</span><span class="o">.</span><span class="na">addArgument</span><span class="o">(</span><span class="n">database</span><span class="o">);</span> <span class="c1">// database
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Exporting SQL data...&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1">// Synchronous execution. Blocking until the execution of the child process is complete.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="kt">int</span> <span class="n">exitCode</span> <span class="o">=</span> <span class="n">defaultExecutor</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">commandLine</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="o">(</span><span class="n">defaultExecutor</span><span class="o">.</span><span class="na">isFailure</span><span class="o">(</span><span class="n">exitCode</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">watchdog</span><span class="o">.</span><span class="na">killedProcess</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;timeout...&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;SQL data export completed: exitCode={}, sqlFile={}&#34;</span><span class="o">,</span> <span class="n">exitCode</span><span class="o">,</span> <span class="n">sqlFile</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;SQL data export exception: {}&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;std err: {}{}&#34;</span><span class="o">,</span> <span class="n">System</span><span class="o">.</span><span class="na">lineSeparator</span><span class="o">(),</span> <span class="n">stdErr</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Obviously, this backup method only applies to mysql, and the mysql service is on the same machine as the current application.</p>
 

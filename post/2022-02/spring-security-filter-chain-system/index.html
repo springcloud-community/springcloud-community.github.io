@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-security-filter-chain-system/" />
@@ -442,13 +442,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="nd">@Bean</span>
-    <span class="nd">@Order</span><span class="o">(</span><span class="n">SecurityProperties</span><span class="o">.</span><span class="na">BASIC_AUTH_ORDER</span><span class="o">)</span>
-    <span class="n">SecurityFilterChain</span> <span class="nf">defaultSecurityFilterChain</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="n">http</span><span class="o">.</span><span class="na">authorizeRequests</span><span class="o">().</span><span class="na">anyRequest</span><span class="o">().</span><span class="na">authenticated</span><span class="o">().</span><span class="na">and</span><span class="o">().</span><span class="na">formLogin</span><span class="o">().</span><span class="na">and</span><span class="o">().</span><span class="na">httpBasic</span><span class="o">();</span>
-        <span class="k">return</span> <span class="n">http</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Order</span><span class="o">(</span><span class="n">SecurityProperties</span><span class="o">.</span><span class="na">BASIC_AUTH_ORDER</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SecurityFilterChain</span> <span class="nf">defaultSecurityFilterChain</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">http</span><span class="o">.</span><span class="na">authorizeRequests</span><span class="o">().</span><span class="na">anyRequest</span><span class="o">().</span><span class="na">authenticated</span><span class="o">().</span><span class="na">and</span><span class="o">().</span><span class="na">formLogin</span><span class="o">().</span><span class="na">and</span><span class="o">().</span><span class="na">httpBasic</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">http</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The configuration here is that all requests must be initiated by an authenticated user, with form login and <strong>Http Basic Authentication</strong> enabled. This is what we need to do when we visit <code>/foo/bar</code> to be authenticated and to be able to log in to the form. This is our daily development needs to customize, in <code>HttpSecurity</code> related articles fat brother also explained. What is this <code>SecurityFilterChain</code> in the end?</p>
 <h4 id="securityfilterchain">SecurityFilterChain</h4>
@@ -463,13 +463,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">SecurityFilterChain</span> <span class="o">{</span>
-    <span class="c1">//  当前请求是否匹配
-</span><span class="c1"></span>    <span class="kt">boolean</span> <span class="nf">matches</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">);</span>
-    <span class="c1">// 一揽子过滤器组成的有序过滤器链
-</span><span class="c1"></span>    <span class="n">List</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;</span> <span class="nf">getFilters</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">SecurityFilterChain</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//  当前请求是否匹配
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">boolean</span> <span class="nf">matches</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 一揽子过滤器组成的有序过滤器链
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">List</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;</span> <span class="nf">getFilters</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>When a request <code>HttpServletRequest</code> enters <code>SecurityFilterChain</code>, the <code>matches</code> method is used to determine whether the conditions are met to enter the filter chain. It&rsquo;s like you are a VIP taking the VIP channel and enjoying a series of VIP treatment; you are a normal user, you take the normal user channel and enjoy the normal user treatment.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/13/92fec47ec6264c07b57cdfd06e1dab3e.png" alt="SecurityFilterChain"></p>
@@ -491,15 +491,15 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;myfilterChainProxy&#34;</span> <span class="na">class=</span><span class="s">&#34;org.springframework.security.web.FilterChainProxy&#34;</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;constructor-arg&gt;</span>
-        <span class="nt">&lt;util:list&gt;</span>
-            <span class="nt">&lt;security:filter-chain</span> <span class="na">pattern=</span><span class="s">&#34;/do/not/filter*&#34;</span> <span class="na">filters=</span><span class="s">&#34;none&#34;</span><span class="nt">/&gt;</span>
-            <span class="nt">&lt;security:filter-chain</span> <span class="na">pattern=</span><span class="s">&#34;/**&#34;</span> <span class="na">filters=</span><span class="s">&#34;filter1,filter2,filter3&#34;</span><span class="nt">/&gt;</span>
-        <span class="nt">&lt;/util:list&gt;</span>
-    <span class="nt">&lt;/constructor-arg&gt;</span>
-<span class="nt">&lt;/bean&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&#34;myfilterChainProxy&#34;</span> <span class="na">class=</span><span class="s">&#34;org.springframework.security.web.FilterChainProxy&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;constructor-arg&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;util:list&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;security:filter-chain</span> <span class="na">pattern=</span><span class="s">&#34;/do/not/filter*&#34;</span> <span class="na">filters=</span><span class="s">&#34;none&#34;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;security:filter-chain</span> <span class="na">pattern=</span><span class="s">&#34;/**&#34;</span> <span class="na">filters=</span><span class="s">&#34;filter1,filter2,filter3&#34;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/util:list&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/constructor-arg&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/bean&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Different <code>SecurityFilterChain</code>s are matched according to different request paths. The following is a diagram.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/13/29d255103300428cb7637320175fe840.png" alt="SecurityFilterChain"></p>

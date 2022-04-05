@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-03/resttemplate-multipart/" />
@@ -68,7 +68,7 @@
 <meta itemprop="name" content="Send multipart/form-data requests using Resttemplate">
 <meta itemprop="description" content="A multipart/form-data request can contain multiple sub-request bodies, each with its own separate header and body. Each sub-request body has its own separate header and body, and is typically used for file uploads. Here we use RestTemplate to send a multipart/form-data request."><meta itemprop="datePublished" content="2022-03-28T15:14:27+08:00" />
 <meta itemprop="dateModified" content="2022-03-28T15:14:27+08:00" />
-<meta itemprop="wordCount" content="563">
+<meta itemprop="wordCount" content="561">
 <meta itemprop="keywords" content="resttemplate," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Send multipart/form-data requests using Resttemplate"/>
 <meta name="twitter:description" content="A multipart/form-data request can contain multiple sub-request bodies, each with its own separate header and body. Each sub-request body has its own separate header and body, and is typically used for file uploads. Here we use RestTemplate to send a multipart/form-data request."/>
@@ -391,7 +391,7 @@
             <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
             
           </div>
-        <span class="more-meta"> 563 words </span>
+        <span class="more-meta"> 561 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -484,66 +484,64 @@
 </span><span class="lnt">53
 </span><span class="lnt">54
 </span><span class="lnt">55
-</span><span class="lnt">56
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">io.springcloud.test</span><span class="o">;</span>
-
-
-<span class="kn">import</span> <span class="nn">org.springframework.core.io.ClassPathResource</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.core.io.FileSystemResource</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.core.io.Resource</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.HttpEntity</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.HttpHeaders</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.MediaType</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.client.MultipartBodyBuilder</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.util.MultiValueMap</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.client.RestTemplate</span><span class="o">;</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainTest</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-
-        <span class="n">RestTemplate</span> <span class="n">restTemplate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RestTemplate</span><span class="o">();</span>
-
-        <span class="n">HttpHeaders</span> <span class="n">headers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpHeaders</span><span class="o">();</span>
-
-        <span class="c1">// ContentType
-</span><span class="c1"></span>        <span class="n">headers</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">MULTIPART_FORM_DATA</span><span class="o">);</span>
-
-        <span class="n">MultipartBodyBuilder</span> <span class="n">multipartBodyBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MultipartBodyBuilder</span><span class="o">();</span>
-
-        <span class="c1">// Common form parameters.
-</span><span class="c1"></span>        <span class="n">multipartBodyBuilder</span><span class="o">.</span><span class="na">part</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">,</span> <span class="s">&#34;spring cloud&#34;</span><span class="o">);</span>
-        
-        <span class="c1">// Custom ContentType.
-</span><span class="c1"></span>        <span class="n">multipartBodyBuilder</span><span class="o">.</span><span class="na">part</span><span class="o">(</span><span class="s">&#34;compment&#34;</span><span class="o">,</span> <span class="s">&#34;&#34;&#34;
-</span><span class="s">                [{&#34;</span><span class="n">name</span><span class="s">&#34;: &#34;</span><span class="n">open</span> <span class="n">feign</span><span class="s">&#34;}, {&#34;</span><span class="n">name</span><span class="s">&#34;: &#34;</span><span class="n">gateway</span><span class="s">&#34;}]&#34;&#34;&#34;</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">);</span>
-
-        <span class="c1">// Load a file from disk.
-</span><span class="c1"></span>        <span class="n">Resource</span> <span class="n">file1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileSystemResource</span><span class="o">(</span><span class="s">&#34;C:\\logo.png&#34;</span><span class="o">);</span>
-        <span class="n">multipartBodyBuilder</span><span class="o">.</span><span class="na">part</span><span class="o">(</span><span class="s">&#34;avatar&#34;</span><span class="o">,</span> <span class="n">file1</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">IMAGE_JPEG</span><span class="o">);</span>
-
-        <span class="c1">// Load the file from the classpath and add some extra request headers.
-</span><span class="c1"></span>        <span class="n">Resource</span> <span class="n">file2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassPathResource</span><span class="o">(</span><span class="s">&#34;logo.png&#34;</span><span class="o">);</span>
-        <span class="n">multipartBodyBuilder</span><span class="o">.</span><span class="na">part</span><span class="o">(</span><span class="s">&#34;avatar&#34;</span><span class="o">,</span> <span class="n">file2</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN</span><span class="o">)</span>
-                    <span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="s">&#34;X-Size&#34;</span><span class="o">,</span> <span class="s">&#34;400&#34;</span><span class="o">)</span>
-                    <span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="s">&#34;X-width&#34;</span><span class="o">,</span> <span class="s">&#34;400&#34;</span><span class="o">);</span>
-
-        <span class="c1">// multipart/form-data request body
-</span><span class="c1"></span>        <span class="n">MultiValueMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">HttpEntity</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">multipartBody</span> <span class="o">=</span> <span class="n">multipartBodyBuilder</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
-
-        <span class="c1">// The complete http request body.
-</span><span class="c1"></span>        <span class="n">HttpEntity</span><span class="o">&lt;</span><span class="n">MultiValueMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">HttpEntity</span><span class="o">&lt;?&gt;&gt;&gt;</span> <span class="n">httpEntity</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpEntity</span><span class="o">&lt;&gt;(</span><span class="n">multipartBody</span><span class="o">,</span> <span class="n">headers</span><span class="o">);</span>
-
-        <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">responseEntity</span> <span class="o">=</span> <span class="n">restTemplate</span><span class="o">.</span><span class="na">postForEntity</span><span class="o">(</span><span class="s">&#34;http://localhost/upload&#34;</span><span class="o">,</span> <span class="n">httpEntity</span><span class="o">,</span>
-                <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">responseEntity</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springcloud.test</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.core.io.ClassPathResource</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.core.io.FileSystemResource</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.core.io.Resource</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.HttpEntity</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.HttpHeaders</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.MediaType</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.client.MultipartBodyBuilder</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.util.MultiValueMap</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.client.RestTemplate</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainTest</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">RestTemplate</span> <span class="n">restTemplate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RestTemplate</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">HttpHeaders</span> <span class="n">headers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpHeaders</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// ContentType
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">headers</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="n">MediaType</span><span class="o">.</span><span class="na">MULTIPART_FORM_DATA</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">MultipartBodyBuilder</span> <span class="n">multipartBodyBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MultipartBodyBuilder</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Common form parameters.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">multipartBodyBuilder</span><span class="o">.</span><span class="na">part</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">,</span> <span class="s">&#34;spring cloud&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// Custom ContentType.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">multipartBodyBuilder</span><span class="o">.</span><span class="na">part</span><span class="o">(</span><span class="s">&#34;compment&#34;</span><span class="o">,</span> <span class="s">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">                [{&#34;</span><span class="n">name</span><span class="s">&#34;: &#34;</span><span class="n">open</span> <span class="n">feign</span><span class="s">&#34;}, {&#34;</span><span class="n">name</span><span class="s">&#34;: &#34;</span><span class="n">gateway</span><span class="s">&#34;}]&#34;&#34;&#34;</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Load a file from disk.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">Resource</span> <span class="n">file1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileSystemResource</span><span class="o">(</span><span class="s">&#34;C:\\logo.png&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">multipartBodyBuilder</span><span class="o">.</span><span class="na">part</span><span class="o">(</span><span class="s">&#34;avatar&#34;</span><span class="o">,</span> <span class="n">file1</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">IMAGE_JPEG</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Load the file from the classpath and add some extra request headers.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">Resource</span> <span class="n">file2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ClassPathResource</span><span class="o">(</span><span class="s">&#34;logo.png&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">multipartBodyBuilder</span><span class="o">.</span><span class="na">part</span><span class="o">(</span><span class="s">&#34;avatar&#34;</span><span class="o">,</span> <span class="n">file2</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="s">&#34;X-Size&#34;</span><span class="o">,</span> <span class="s">&#34;400&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="o">.</span><span class="na">header</span><span class="o">(</span><span class="s">&#34;X-width&#34;</span><span class="o">,</span> <span class="s">&#34;400&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// multipart/form-data request body
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">MultiValueMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">HttpEntity</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">multipartBody</span> <span class="o">=</span> <span class="n">multipartBodyBuilder</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// The complete http request body.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">HttpEntity</span><span class="o">&lt;</span><span class="n">MultiValueMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">HttpEntity</span><span class="o">&lt;?&gt;&gt;&gt;</span> <span class="n">httpEntity</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpEntity</span><span class="o">&lt;&gt;(</span><span class="n">multipartBody</span><span class="o">,</span> <span class="n">headers</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">responseEntity</span> <span class="o">=</span> <span class="n">restTemplate</span><span class="o">.</span><span class="na">postForEntity</span><span class="o">(</span><span class="s">&#34;http://localhost/upload&#34;</span><span class="o">,</span> <span class="n">httpEntity</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">responseEntity</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="testing">Testing</h2>
 <h3 id="server">Server</h3>
@@ -613,74 +611,72 @@
 </span><span class="lnt">61
 </span><span class="lnt">62
 </span><span class="lnt">63
-</span><span class="lnt">64
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">io.springboot.demo.web.controller</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.Part</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.springframework.http.HttpHeaders</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.MediaType</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.util.StreamUtils</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
-
-
-<span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
-
-<span class="nd">@RestController</span>
-<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/upload&#34;</span><span class="o">)</span>
-<span class="nd">@Slf4j</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UploadController</span> <span class="o">{</span>
-
-    <span class="nd">@PostMapping</span><span class="o">(</span><span class="n">consumes</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">MULTIPART_FORM_DATA_VALUE</span><span class="o">,</span> <span class="n">produces</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN_VALUE</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">upload</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
-        
-        <span class="k">for</span> <span class="o">(</span><span class="n">Part</span> <span class="n">part</span> <span class="o">:</span> <span class="n">request</span><span class="o">.</span><span class="na">getParts</span><span class="o">())</span> <span class="o">{</span>
-            
-            <span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getContentType</span><span class="o">();</span>
-            <span class="n">String</span> <span class="n">parameterName</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
-            <span class="n">String</span> <span class="n">fileName</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getSubmittedFileName</span><span class="o">();</span>
-            <span class="kt">long</span> <span class="n">size</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getSize</span><span class="o">();</span>
-            
-
-            <span class="c1">// Headers
-</span><span class="c1"></span>            <span class="n">HttpHeaders</span> <span class="n">headers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpHeaders</span><span class="o">();</span>
-            <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">headerName</span> <span class="o">:</span> <span class="n">part</span><span class="o">.</span><span class="na">getHeaderNames</span><span class="o">())</span> <span class="o">{</span>
-                <span class="n">headers</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">headerName</span><span class="o">,</span> <span class="n">part</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">(</span><span class="n">headerName</span><span class="o">).</span><span class="na">stream</span><span class="o">().</span><span class="na">toList</span><span class="o">());</span>
-            <span class="o">}</span>
-
-            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;contentType={},parameterName={}, fileName={},size={},headers={}&#34;</span><span class="o">,</span> <span class="n">contentType</span><span class="o">,</span> <span class="n">parameterName</span><span class="o">,</span>
-                    <span class="n">fileName</span><span class="o">,</span> <span class="n">size</span><span class="o">,</span> <span class="n">headers</span><span class="o">);</span>
-
-            
-            <span class="cm">/**
-</span><span class="cm">            * Read body
-</span><span class="cm">            */</span>
-            <span class="k">try</span> <span class="o">(</span><span class="n">InputStream</span> <span class="n">reader</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">())</span> <span class="o">{</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">fileName</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="kt">byte</span><span class="o">[]</span> <span class="n">content</span> <span class="o">=</span> <span class="n">StreamUtils</span><span class="o">.</span><span class="na">copyToByteArray</span><span class="o">(</span><span class="n">reader</span><span class="o">);</span>
-                    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;content={}&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">content</span><span class="o">));</span>
-                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-                    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;content={}&#34;</span><span class="o">,</span> <span class="s">&#34;[binary]&#34;</span><span class="o">);</span>
-                <span class="o">}</span>
-            <span class="o">}</span>
-            
-            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;---------------------------------------------------&#34;</span><span class="o">);</span>
-
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="s">&#34;success&#34;</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springboot.demo.web.controller</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.servlet.ServletException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.servlet.http.Part</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.HttpHeaders</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.MediaType</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.util.StreamUtils</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PostMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/upload&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Slf4j</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UploadController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@PostMapping</span><span class="o">(</span><span class="n">consumes</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">MULTIPART_FORM_DATA_VALUE</span><span class="o">,</span> <span class="n">produces</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_PLAIN_VALUE</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">upload</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="o">(</span><span class="n">Part</span> <span class="n">part</span> <span class="o">:</span> <span class="n">request</span><span class="o">.</span><span class="na">getParts</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getContentType</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">String</span> <span class="n">parameterName</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">String</span> <span class="n">fileName</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getSubmittedFileName</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="kt">long</span> <span class="n">size</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getSize</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// Headers
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">HttpHeaders</span> <span class="n">headers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpHeaders</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">headerName</span> <span class="o">:</span> <span class="n">part</span><span class="o">.</span><span class="na">getHeaderNames</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">headers</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">headerName</span><span class="o">,</span> <span class="n">part</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">(</span><span class="n">headerName</span><span class="o">).</span><span class="na">stream</span><span class="o">().</span><span class="na">toList</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;contentType={},parameterName={}, fileName={},size={},headers={}&#34;</span><span class="o">,</span> <span class="n">contentType</span><span class="o">,</span> <span class="n">parameterName</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">fileName</span><span class="o">,</span> <span class="n">size</span><span class="o">,</span> <span class="n">headers</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">            * Read body
+</span></span></span><span class="line"><span class="cl"><span class="cm">            */</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span> <span class="o">(</span><span class="n">InputStream</span> <span class="n">reader</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="o">(</span><span class="n">fileName</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="kt">byte</span><span class="o">[]</span> <span class="n">content</span> <span class="o">=</span> <span class="n">StreamUtils</span><span class="o">.</span><span class="na">copyToByteArray</span><span class="o">(</span><span class="n">reader</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;content={}&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">content</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;content={}&#34;</span><span class="o">,</span> <span class="s">&#34;[binary]&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;---------------------------------------------------&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s">&#34;success&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="console-logs">Console Logs</h3>
 <div class="highlight"><div class="chroma">
@@ -699,19 +695,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">contentType=text/plain;charset=UTF-8,parameterName=name, fileName=null,size=12,headers=[Content-Disposition:&#34;form-data; name=&#34;name&#34;&#34;, Content-Length:&#34;12&#34;, Content-Type:&#34;text/plain;charset=UTF-8&#34;]
-content=spring cloud
----------------------------------------------------
-contentType=application/json,parameterName=compment, fileName=null,size=45,headers=[Content-Disposition:&#34;form-data; name=&#34;compment&#34;&#34;, Content-Length:&#34;45&#34;, Content-Type:&#34;application/json&#34;]
-content=[{&#34;name&#34;: &#34;open feign&#34;}, {&#34;name&#34;: &#34;gateway&#34;}]
----------------------------------------------------
-contentType=image/jpeg,parameterName=avatar, fileName=logo.png,size=19825,headers=[Content-Disposition:&#34;form-data; name=&#34;avatar&#34;; filename=&#34;logo.png&#34;&#34;, Content-Length:&#34;19825&#34;, Content-Type:&#34;image/jpeg&#34;]
-content=[binary]
----------------------------------------------------
-contentType=text/plain,parameterName=avatar, fileName=logo.png,size=19825,headers=[Content-Disposition:&#34;form-data; name=&#34;avatar&#34;; filename=&#34;logo.png&#34;&#34;, Content-Length:&#34;19825&#34;, X-Size:&#34;400&#34;, X-width:&#34;400&#34;, Content-Type:&#34;text/plain&#34;]
-content=[binary]
----------------------------------------------------
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">contentType=text/plain;charset=UTF-8,parameterName=name, fileName=null,size=12,headers=[Content-Disposition:&#34;form-data; name=&#34;name&#34;&#34;, Content-Length:&#34;12&#34;, Content-Type:&#34;text/plain;charset=UTF-8&#34;]
+</span></span><span class="line"><span class="cl">content=spring cloud
+</span></span><span class="line"><span class="cl">---------------------------------------------------
+</span></span><span class="line"><span class="cl">contentType=application/json,parameterName=compment, fileName=null,size=45,headers=[Content-Disposition:&#34;form-data; name=&#34;compment&#34;&#34;, Content-Length:&#34;45&#34;, Content-Type:&#34;application/json&#34;]
+</span></span><span class="line"><span class="cl">content=[{&#34;name&#34;: &#34;open feign&#34;}, {&#34;name&#34;: &#34;gateway&#34;}]
+</span></span><span class="line"><span class="cl">---------------------------------------------------
+</span></span><span class="line"><span class="cl">contentType=image/jpeg,parameterName=avatar, fileName=logo.png,size=19825,headers=[Content-Disposition:&#34;form-data; name=&#34;avatar&#34;; filename=&#34;logo.png&#34;&#34;, Content-Length:&#34;19825&#34;, Content-Type:&#34;image/jpeg&#34;]
+</span></span><span class="line"><span class="cl">content=[binary]
+</span></span><span class="line"><span class="cl">---------------------------------------------------
+</span></span><span class="line"><span class="cl">contentType=text/plain,parameterName=avatar, fileName=logo.png,size=19825,headers=[Content-Disposition:&#34;form-data; name=&#34;avatar&#34;; filename=&#34;logo.png&#34;&#34;, Content-Length:&#34;19825&#34;, X-Size:&#34;400&#34;, X-width:&#34;400&#34;, Content-Type:&#34;text/plain&#34;]
+</span></span><span class="line"><span class="cl">content=[binary]
+</span></span><span class="line"><span class="cl">---------------------------------------------------
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="noclassdeffounderror">NoClassDefFoundError</h3>
 <p>If the client application throws a <code>NoClassDefFoundError</code> exception.</p>
@@ -726,14 +722,14 @@ content=[binary]
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt">Exception in thread &#34;main&#34; java.lang.NoClassDefFoundError: org/reactivestreams/Publisher
-    at io.springcloud.test.MainTest.main(MainTest.java:25)
-Caused by: java.lang.ClassNotFoundException: org.reactivestreams.Publisher
-    at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
-    at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
-    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:520)
-    ... 1 more
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Exception in thread &#34;main&#34; java.lang.NoClassDefFoundError: org/reactivestreams/Publisher
+</span></span><span class="line"><span class="cl">    at io.springcloud.test.MainTest.main(MainTest.java:25)
+</span></span><span class="line"><span class="cl">Caused by: java.lang.ClassNotFoundException: org.reactivestreams.Publisher
+</span></span><span class="line"><span class="cl">    at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+</span></span><span class="line"><span class="cl">    at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+</span></span><span class="line"><span class="cl">    at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:520)
+</span></span><span class="line"><span class="cl">    ... 1 more
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then you may need to add the following dependencies to the client.</p>
 <div class="highlight"><div class="chroma">
@@ -745,12 +741,12 @@ Caused by: java.lang.ClassNotFoundException: org.reactivestreams.Publisher
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams --&gt;</span>
-<span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.reactivestreams<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>reactive-streams<span class="nt">&lt;/artifactId&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="c">&lt;!-- https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams --&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.reactivestreams<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>reactive-streams<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div>
     </div>

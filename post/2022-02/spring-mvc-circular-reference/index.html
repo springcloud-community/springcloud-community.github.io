@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-mvc-circular-reference/" />
@@ -69,7 +69,7 @@
 <meta itemprop="name" content="A brief analysis of the circular reference problem of returning objects in SpringMVC">
 <meta itemprop="description" content="Problem Discovery Today this topic is still relatively easy, and many of you may have encountered this problem. The @RestController, @ResponseBody and other annotations are the ones we deal with most when writing web applications, and we often have the need to return an object to the client, which SpringMVC helps us serialize into JSON objects. And today I want to share the topic is not something profound, it is"><meta itemprop="datePublished" content="2022-02-17T15:24:24+08:00" />
 <meta itemprop="dateModified" content="2022-02-17T15:24:24+08:00" />
-<meta itemprop="wordCount" content="1241">
+<meta itemprop="wordCount" content="1240">
 <meta itemprop="keywords" content="spring-mvc," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="A brief analysis of the circular reference problem of returning objects in SpringMVC"/>
 <meta name="twitter:description" content="Problem Discovery Today this topic is still relatively easy, and many of you may have encountered this problem. The @RestController, @ResponseBody and other annotations are the ones we deal with most when writing web applications, and we often have the need to return an object to the client, which SpringMVC helps us serialize into JSON objects. And today I want to share the topic is not something profound, it is"/>
@@ -392,7 +392,7 @@
             <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
             
           </div>
-        <span class="more-meta"> 1241 words </span>
+        <span class="more-meta"> 1240 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -441,19 +441,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">
-<span class="nd">@Data</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">IdCard</span> <span class="n">idCard</span><span class="o">;</span>
-<span class="o">}</span>
-
-<span class="nd">@Data</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">IdCard</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">id</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">Person</span> <span class="n">person</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Data</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">IdCard</span> <span class="n">idCard</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Data</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">IdCard</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Person</span> <span class="n">person</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Return objects with circular references directly in the SpringMVC controller.</p>
 <div class="highlight"><div class="chroma">
@@ -477,24 +477,24 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RestController</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloController</span> <span class="o">{</span>
-
-    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/hello&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">Person</span> <span class="nf">hello</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Person</span><span class="o">();</span>
-        <span class="n">person</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&#34;kirito&#34;</span><span class="o">);</span>
-
-        <span class="n">IdCard</span> <span class="n">idCard</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IdCard</span><span class="o">();</span>
-        <span class="n">idCard</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="s">&#34;xxx19950102xxx&#34;</span><span class="o">);</span>
-
-        <span class="n">person</span><span class="o">.</span><span class="na">setIdCard</span><span class="o">(</span><span class="n">idCard</span><span class="o">);</span>
-        <span class="n">idCard</span><span class="o">.</span><span class="na">setPerson</span><span class="o">(</span><span class="n">person</span><span class="o">);</span>
-
-        <span class="k">return</span> <span class="n">person</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/hello&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Person</span> <span class="nf">hello</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Person</span> <span class="n">person</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Person</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">person</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&#34;kirito&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">IdCard</span> <span class="n">idCard</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IdCard</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">idCard</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="s">&#34;xxx19950102xxx&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">person</span><span class="o">.</span><span class="na">setIdCard</span><span class="o">(</span><span class="n">idCard</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">idCard</span><span class="o">.</span><span class="na">setPerson</span><span class="o">(</span><span class="n">person</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">person</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Requesting <code>curl localhost:8080/hello</code> was found to throw a <code>StackOverFlowError</code> directly.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/17/47757ef5ff8a4507ba8d43cbad883057.png" alt="StackOverFlowError"></p>
@@ -512,13 +512,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Data</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">IdCard</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">id</span><span class="o">;</span>
-    <span class="nd">@JsonIgnore</span>
-    <span class="kd">private</span> <span class="n">Person</span> <span class="n">person</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Data</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">IdCard</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@JsonIgnore</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Person</span> <span class="n">person</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Of course, I also looked through some sources to try to find a more elegant solution to jackson, such as these two annotations.</p>
 <div class="highlight"><div class="chroma">
@@ -527,9 +527,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@JsonManagedReference</span>
-<span class="nd">@JsonBackReference</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@JsonManagedReference</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@JsonBackReference</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>But in my opinion, they don&rsquo;t seem to be of much use.</p>
 <p>Of course, you can also choose to use <code>FastJsonHttpMessageConverter</code> to replace the default implementation of jackson if you don&rsquo;t mind the frequent security vulnerabilities of fastjson, like the following.</p>
@@ -573,49 +573,47 @@
 </span><span class="lnt">36
 </span><span class="lnt">37
 </span><span class="lnt">38
-</span><span class="lnt">39
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
-<span class="kd">public</span> <span class="n">HttpMessageConverters</span> <span class="nf">fastJsonHttpMessageConverters</span><span class="o">()</span> <span class="o">{</span>
-    <span class="c1">//1、定义一个convert转换消息的对象
-</span><span class="c1"></span>    <span class="n">FastJsonHttpMessageConverter</span> <span class="n">fastConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FastJsonHttpMessageConverter</span><span class="o">();</span>
-
-    <span class="c1">//2、添加fastjson的配置信息
-</span><span class="c1"></span>    <span class="n">FastJsonConfig</span> <span class="n">fastJsonConfig</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FastJsonConfig</span><span class="o">();</span>
-
-    <span class="n">SerializerFeature</span><span class="o">[]</span> <span class="n">serializerFeatures</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SerializerFeature</span><span class="o">[]{</span>
-        <span class="c1">//    输出key是包含双引号
-</span><span class="c1"></span>        <span class="c1">//                SerializerFeature.QuoteFieldNames,
-</span><span class="c1"></span>        <span class="c1">//    是否输出为null的字段,若为null 则显示该字段
-</span><span class="c1"></span>        <span class="c1">//                SerializerFeature.WriteMapNullValue,
-</span><span class="c1"></span>        <span class="c1">//    数值字段如果为null，则输出为0
-</span><span class="c1"></span>        <span class="n">SerializerFeature</span><span class="o">.</span><span class="na">WriteNullNumberAsZero</span><span class="o">,</span>
-        <span class="c1">//     List字段如果为null,输出为[],而非null
-</span><span class="c1"></span>        <span class="n">SerializerFeature</span><span class="o">.</span><span class="na">WriteNullListAsEmpty</span><span class="o">,</span>
-        <span class="c1">//    字符类型字段如果为null,输出为&#34;&#34;,而非null
-</span><span class="c1"></span>        <span class="n">SerializerFeature</span><span class="o">.</span><span class="na">WriteNullStringAsEmpty</span><span class="o">,</span>
-        <span class="c1">//    Boolean字段如果为null,输出为false,而非null
-</span><span class="c1"></span>        <span class="n">SerializerFeature</span><span class="o">.</span><span class="na">WriteNullBooleanAsFalse</span><span class="o">,</span>
-        <span class="c1">//    Date的日期转换器
-</span><span class="c1"></span>        <span class="n">SerializerFeature</span><span class="o">.</span><span class="na">WriteDateUseDateFormat</span><span class="o">,</span>
-        <span class="c1">//    循环引用
-</span><span class="c1"></span>        <span class="c1">//SerializerFeature.DisableCircularReferenceDetect,
-</span><span class="c1"></span>    <span class="o">};</span>
-
-    <span class="n">fastJsonConfig</span><span class="o">.</span><span class="na">setSerializerFeatures</span><span class="o">(</span><span class="n">serializerFeatures</span><span class="o">);</span>
-    <span class="n">fastJsonConfig</span><span class="o">.</span><span class="na">setCharset</span><span class="o">(</span><span class="n">Charset</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;UTF-8&#34;</span><span class="o">));</span>
-
-    <span class="c1">//3、在convert中添加配置信息
-</span><span class="c1"></span>    <span class="n">fastConverter</span><span class="o">.</span><span class="na">setFastJsonConfig</span><span class="o">(</span><span class="n">fastJsonConfig</span><span class="o">);</span>
-
-    <span class="c1">//4、将convert添加到converters中
-</span><span class="c1"></span>    <span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;</span> <span class="n">converter</span> <span class="o">=</span> <span class="n">fastConverter</span><span class="o">;</span>
-
-    <span class="k">return</span> <span class="k">new</span> <span class="n">HttpMessageConverters</span><span class="o">(</span><span class="n">converter</span><span class="o">);</span>
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">HttpMessageConverters</span> <span class="nf">fastJsonHttpMessageConverters</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//1、定义一个convert转换消息的对象
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">FastJsonHttpMessageConverter</span> <span class="n">fastConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FastJsonHttpMessageConverter</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">//2、添加fastjson的配置信息
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">FastJsonConfig</span> <span class="n">fastJsonConfig</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FastJsonConfig</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">SerializerFeature</span><span class="o">[]</span> <span class="n">serializerFeatures</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SerializerFeature</span><span class="o">[]{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//    输出key是包含双引号
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">//                SerializerFeature.QuoteFieldNames,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">//    是否输出为null的字段,若为null 则显示该字段
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">//                SerializerFeature.WriteMapNullValue,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">//    数值字段如果为null，则输出为0
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">SerializerFeature</span><span class="o">.</span><span class="na">WriteNullNumberAsZero</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//     List字段如果为null,输出为[],而非null
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">SerializerFeature</span><span class="o">.</span><span class="na">WriteNullListAsEmpty</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//    字符类型字段如果为null,输出为&#34;&#34;,而非null
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">SerializerFeature</span><span class="o">.</span><span class="na">WriteNullStringAsEmpty</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//    Boolean字段如果为null,输出为false,而非null
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">SerializerFeature</span><span class="o">.</span><span class="na">WriteNullBooleanAsFalse</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//    Date的日期转换器
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">SerializerFeature</span><span class="o">.</span><span class="na">WriteDateUseDateFormat</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//    循环引用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">//SerializerFeature.DisableCircularReferenceDetect,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">fastJsonConfig</span><span class="o">.</span><span class="na">setSerializerFeatures</span><span class="o">(</span><span class="n">serializerFeatures</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fastJsonConfig</span><span class="o">.</span><span class="na">setCharset</span><span class="o">(</span><span class="n">Charset</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&#34;UTF-8&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">//3、在convert中添加配置信息
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">fastConverter</span><span class="o">.</span><span class="na">setFastJsonConfig</span><span class="o">(</span><span class="n">fastJsonConfig</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">//4、将convert添加到converters中
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;</span> <span class="n">converter</span> <span class="o">=</span> <span class="n">fastConverter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="n">HttpMessageConverters</span><span class="o">(</span><span class="n">converter</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>You can customize some features for json conversion, but today I&rsquo;m mainly concerned with the <code>SerializerFeature.DisableCircularReferenceDetect</code> property, which allows fastjson to handle circular references by default, as long as the feature is not shown to be turned on.</p>
 <p>After configuring as above, let&rsquo;s see the result.</p>
@@ -624,8 +622,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span><span class="nt">&#34;idCard&#34;</span><span class="p">:{</span><span class="nt">&#34;id&#34;</span><span class="p">:</span><span class="s2">&#34;xxx19950102xxx&#34;</span><span class="p">,</span><span class="nt">&#34;person&#34;</span><span class="p">:{</span><span class="nt">&#34;$ref&#34;</span><span class="p">:</span><span class="s2">&#34;..&#34;</span><span class="p">}},</span><span class="nt">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;kirito&#34;</span><span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;idCard&#34;</span><span class="p">:{</span><span class="nt">&#34;id&#34;</span><span class="p">:</span><span class="s2">&#34;xxx19950102xxx&#34;</span><span class="p">,</span><span class="nt">&#34;person&#34;</span><span class="p">:{</span><span class="nt">&#34;$ref&#34;</span><span class="p">:</span><span class="s2">&#34;..&#34;</span><span class="p">}},</span><span class="nt">&#34;name&#34;</span><span class="p">:</span><span class="s2">&#34;kirito&#34;</span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>has been returned normally, fastjson uses <code>&quot;$ref&quot;:&quot;...&quot;</code> This identifier solves the circular reference problem, and if you continue to use fastjson deserialization, you can still resolve to the same object.</p>
 <p>Using FastJsonHttpMessageConverter completely circumvents the circular reference problem, which is very helpful in scenarios where the return type is not fixed, whereas <code>@JsonIgnore</code> only works on objects with fixed structure of circular references.</p>

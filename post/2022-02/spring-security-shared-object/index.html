@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-security-shared-object/" />
@@ -437,9 +437,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"> <span class="n">ApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="na">getSharedObject</span><span class="o">(</span><span class="n">ApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-    <span class="n">CaptchaAuthenticationProvider</span> <span class="n">captchaAuthenticationProvider</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">&#34;captchaAuthenticationProvider&#34;</span><span class="o">,</span> <span class="n">CaptchaAuthenticationProvider</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="n">ApplicationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="na">getSharedObject</span><span class="o">(</span><span class="n">ApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">CaptchaAuthenticationProvider</span> <span class="n">captchaAuthenticationProvider</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">&#34;captchaAuthenticationProvider&#34;</span><span class="o">,</span> <span class="n">CaptchaAuthenticationProvider</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>How does the above get the <strong>Spring</strong> application context object <code>ApplicationContext</code> directly from the <code>HttpSecurity</code> object? And what is the concept of <strong>SharedObject</strong>? Let&rsquo;s figure this out today.</p>
 <h2 id="2-sharedobject">2. SharedObject</h2>
@@ -464,13 +464,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">SecurityConfigurer</span><span class="o">&lt;</span><span class="n">O</span><span class="o">,</span> <span class="n">B</span> <span class="kd">extends</span> <span class="n">SecurityBuilder</span><span class="o">&lt;</span><span class="n">O</span><span class="o">&gt;&gt;</span> <span class="o">{</span>
-
-   <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">B</span> <span class="n">builder</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">;</span>
-
-   <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">B</span> <span class="n">builder</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">SecurityConfigurer</span><span class="o">&lt;</span><span class="n">O</span><span class="o">,</span> <span class="n">B</span> <span class="kd">extends</span> <span class="n">SecurityBuilder</span><span class="o">&lt;</span><span class="n">O</span><span class="o">&gt;&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">B</span> <span class="n">builder</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">B</span> <span class="n">builder</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The above two methods are used to initialize and configure <code>HttpSecurityBuilder</code> respectively. For example, the familiar <code>WebSecurityConfigurerAdapter</code> is used to configure <code>HttpSecurity</code>, and we can find the relevant code in its <code>init</code> method.</p>
 <div class="highlight"><div class="chroma">
@@ -486,16 +486,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;?&gt;,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">createSharedObjects</span><span class="o">()</span> <span class="o">{</span>
-   <span class="n">Map</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;?&gt;,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">sharedObjects</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
-   <span class="n">sharedObjects</span><span class="o">.</span><span class="na">putAll</span><span class="o">(</span><span class="n">localConfigureAuthenticationBldr</span><span class="o">.</span><span class="na">getSharedObjects</span><span class="o">());</span>
-   <span class="n">sharedObjects</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">UserDetailsService</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">userDetailsService</span><span class="o">());</span>
-   <span class="n">sharedObjects</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">ApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">context</span><span class="o">);</span>
-   <span class="n">sharedObjects</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">ContentNegotiationStrategy</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">contentNegotiationStrategy</span><span class="o">);</span>
-   <span class="n">sharedObjects</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">AuthenticationTrustResolver</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">trustResolver</span><span class="o">);</span>
-   <span class="k">return</span> <span class="n">sharedObjects</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;?&gt;,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">createSharedObjects</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Map</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;?&gt;,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">sharedObjects</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">   <span class="n">sharedObjects</span><span class="o">.</span><span class="na">putAll</span><span class="o">(</span><span class="n">localConfigureAuthenticationBldr</span><span class="o">.</span><span class="na">getSharedObjects</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">   <span class="n">sharedObjects</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">UserDetailsService</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">userDetailsService</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">   <span class="n">sharedObjects</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">ApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">context</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="n">sharedObjects</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">ContentNegotiationStrategy</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">contentNegotiationStrategy</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="n">sharedObjects</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">AuthenticationTrustResolver</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">trustResolver</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">sharedObjects</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This is the fundamental reason why I could get <code>ApplicationContext</code> at the beginning of the article.</p>
 <h3 id="getting-and-using-sharedobject">Getting and using SharedObject</h3>
@@ -509,12 +509,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">OAuth2ClientConfigurer</span><span class="o">&lt;</span><span class="n">B</span><span class="o">&gt;</span> <span class="nf">clientRegistrationRepository</span><span class="o">(</span><span class="n">ClientRegistrationRepository</span> <span class="n">clientRegistrationRepository</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">clientRegistrationRepository</span><span class="o">,</span> <span class="s">&#34;clientRegistrationRepository cannot be null&#34;</span><span class="o">);</span>
-   <span class="k">this</span><span class="o">.</span><span class="na">getBuilder</span><span class="o">().</span><span class="na">setSharedObject</span><span class="o">(</span><span class="n">ClientRegistrationRepository</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">clientRegistrationRepository</span><span class="o">);</span>
-   <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">OAuth2ClientConfigurer</span><span class="o">&lt;</span><span class="n">B</span><span class="o">&gt;</span> <span class="nf">clientRegistrationRepository</span><span class="o">(</span><span class="n">ClientRegistrationRepository</span> <span class="n">clientRegistrationRepository</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">clientRegistrationRepository</span><span class="o">,</span> <span class="s">&#34;clientRegistrationRepository cannot be null&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">this</span><span class="o">.</span><span class="na">getBuilder</span><span class="o">().</span><span class="na">setSharedObject</span><span class="o">(</span><span class="n">ClientRegistrationRepository</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">clientRegistrationRepository</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>When you need to use <code>ClientRegistrationRepository</code> elsewhere in the <code>HttpSecurity</code> configuration, you can get it directly through <code>getSharedObject</code>, just like at the beginning of the article, without having to write some methods to get it.</p>
 <h2 id="3-summary">3. Summary</h2>

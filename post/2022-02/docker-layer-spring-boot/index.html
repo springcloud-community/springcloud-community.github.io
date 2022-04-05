@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/docker-layer-spring-boot/" />
@@ -430,12 +430,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="k">FROM</span><span class="s"> adoptopenjdk:8-jre-hotspot</span><span class="err">
-</span><span class="err"></span><span class="k">ARG</span> <span class="nv">JAR_FILE</span><span class="o">=</span>target/*.jar<span class="err">
-</span><span class="err"></span><span class="k">COPY</span> <span class="si">${</span><span class="nv">JAR_FILE</span><span class="si">}</span> app.jar<span class="err">
-</span><span class="err"></span><span class="k">EXPOSE</span><span class="s"> 8080</span><span class="err">
-</span><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;java&#34;</span><span class="p">,</span><span class="s2">&#34;-jar&#34;</span><span class="p">,</span><span class="s2">&#34;/app.jar&#34;</span><span class="p">]</span><span class="err">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="k">FROM</span><span class="s"> adoptopenjdk:8-jre-hotspot</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ARG</span> <span class="nv">JAR_FILE</span><span class="o">=</span>target/*.jar<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> <span class="si">${</span><span class="nv">JAR_FILE</span><span class="si">}</span> app.jar<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">EXPOSE</span><span class="s"> 8080</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;java&#34;</span><span class="p">,</span><span class="s2">&#34;-jar&#34;</span><span class="p">,</span><span class="s2">&#34;/app.jar&#34;</span><span class="p">]</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>It looks good, but you will find that if we change the business code, the image will be rebuilt, even if you just change a string. If you use CI/CD to build and deploy Docker images, you will find that sometimes the build time in the CI pipeline can be very long, or even stuck, especially when there are more images. So we project to optimize this place.</p>
 <h2 id="dockers-layering-mechanism">Docker&rsquo;s layering mechanism</h2>
@@ -459,8 +459,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ java -Djarmode<span class="o">=</span>layertools -jar my-app.jar
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">$ java -Djarmode<span class="o">=</span>layertools -jar my-app.jar
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The index file <code>layers.idx</code> will be generated for the above four levels.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/13/35a5cd78856647c68dcdb2c6cac373bb.png" alt="layers.idx"></p>
@@ -489,23 +489,23 @@
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="c"># 第一阶段使用 layertools 的 extract 命令将应用程序拆分为多个层  本次构建标记为builder</span><span class="err">
-</span><span class="err"></span><span class="k">FROM</span><span class="s"> adoptopenjdk:8-jre-hotspot as builder</span><span class="err">
-</span><span class="err"></span><span class="k">WORKDIR</span><span class="s"> application</span><span class="err">
-</span><span class="err"></span><span class="k">ARG</span> <span class="nv">JAR_FILE</span><span class="o">=</span>target/*.jar<span class="err">
-</span><span class="err"></span><span class="k">COPY</span> <span class="si">${</span><span class="nv">JAR_FILE</span><span class="si">}</span> app.jar<span class="err">
-</span><span class="err"></span><span class="k">RUN</span> java -Djarmode<span class="o">=</span>layertools -jar app.jar extract<span class="err">
-</span><span class="err">
-</span><span class="err"></span><span class="c">#  第二阶段从分层中复制并构建镜像</span><span class="err">
-</span><span class="err"></span><span class="k">FROM</span><span class="s"> adoptopenjdk:8-jre-hotspot</span><span class="err">
-</span><span class="err"></span><span class="k">WORKDIR</span><span class="s"> application</span><span class="err">
-</span><span class="err"></span><span class="c"># 从上面构建的builder 中复制层  注意保证层的顺序</span><span class="err">
-</span><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span>builder application/dependencies/ ./<span class="err">
-</span><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span>builder application/spring-boot-loader/ ./<span class="err">
-</span><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span>builder application/snapshot-dependencies/ ./<span class="err">
-</span><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span>builder application/application/ ./<span class="err">
-</span><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;java&#34;</span><span class="p">,</span> <span class="s2">&#34;org.springframework.boot.loader.JarLauncher&#34;</span><span class="p">]</span><span class="err">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># 第一阶段使用 layertools 的 extract 命令将应用程序拆分为多个层  本次构建标记为builder</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">FROM</span><span class="s"> adoptopenjdk:8-jre-hotspot as builder</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="s"> application</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ARG</span> <span class="nv">JAR_FILE</span><span class="o">=</span>target/*.jar<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> <span class="si">${</span><span class="nv">JAR_FILE</span><span class="si">}</span> app.jar<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> java -Djarmode<span class="o">=</span>layertools -jar app.jar extract<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#  第二阶段从分层中复制并构建镜像</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">FROM</span><span class="s"> adoptopenjdk:8-jre-hotspot</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="s"> application</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 从上面构建的builder 中复制层  注意保证层的顺序</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span>builder application/dependencies/ ./<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span>builder application/spring-boot-loader/ ./<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span>builder application/snapshot-dependencies/ ./<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span>builder application/application/ ./<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;java&#34;</span><span class="p">,</span> <span class="s2">&#34;org.springframework.boot.loader.JarLauncher&#34;</span><span class="p">]</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>You can then reuse the Docker caching layer in the host to speed up the build efficiency. The build command is.</p>
 <div class="highlight"><div class="chroma">
@@ -513,8 +513,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">docker build --build-arg <span class="nv">JAR_FILE</span><span class="o">=</span>path/to/myapp.jar . -tag demo
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">docker build --build-arg <span class="nv">JAR_FILE</span><span class="o">=</span>path/to/myapp.jar . -tag demo
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>It will then output.</p>
 <div class="highlight"><div class="chroma">
@@ -558,44 +558,44 @@
 </span><span class="lnt">37
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">Sending build context to Docker daemon  41.87MB
-Step 1/12 : adoptopenjdk:8-jre-hotspot as builder
- – -&gt; 973c18dbf567
-Step 2/12 : WORKDIR application
- – -&gt; Using cache
- – -&gt; b6b89995bd66
-Step 3/12 : ARG JAR_FILE=target/*.jar
- – -&gt; Using cache
- – -&gt; 2065a4ad00d4
-Step 4/12 : COPY ${JAR_FILE} app.jar
- – -&gt; c107bce376f9
-Step 5/12 : RUN java -Djarmode=layertools -jar app.jar extract
- – -&gt; Running in 7a6dfd889b0e
-Removing intermediate container 7a6dfd889b0e
- – -&gt; edb00225ad75
-Step 6/12 : FROM  adoptopenjdk:8-jre-hotspot
- – -&gt; 973c18dbf567
-Step 7/12 : WORKDIR application
- – -&gt; Using cache
- – -&gt; b6b89995bd66
-Step 8/12 : COPY – from=builder application/dependencies/ ./
- – -&gt; Using cache
- – -&gt; c9a01ed348a9
-Step 9/12 : COPY – from=builder application/spring-boot-loader/ ./
- – -&gt; Using cache
- – -&gt; e3861c690a96
-Step 10/12 : COPY – from=builder application/snapshot-dependencies/ ./
- – -&gt; Using cache
- – -&gt; f928837acc47
-Step 11/12 : COPY – from=builder application/application/ ./
- – -&gt; 3a5f60a9b204
-Step 12/12 : ENTRYPOINT [&#34;java&#34;, &#34;org.springframework.boot.loader.JarLauncher&#34;]
- – -&gt; Running in f1eb4befc4e0
-Removing intermediate container f1eb4befc4e0
- – -&gt; 8575cc3ac2e3
-Successfully built 8575cc3ac2e3
-Successfully tagged demo:latest
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Sending build context to Docker daemon  41.87MB
+</span></span><span class="line"><span class="cl">Step 1/12 : adoptopenjdk:8-jre-hotspot as builder
+</span></span><span class="line"><span class="cl"> – -&gt; 973c18dbf567
+</span></span><span class="line"><span class="cl">Step 2/12 : WORKDIR application
+</span></span><span class="line"><span class="cl"> – -&gt; Using cache
+</span></span><span class="line"><span class="cl"> – -&gt; b6b89995bd66
+</span></span><span class="line"><span class="cl">Step 3/12 : ARG JAR_FILE=target/*.jar
+</span></span><span class="line"><span class="cl"> – -&gt; Using cache
+</span></span><span class="line"><span class="cl"> – -&gt; 2065a4ad00d4
+</span></span><span class="line"><span class="cl">Step 4/12 : COPY ${JAR_FILE} app.jar
+</span></span><span class="line"><span class="cl"> – -&gt; c107bce376f9
+</span></span><span class="line"><span class="cl">Step 5/12 : RUN java -Djarmode=layertools -jar app.jar extract
+</span></span><span class="line"><span class="cl"> – -&gt; Running in 7a6dfd889b0e
+</span></span><span class="line"><span class="cl">Removing intermediate container 7a6dfd889b0e
+</span></span><span class="line"><span class="cl"> – -&gt; edb00225ad75
+</span></span><span class="line"><span class="cl">Step 6/12 : FROM  adoptopenjdk:8-jre-hotspot
+</span></span><span class="line"><span class="cl"> – -&gt; 973c18dbf567
+</span></span><span class="line"><span class="cl">Step 7/12 : WORKDIR application
+</span></span><span class="line"><span class="cl"> – -&gt; Using cache
+</span></span><span class="line"><span class="cl"> – -&gt; b6b89995bd66
+</span></span><span class="line"><span class="cl">Step 8/12 : COPY – from=builder application/dependencies/ ./
+</span></span><span class="line"><span class="cl"> – -&gt; Using cache
+</span></span><span class="line"><span class="cl"> – -&gt; c9a01ed348a9
+</span></span><span class="line"><span class="cl">Step 9/12 : COPY – from=builder application/spring-boot-loader/ ./
+</span></span><span class="line"><span class="cl"> – -&gt; Using cache
+</span></span><span class="line"><span class="cl"> – -&gt; e3861c690a96
+</span></span><span class="line"><span class="cl">Step 10/12 : COPY – from=builder application/snapshot-dependencies/ ./
+</span></span><span class="line"><span class="cl"> – -&gt; Using cache
+</span></span><span class="line"><span class="cl"> – -&gt; f928837acc47
+</span></span><span class="line"><span class="cl">Step 11/12 : COPY – from=builder application/application/ ./
+</span></span><span class="line"><span class="cl"> – -&gt; 3a5f60a9b204
+</span></span><span class="line"><span class="cl">Step 12/12 : ENTRYPOINT [&#34;java&#34;, &#34;org.springframework.boot.loader.JarLauncher&#34;]
+</span></span><span class="line"><span class="cl"> – -&gt; Running in f1eb4befc4e0
+</span></span><span class="line"><span class="cl">Removing intermediate container f1eb4befc4e0
+</span></span><span class="line"><span class="cl"> – -&gt; 8575cc3ac2e3
+</span></span><span class="line"><span class="cl">Successfully built 8575cc3ac2e3
+</span></span><span class="line"><span class="cl">Successfully tagged demo:latest
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p><code>java -Djarmode=layertools -jar</code> is not recommended for use in startup scripts, only recommended for use in builds .</p>
@@ -621,22 +621,22 @@ Successfully tagged demo:latest
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;build&gt;</span>
-  <span class="nt">&lt;plugins&gt;</span>
-    <span class="nt">&lt;plugin&gt;</span>
-      <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-      <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-      <span class="nt">&lt;configuration&gt;</span>
-          <span class="nt">&lt;layers&gt;</span>
-            <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
-          <span class="nt">&lt;/layers&gt;</span>
-      <span class="nt">&lt;/configuration&gt;</span>
-    <span class="nt">&lt;/plugin&gt;</span>
-    ...
-  <span class="nt">&lt;/plugins&gt;</span>
-  ...
-<span class="nt">&lt;/build&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;build&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;plugins&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;plugin&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;configuration&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&lt;layers&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&lt;/layers&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;/configuration&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/plugin&gt;</span>
+</span></span><span class="line"><span class="cl">    ...
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/plugins&gt;</span>
+</span></span><span class="line"><span class="cl">  ...
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/build&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>By default in springboot 2.4.x and above.</p>
 <div class="highlight"><div class="chroma">
@@ -652,16 +652,16 @@ Successfully tagged demo:latest
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;build&gt;</span>
-    <span class="nt">&lt;plugins&gt;</span>
-        <span class="nt">&lt;plugin&gt;</span>
-            <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-            <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="c">&lt;!--当然你可以修改layers.enabled为false以关闭此功能。--&gt;</span>
-        <span class="nt">&lt;/plugin&gt;</span>
-    <span class="nt">&lt;/plugins&gt;</span>
-<span class="nt">&lt;/build&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;build&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;plugins&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;plugin&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="c">&lt;!--当然你可以修改layers.enabled为false以关闭此功能。--&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/plugin&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/plugins&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/build&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>By enabling the layered build Spring Boot application image, you can obviously feel the speed of pushing the image a lot faster (of course, this is the case of the dependency has not changed); in addition, when pulling the image from the remote only need to pull the change layer, the speed is also significantly faster; on the build is actually built twice, although with the cache, the efficiency actually does not change much. That is to say, in the mirror of the network transmission on the layered build has obvious advantages, worth a try.</p>
 <blockquote>

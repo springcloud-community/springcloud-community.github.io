@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2021-12/loadbalance/" />
@@ -450,12 +450,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">IRule</span><span class="o">{</span>
-    <span class="kd">public</span> <span class="n">Server</span> <span class="nf">choose</span><span class="o">(</span><span class="n">Object</span> <span class="n">key</span><span class="o">);</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLoadBalancer</span><span class="o">(</span><span class="n">ILoadBalancer</span> <span class="n">lb</span><span class="o">);</span>
-    <span class="kd">public</span> <span class="n">ILoadBalancer</span> <span class="nf">getLoadBalancer</span><span class="o">();</span>    
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">IRule</span><span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Server</span> <span class="nf">choose</span><span class="o">(</span><span class="n">Object</span> <span class="n">key</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLoadBalancer</span><span class="o">(</span><span class="n">ILoadBalancer</span> <span class="n">lb</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">ILoadBalancer</span> <span class="nf">getLoadBalancer</span><span class="o">();</span>    
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The IRule interface has the following implementation classes.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2021/12/03/fda55164e4d04f43ac7e0a6abbbc8f5b.png" alt=""></p>
@@ -498,40 +498,40 @@
 </span><span class="lnt">33
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">Server</span> <span class="nf">choose</span><span class="o">(</span><span class="n">ILoadBalancer</span> <span class="n">lb</span><span class="o">,</span> <span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">lb</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="o">}</span>
-    <span class="n">Server</span> <span class="n">server</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-
-    <span class="k">while</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">Thread</span><span class="o">.</span><span class="na">interrupted</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="n">List</span><span class="o">&lt;</span><span class="n">Server</span><span class="o">&gt;</span> <span class="n">upList</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="na">getReachableServers</span><span class="o">();</span>
-        <span class="n">List</span><span class="o">&lt;</span><span class="n">Server</span><span class="o">&gt;</span> <span class="n">allList</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="na">getAllServers</span><span class="o">();</span>
-        <span class="kt">int</span> <span class="n">serverCount</span> <span class="o">=</span> <span class="n">allList</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">serverCount</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">rand</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="n">serverCount</span><span class="o">);</span> <span class="c1">// Use jdk&#39;s internal Random class to get the index value randomly
-</span><span class="c1"></span>        <span class="n">server</span> <span class="o">=</span> <span class="n">upList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">index</span><span class="o">);</span> <span class="c1">// Get the server instance
-</span><span class="c1"></span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span>
-            <span class="k">continue</span><span class="o">;</span>
-        <span class="o">}</span>
-
-        <span class="k">if</span> <span class="o">(</span><span class="n">server</span><span class="o">.</span><span class="na">isAlive</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="o">(</span><span class="n">server</span><span class="o">);</span>
-        <span class="o">}</span>
-
-        <span class="n">server</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="n">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span>
-    <span class="o">}</span>
-    <span class="k">return</span> <span class="n">server</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Server</span> <span class="nf">choose</span><span class="o">(</span><span class="n">ILoadBalancer</span> <span class="n">lb</span><span class="o">,</span> <span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span><span class="n">lb</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Server</span> <span class="n">server</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">Thread</span><span class="o">.</span><span class="na">interrupted</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">List</span><span class="o">&lt;</span><span class="n">Server</span><span class="o">&gt;</span> <span class="n">upList</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="na">getReachableServers</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">List</span><span class="o">&lt;</span><span class="n">Server</span><span class="o">&gt;</span> <span class="n">allList</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="na">getAllServers</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">serverCount</span> <span class="o">=</span> <span class="n">allList</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">serverCount</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">rand</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="n">serverCount</span><span class="o">);</span> <span class="c1">// Use jdk&#39;s internal Random class to get the index value randomly
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">server</span> <span class="o">=</span> <span class="n">upList</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">index</span><span class="o">);</span> <span class="c1">// Get the server instance
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">server</span><span class="o">.</span><span class="na">isAlive</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="o">(</span><span class="n">server</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">server</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">server</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The <code>RoundRobin</code> polling policy means that the next server is taken each time, for example, if there are 5 servers, the first one is taken for the first time, the second one for the second time, the third one for the third time, and so on.</p>
 <div class="highlight"><div class="chroma">
@@ -578,47 +578,47 @@
 </span><span class="lnt">40
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">Server</span> <span class="nf">choose</span><span class="o">(</span><span class="n">ILoadBalancer</span> <span class="n">lb</span><span class="o">,</span> <span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">lb</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;no load balancer&#34;</span><span class="o">);</span>
-        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="n">Server</span> <span class="n">server</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
-    <span class="k">while</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">count</span><span class="o">++</span> <span class="o">&lt;</span> <span class="n">10</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// Retry 10 times
-</span><span class="c1"></span>        <span class="n">List</span><span class="o">&lt;</span><span class="n">Server</span><span class="o">&gt;</span> <span class="n">reachableServers</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="na">getReachableServers</span><span class="o">();</span>
-        <span class="n">List</span><span class="o">&lt;</span><span class="n">Server</span><span class="o">&gt;</span> <span class="n">allServers</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="na">getAllServers</span><span class="o">();</span>
-        <span class="kt">int</span> <span class="n">upCount</span> <span class="o">=</span> <span class="n">reachableServers</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-        <span class="kt">int</span> <span class="n">serverCount</span> <span class="o">=</span> <span class="n">allServers</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-
-        <span class="k">if</span> <span class="o">((</span><span class="n">upCount</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="n">serverCount</span> <span class="o">==</span> <span class="n">0</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;No up servers available from load balancer: &#34;</span> <span class="o">+</span> <span class="n">lb</span><span class="o">);</span>
-            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="o">}</span>
-
-        <span class="kt">int</span> <span class="n">nextServerIndex</span> <span class="o">=</span> <span class="n">incrementAndGetModulo</span><span class="o">(</span><span class="n">serverCount</span><span class="o">);</span> <span class="c1">// The incrementAndGetModulo method internally uses the nextServerCyclicCounter AtomicInteger property to increment the serverCount atomically to get the index value.
-</span><span class="c1"></span>        <span class="n">server</span> <span class="o">=</span> <span class="n">allServers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">nextServerIndex</span><span class="o">);</span> <span class="c1">// Get the server instance
-</span><span class="c1"></span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span>
-            <span class="k">continue</span><span class="o">;</span>
-        <span class="o">}</span>
-
-        <span class="k">if</span> <span class="o">(</span><span class="n">server</span><span class="o">.</span><span class="na">isAlive</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">server</span><span class="o">.</span><span class="na">isReadyToServe</span><span class="o">()))</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="o">(</span><span class="n">server</span><span class="o">);</span>
-        <span class="o">}</span>
-
-        <span class="n">server</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">&gt;=</span> <span class="n">10</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;No available alive servers after 10 tries from load balancer: &#34;</span>
-                <span class="o">+</span> <span class="n">lb</span><span class="o">);</span>
-    <span class="o">}</span>
-    <span class="k">return</span> <span class="n">server</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Server</span> <span class="nf">choose</span><span class="o">(</span><span class="n">ILoadBalancer</span> <span class="n">lb</span><span class="o">,</span> <span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span><span class="n">lb</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;no load balancer&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">Server</span> <span class="n">server</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">count</span><span class="o">++</span> <span class="o">&lt;</span> <span class="n">10</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// Retry 10 times
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">List</span><span class="o">&lt;</span><span class="n">Server</span><span class="o">&gt;</span> <span class="n">reachableServers</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="na">getReachableServers</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">List</span><span class="o">&lt;</span><span class="n">Server</span><span class="o">&gt;</span> <span class="n">allServers</span> <span class="o">=</span> <span class="n">lb</span><span class="o">.</span><span class="na">getAllServers</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">upCount</span> <span class="o">=</span> <span class="n">reachableServers</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">serverCount</span> <span class="o">=</span> <span class="n">allServers</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">((</span><span class="n">upCount</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="n">serverCount</span> <span class="o">==</span> <span class="n">0</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;No up servers available from load balancer: &#34;</span> <span class="o">+</span> <span class="n">lb</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">nextServerIndex</span> <span class="o">=</span> <span class="n">incrementAndGetModulo</span><span class="o">(</span><span class="n">serverCount</span><span class="o">);</span> <span class="c1">// The incrementAndGetModulo method internally uses the nextServerCyclicCounter AtomicInteger property to increment the serverCount atomically to get the index value.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">server</span> <span class="o">=</span> <span class="n">allServers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">nextServerIndex</span><span class="o">);</span> <span class="c1">// Get the server instance
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Thread</span><span class="o">.</span><span class="na">yield</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">server</span><span class="o">.</span><span class="na">isAlive</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">server</span><span class="o">.</span><span class="na">isReadyToServe</span><span class="o">()))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="o">(</span><span class="n">server</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">server</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">&gt;=</span> <span class="n">10</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;No available alive servers after 10 tries from load balancer: &#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">+</span> <span class="n">lb</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">server</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The <code>BestAvailableRule</code> policy is used to select the server with the least number of concurrent requests.</p>
 <div class="highlight"><div class="chroma">
@@ -649,31 +649,31 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">Server</span> <span class="nf">choose</span><span class="o">(</span><span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">loadBalancerStats</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">choose</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-    <span class="o">}</span>
-    <span class="n">List</span><span class="o">&lt;</span><span class="n">Server</span><span class="o">&gt;</span> <span class="n">serverList</span> <span class="o">=</span> <span class="n">getLoadBalancer</span><span class="o">().</span><span class="na">getAllServers</span><span class="o">();</span> <span class="c1">// Get a list of all servers
-</span><span class="c1"></span>    <span class="kt">int</span> <span class="n">minimalConcurrentConnections</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">;</span>
-    <span class="kt">long</span> <span class="n">currentTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
-    <span class="n">Server</span> <span class="n">chosen</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="k">for</span> <span class="o">(</span><span class="n">Server</span> <span class="n">server</span><span class="o">:</span> <span class="n">serverList</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// Iterate through each server
-</span><span class="c1"></span>        <span class="n">ServerStats</span> <span class="n">serverStats</span> <span class="o">=</span> <span class="n">loadBalancerStats</span><span class="o">.</span><span class="na">getSingleServerStat</span><span class="o">(</span><span class="n">server</span><span class="o">);</span> <span class="c1">// Get the status of each server
-</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(!</span><span class="n">serverStats</span><span class="o">.</span><span class="na">isCircuitBreakerTripped</span><span class="o">(</span><span class="n">currentTime</span><span class="o">))</span> <span class="o">{</span> <span class="c1">// Continue if no circuit breaker is triggered
-</span><span class="c1"></span>            <span class="kt">int</span> <span class="n">concurrentConnections</span> <span class="o">=</span> <span class="n">serverStats</span><span class="o">.</span><span class="na">getActiveRequestsCount</span><span class="o">(</span><span class="n">currentTime</span><span class="o">);</span> <span class="c1">// Get the number of requests from the current server
-</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">concurrentConnections</span> <span class="o">&lt;</span> <span class="n">minimalConcurrentConnections</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// Compare the number of requests between servers, then select the server with the lowest number of requests and put it in the chosen variable
-</span><span class="c1"></span>                <span class="n">minimalConcurrentConnections</span> <span class="o">=</span> <span class="n">concurrentConnections</span><span class="o">;</span>
-                <span class="n">chosen</span> <span class="o">=</span> <span class="n">server</span><span class="o">;</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">chosen</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// If not selected, call the parent class ClientConfigEnabledRoundRobinRule&#39;s choose method, that is, use RoundRobinRule polling for load balancing        
-</span><span class="c1"></span>        <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">choose</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">chosen</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Server</span> <span class="nf">choose</span><span class="o">(</span><span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span><span class="n">loadBalancerStats</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">choose</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">List</span><span class="o">&lt;</span><span class="n">Server</span><span class="o">&gt;</span> <span class="n">serverList</span> <span class="o">=</span> <span class="n">getLoadBalancer</span><span class="o">().</span><span class="na">getAllServers</span><span class="o">();</span> <span class="c1">// Get a list of all servers
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">minimalConcurrentConnections</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">long</span> <span class="n">currentTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Server</span> <span class="n">chosen</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="o">(</span><span class="n">Server</span> <span class="n">server</span><span class="o">:</span> <span class="n">serverList</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// Iterate through each server
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">ServerStats</span> <span class="n">serverStats</span> <span class="o">=</span> <span class="n">loadBalancerStats</span><span class="o">.</span><span class="na">getSingleServerStat</span><span class="o">(</span><span class="n">server</span><span class="o">);</span> <span class="c1">// Get the status of each server
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="o">(!</span><span class="n">serverStats</span><span class="o">.</span><span class="na">isCircuitBreakerTripped</span><span class="o">(</span><span class="n">currentTime</span><span class="o">))</span> <span class="o">{</span> <span class="c1">// Continue if no circuit breaker is triggered
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="kt">int</span> <span class="n">concurrentConnections</span> <span class="o">=</span> <span class="n">serverStats</span><span class="o">.</span><span class="na">getActiveRequestsCount</span><span class="o">(</span><span class="n">currentTime</span><span class="o">);</span> <span class="c1">// Get the number of requests from the current server
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">concurrentConnections</span> <span class="o">&lt;</span> <span class="n">minimalConcurrentConnections</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// Compare the number of requests between servers, then select the server with the lowest number of requests and put it in the chosen variable
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="n">minimalConcurrentConnections</span> <span class="o">=</span> <span class="n">concurrentConnections</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">chosen</span> <span class="o">=</span> <span class="n">server</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span><span class="n">chosen</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// If not selected, call the parent class ClientConfigEnabledRoundRobinRule&#39;s choose method, that is, use RoundRobinRule polling for load balancing        
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">choose</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">chosen</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="example-to-verify-the-loadbalance-function-in-ribbon">Example to verify the LoadBalance function in Ribbon</h2>
 <p>There are 3 instances provided in ServerList, which are.</p>
@@ -684,10 +684,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">compute-service:2222
-compute-service:2223
-compute-service:2224
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">compute-service:2222
+</span></span><span class="line"><span class="cl">compute-service:2223
+</span></span><span class="line"><span class="cl">compute-service:2224
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then use the different <code>IRule</code> policies to see the load balancing implementation.</p>
 <p>Start by using the <code>LoadBalanced</code> annotation provided by ribbon on top of the RestTemplate, which automatically constructs the implementation class of the <code>LoadBalancerClient</code> interface and registers it in the Spring container.</p>
@@ -700,12 +700,12 @@ compute-service:2224
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
-<span class="nd">@LoadBalanced</span>
-<span class="n">RestTemplate</span> <span class="nf">restTemplate</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="n">RestTemplate</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@LoadBalanced</span>
+</span></span><span class="line"><span class="cl"><span class="n">RestTemplate</span> <span class="nf">restTemplate</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="n">RestTemplate</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Next, when using RestTemplate for rest operation, it will automatically use the load balancing policy, and it will internally add LoadBalancerInterceptor as an interceptor in RestTemplate.</p>
 <p>In the example, the name of our instance is called compute-service, which provides a method add for adding 2 values of type Integer.</p>
@@ -722,15 +722,15 @@ compute-service:2224
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">String</span> <span class="nf">loadbalance</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">ServiceInstance</span> <span class="n">serviceInstance</span> <span class="o">=</span> <span class="n">loadBalancerClient</span><span class="o">.</span><span class="na">choose</span><span class="o">(</span><span class="s">&#34;compute-service&#34;</span><span class="o">);</span>
-    <span class="n">StringBuilder</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
-    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;host: &#34;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">serviceInstance</span><span class="o">.</span><span class="na">getHost</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;, &#34;</span><span class="o">);</span>
-    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;port: &#34;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">serviceInstance</span><span class="o">.</span><span class="na">getPort</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;, &#34;</span><span class="o">);</span>
-    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;uri: &#34;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">serviceInstance</span><span class="o">.</span><span class="na">getUri</span><span class="o">());</span>
-    <span class="k">return</span> <span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">String</span> <span class="nf">loadbalance</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ServiceInstance</span> <span class="n">serviceInstance</span> <span class="o">=</span> <span class="n">loadBalancerClient</span><span class="o">.</span><span class="na">choose</span><span class="o">(</span><span class="s">&#34;compute-service&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">StringBuilder</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;host: &#34;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">serviceInstance</span><span class="o">.</span><span class="na">getHost</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;, &#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;port: &#34;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">serviceInstance</span><span class="o">.</span><span class="na">getPort</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;, &#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&#34;uri: &#34;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">serviceInstance</span><span class="o">.</span><span class="na">getUri</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="randomrule">RandomRule</h3>
 <div class="highlight"><div class="chroma">
@@ -749,19 +749,19 @@ compute-service:2224
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RibbonConfiguration</span> <span class="o">{</span>
-
-    <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="n">SpringClientFactory</span> <span class="n">springClientFactory</span><span class="o">;</span>
-
-    <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">IRule</span> <span class="nf">ribbonRule</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">RandomRule</span><span class="o">();</span>
-    <span class="o">}</span>
-
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RibbonConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">SpringClientFactory</span> <span class="n">springClientFactory</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">IRule</span> <span class="nf">ribbonRule</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">RandomRule</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The test results are as follows, which are indeed obtained randomly.</p>
 <div class="highlight"><div class="chroma">
@@ -778,17 +778,17 @@ compute-service:2224
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
-host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
-host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
-host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
-host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
-host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
-host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
-host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
-host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223   
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223   
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="roundrobinrule">RoundRobinRule</h3>
 <div class="highlight"><div class="chroma">
@@ -799,11 +799,11 @@ host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
-<span class="kd">public</span> <span class="n">IRule</span> <span class="nf">ribbonRule</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="n">RoundRobinRule</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">IRule</span> <span class="nf">ribbonRule</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="n">RoundRobinRule</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The test results are as follows, which do poll each server.</p>
 <div class="highlight"><div class="chroma">
@@ -822,19 +822,19 @@ host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
-host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
-host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
-host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
-host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
-host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
-host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
-host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2222, uri: http://192.168.31.113:2222
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="bestavailablerule">BestAvailableRule</h3>
 <div class="highlight"><div class="chroma">
@@ -845,11 +845,11 @@ host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
-<span class="kd">public</span> <span class="n">IRule</span> <span class="nf">ribbonRule</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="n">BestAvailableRule</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">IRule</span> <span class="nf">ribbonRule</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="n">BestAvailableRule</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>If the browser is accessed directly, the test results are as follows (because the number of requests becomes 0 after each visit, and the next traversal will always be an instance of port 2223).</p>
 <div class="highlight"><div class="chroma">
@@ -863,14 +863,14 @@ host: 192.168.31.113, port: 2224, uri: http://192.168.31.113:2224
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
-..
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
+</span></span><span class="line"><span class="cl">..
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Simulating concurrent requests using wrk results in multiple instances of.</p>
 <div class="highlight"><div class="chroma">
@@ -878,8 +878,8 @@ host: 192.168.31.113, port: 2223, uri: http://192.168.31.113:2223
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">wrk -c <span class="m">1000</span> -t <span class="m">10</span> -d 10s http://localhost:3333/test
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">wrk -c <span class="m">1000</span> -t <span class="m">10</span> -d 10s http://localhost:3333/test
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>Reference <a href="https://fangjian0423.github.io/2017/01/29/loadbalance/">https://fangjian0423.github.io/2017/01/29/loadbalance/</a></p>

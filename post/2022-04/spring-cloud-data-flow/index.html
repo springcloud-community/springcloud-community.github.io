@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Getting Started with Spring Cloud Data Flow, Running in Local Mode - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="Learn the core concepts and basic usage of Spring Cloud Data Flow." />
+<meta name="keywords" content="Spring Cloud Data Flow" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.96.0" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-04/spring-cloud-data-flow/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Getting Started with Spring Cloud Data Flow, Running in Local Mode" />
+<meta property="og:description" content="Learn the core concepts and basic usage of Spring Cloud Data Flow." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-04/spring-cloud-data-flow/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-04-05T18:28:06+08:00" />
+<meta property="article:modified_time" content="2022-04-05T18:28:06+08:00" />
+
+<meta itemprop="name" content="Getting Started with Spring Cloud Data Flow, Running in Local Mode">
+<meta itemprop="description" content="Learn the core concepts and basic usage of Spring Cloud Data Flow."><meta itemprop="datePublished" content="2022-04-05T18:28:06+08:00" />
+<meta itemprop="dateModified" content="2022-04-05T18:28:06+08:00" />
+<meta itemprop="wordCount" content="1270">
+<meta itemprop="keywords" content="spring-cloud-dataflow," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Getting Started with Spring Cloud Data Flow, Running in Local Mode"/>
+<meta name="twitter:description" content="Learn the core concepts and basic usage of Spring Cloud Data Flow."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Getting Started with Spring Cloud Data Flow, Running in Local Mode</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-04-05" class="post-time">
+          2022-04-05
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 1270 words </span>
+          <span class="more-meta"> 3 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-preface">1 Preface</a></li>
+    <li><a href="#2-basic-concepts">2 Basic concepts</a>
+      <ul>
+        <li><a href="#21-data-processing-modes">2.1 Data Processing Modes</a></li>
+        <li><a href="#22-features">2.2 Features</a></li>
+        <li><a href="#23-server-side-components">2.3 Server-side components</a></li>
+        <li><a href="#24-runtime-environment">2.4 Runtime environment</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-local-mode-installation-and-use">3 Local mode installation and use</a>
+      <ul>
+        <li><a href="#31-downloading-jar-packages">3.1 Downloading Jar Packages</a></li>
+        <li><a href="#32-starting-the-application">3.2 Starting the application</a></li>
+        <li><a href="#33-deploying-applications">3.3 Deploying applications</a></li>
+        <li><a href="#34-data-flow-shell-command-linecli">3.4 Data Flow Shell Command Line(CLI)</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-summary">4 Summary</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="1-preface">1 Preface</h2>
+<p>What is <code>Spring Cloud Data Flow</code>, although it has been around for a while, I think many people don&rsquo;t know about it, because few people use it in their projects. Not much information can be found online.</p>
+<p><code>Spring Cloud Data Flow</code> is a microservices-based, specialized framework for streaming and batch data processing.</p>
+<h2 id="2-basic-concepts">2 Basic concepts</h2>
+<h3 id="21-data-processing-modes">2.1 Data Processing Modes</h3>
+<p>There are two modes of data processing, <code>Streaming</code> and <code>Batch processing</code>. <code>Streaming</code> is long time always, I process when your data comes, I wait when it doesn&rsquo;t, based on message driven. <code>Batch</code> is a shorter processing time, start once and process once, then exit the task, need to go to trigger the task.</p>
+<p>Generally, we develop <code>Streaming</code> applications based on the <code>Spring Cloud Stream</code> framework and <code>Batch</code> applications based on the <code>Spring Cloud Task</code> or <code>Spring Batch</code> framework. Once the development is done, it can be packaged into two forms.</p>
+<ul>
+<li><code>Springboot</code>-style <code>jar</code> packages that can be placed on <code>maven</code> repositories, file directories, or <code>HTTP</code> services.</li>
+<li><code>Docker</code> images.</li>
+</ul>
+<p>For <code>Stream</code>, there are three concepts that need to be understood.</p>
+<ul>
+<li><code>Source</code> : the message producer, responsible for sending messages to a certain target.</li>
+<li><code>Sink</code> : a message consumer, responsible for reading messages from some target.</li>
+<li><code>Processor</code> : the union of <code>Source</code> and <code>Sink</code>, which consumes messages from a target and sends them to another target.</li>
+</ul>
+<h3 id="22-features">2.2 Features</h3>
+<p><code>Spring Cloud Data Flow</code> has many good features to learn how to use it.</p>
+<ul>
+<li>A cloud-based architecture that can be deployed on <code>Cloud Foundry</code>, <code>Kubernetes</code> or <code>OpenShift</code>, etc.</li>
+<li>A number of optional out-of-the-box stream processing and batch application components.</li>
+<li>Customizable application components based on a <code>Springboot</code> style programming model.</li>
+<li>Simple and flexible <code>DSL (Domain Specific Language)</code> to define task processing logic.</li>
+<li>Beautiful <code>Dashboard</code> to visually define processing logic, manage applications, manage tasks, etc.</li>
+<li>Provides <code>REST API</code> to interact in <code>shell</code> command line mode.</li>
+</ul>
+<h3 id="23-server-side-components">2.3 Server-side components</h3>
+<p>The server side has two important components: <code>Data Flow Server</code> and <code>Skipper Server</code>. The two have different roles and collaborate with each other.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/9893572cb36d4dc2b41d1eb7d16245d7.png" alt="Data Flow Server and Skipper Server"></p>
+<p>The main roles of the <code>Data Flow Server</code> are</p>
+<ul>
+<li>Parsing the <code>DSL</code>.</li>
+<li>Verifying and persisting the definitions of <code>Stream</code>, <code>Task</code> and <code>Batch</code>.</li>
+<li>Registering applications such as <code>jar</code> package applications and <code>docker</code> applications.</li>
+<li>Deploying <code>Batch</code> to one or more platforms.</li>
+<li>Querying the execution history of <code>Jobs</code> and <code>Batches</code>.</li>
+<li>Configuration management of <code>Stream</code>.</li>
+<li>Distribution of <code>Stream</code> deployments to <code>Skipper</code>.</li>
+</ul>
+<p>The main roles of the <code>Skipper Server</code> are.</p>
+<ul>
+<li>Deploying <code>Stream</code> to one or more platforms.</li>
+<li>Updating or rolling back <code>Streams</code> based on a grayed-out/greened-out update policy.</li>
+<li>Save the description information of each <code>Stream</code>.</li>
+</ul>
+<p>As you can see, if you don&rsquo;t need to use <code>Stream</code>, you can deploy <code>Skipper</code> without it. Both rely on a relational database (<code>RDBMS</code>) and by default use the built-in <code>H2</code>, supported by <code>H2</code>, <code>HSQLDB</code>, <code>MYSQL</code>, <code>Oracle</code>, <code>PostgreSql</code>, <code>DB2</code> and <code>SqlServer</code>.</p>
+<h3 id="24-runtime-environment">2.4 Runtime environment</h3>
+<p>The good <code>Spring</code> is always particularly decoupled, and the <code>Server</code> and application can run on different platforms. We can deploy <code>Data Flow Server</code> and <code>Skipper Server</code> on <code>Local</code>, <code>Cloud Foundry</code> and <code>Kuernetes</code>, and <code>Server</code> can deploy the application on different platforms.</p>
+<ul>
+<li>Server-side Local: application Local/Cloud Foundry/Kuernetes.</li>
+<li>Server-side Cloud Foundry: applying Cloud Foundry/Kuernetes.</li>
+<li>Server-side Kuernetes: Apply Cloud Foundry/Kuernetes.</li>
+</ul>
+<p>In general, we deploy <code>Server</code> and application on the same platform. For production environments, it is recommended that it is more appropriate to be on <code>Kuernetes</code>.</p>
+<h2 id="3-local-mode-installation-and-use">3 Local mode installation and use</h2>
+<p>For a quick experience, we use the simplest local runtime environment.</p>
+<h3 id="31-downloading-jar-packages">3.1 Downloading Jar Packages</h3>
+<p>Download the following three <code>jar</code> packages.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">wget https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-server/2.5.3.RELEASE/spring-cloud-dataflow-server-2.5.3.RELEASE.jar
+</span></span><span class="line"><span class="cl">wget https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/2.5.3.RELEASE/spring-cloud-dataflow-shell-2.5.3.RELEASE.jar
+</span></span><span class="line"><span class="cl">wget https://repo.spring.io/release/org/springframework/cloud/spring-cloud-skipper-server/2.4.3.RELEASE/spring-cloud-skipper-server-2.4.3.RELEASE.jar
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>For a simple <code>Batch</code> application, you can just download <code>spring-cloud-dataflow-server-2.5.3.RELEASE.jar</code>.</p>
+<h3 id="32-starting-the-application">3.2 Starting the application</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># 启动Skipper，默认端口为7577</span>
+</span></span><span class="line"><span class="cl">java -jar spring-cloud-skipper-server-2.4.3.RELEASE.jar
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动Data Flow Server，默认端口为9393</span>
+</span></span><span class="line"><span class="cl">java -jar spring-cloud-dataflow-server-2.5.3.RELEASE.jar
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>After the launch is complete, open your browser and visit <code>http://localhost:9393/dashboard</code> to see the UI interface.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/c52ac3c430dd4e76b00198ac80f07fc5.png" alt="UI"></p>
+<h3 id="33-deploying-applications">3.3 Deploying applications</h3>
+<h4 id="331-adding-applicationsapplications">3.3.1 Adding ApplicationsApplications</h4>
+<p>You can only deploy <code>Batch</code> and <code>Stream</code> if you have added applications. The official example <code>Applications</code> is provided and we can use it directly.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/2e5f2da1403641be95172fee9d1e1c6b.png" alt="official example"></p>
+<p>After successful addition, you can view in the application list.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/fc25943ad2a0424ea7a3f3c758db9bd5.png" alt="application list"></p>
+<h4 id="332-creating-a-task">3.3.2 Creating a Task</h4>
+<p>Creating a <code>Task</code> can be done graphically or through the <code>DSL</code>, which is very convenient.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/104443d3fbe249d8a278b9d547788e03.png" alt="Creating a Task"></p>
+<p>After defining the <code>Task</code>, enter the name to create.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/18261e01253f4d13b4c5cd069c50aaea.png" alt="Task"></p>
+<h4 id="333-running-a-task">3.3.3 Running a Task</h4>
+<p>Run directly by clicking on.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/ff83eea0816246f5b79c02ea3db2d9cd.png" alt="Running a Task"></p>
+<p>Parameters can be passed in.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/089323e00a24452f919cb2553d8706b9.png" alt="Parameters"></p>
+<h4 id="334-viewing-task-runs">3.3.4 Viewing Task Runs</h4>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/1b6e7e7338434570be589d2056c5a120.png" alt="Viewing Task Runs">
+<img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/73be78752ee24c57b614ea1949dc0af1.png" alt="Viewing Task Runs"></p>
+<p>You can view the run log.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/05/7f134746ba234d4bb615234b05c91e96.png" alt="run log"></p>
+<h3 id="34-data-flow-shell-command-linecli">3.4 Data Flow Shell Command Line(CLI)</h3>
+<p>In addition to the web page, you can also interact with <code>Server</code> via command line mode.</p>
+<p>To start the application.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">$ java -jar spring-cloud-dataflow-shell-2.5.3.RELEASE.jar 
+</span></span><span class="line"><span class="cl">  ____                              ____ _                __
+</span></span><span class="line"><span class="cl"> / ___<span class="p">|</span> _ __  _ __<span class="o">(</span>_<span class="o">)</span>_ __   __ _   / ___<span class="p">|</span> <span class="p">|</span> ___  _   _  __<span class="p">|</span> <span class="p">|</span>
+</span></span><span class="line"><span class="cl"> <span class="se">\_</span>__ <span class="se">\|</span> <span class="s1">&#39;_ \| &#39;</span>__<span class="p">|</span> <span class="p">|</span> <span class="err">&#39;</span>_ <span class="se">\ </span>/ _<span class="sb">`</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>   <span class="p">|</span> <span class="p">|</span>/ _ <span class="se">\|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>/ _<span class="sb">`</span> <span class="p">|</span>
+</span></span><span class="line"><span class="cl">  ___<span class="o">)</span> <span class="p">|</span> <span class="p">|</span>_<span class="o">)</span> <span class="p">|</span> <span class="p">|</span>  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="o">(</span>_<span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>___<span class="p">|</span> <span class="p">|</span> <span class="o">(</span>_<span class="o">)</span> <span class="p">|</span> <span class="p">|</span>_<span class="p">|</span> <span class="p">|</span> <span class="o">(</span>_<span class="p">|</span> <span class="p">|</span>
+</span></span><span class="line"><span class="cl"> <span class="p">|</span>____/<span class="p">|</span> .__/<span class="p">|</span>_<span class="p">|</span>  <span class="p">|</span>_<span class="p">|</span>_<span class="p">|</span> <span class="p">|</span>_<span class="p">|</span><span class="se">\_</span>_, <span class="p">|</span>  <span class="se">\_</span>___<span class="p">|</span>_<span class="p">|</span><span class="se">\_</span>__/ <span class="se">\_</span>_,_<span class="p">|</span><span class="se">\_</span>_,_<span class="p">|</span>
+</span></span><span class="line"><span class="cl">  ____ <span class="p">|</span>_<span class="p">|</span>    _          __<span class="p">|</span>___/                 __________
+</span></span><span class="line"><span class="cl"> <span class="p">|</span>  _ <span class="se">\ </span> __ _<span class="p">|</span> <span class="p">|</span>_ __ _  <span class="p">|</span>  ___<span class="p">|</span> <span class="p">|</span> _____      __  <span class="se">\ \ \ \ \ \
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>/ _<span class="sb">`</span> <span class="p">|</span> __/ _<span class="sb">`</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span>_  <span class="p">|</span> <span class="p">|</span>/ _ <span class="se">\ \ </span>/<span class="se">\ </span>/ /   <span class="se">\ \ \ \ \ \
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> <span class="p">|</span> <span class="p">|</span>_<span class="p">|</span> <span class="p">|</span> <span class="o">(</span>_<span class="p">|</span> <span class="p">|</span> <span class="o">||</span> <span class="o">(</span>_<span class="p">|</span> <span class="p">|</span> <span class="p">|</span>  _<span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="o">(</span>_<span class="o">)</span> <span class="se">\ </span>V  V /    / / / / / /
+</span></span><span class="line"><span class="cl"> <span class="p">|</span>____/ <span class="se">\_</span>_,_<span class="p">|</span><span class="se">\_</span>_<span class="se">\_</span>_,_<span class="p">|</span> <span class="p">|</span>_<span class="p">|</span>   <span class="p">|</span>_<span class="p">|</span><span class="se">\_</span>__/ <span class="se">\_</span>/<span class="se">\_</span>/    /_/_/_/_/_/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2.5.3.RELEASE
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Welcome to the Spring Cloud Data Flow shell. For assistance hit TAB or <span class="nb">type</span> <span class="s2">&#34;help&#34;</span>.
+</span></span><span class="line"><span class="cl">Successfully targeted http://localhost:9393/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dataflow:&gt;app list
+</span></span><span class="line"><span class="cl">╔═══╤══════╤═════════╤════╤════════════════════╗
+</span></span><span class="line"><span class="cl">║app│source│processor│sink│        task        ║
+</span></span><span class="line"><span class="cl">╠═══╪══════╪═════════╪════╪════════════════════╣
+</span></span><span class="line"><span class="cl">║   │      │         │    │composed-task-runner║
+</span></span><span class="line"><span class="cl">║   │      │         │    │timestamp-batch     ║
+</span></span><span class="line"><span class="cl">║   │      │         │    │timestamp           ║
+</span></span><span class="line"><span class="cl">╚═══╧══════╧═════════╧════╧════════════════════╝
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dataflow:&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="4-summary">4 Summary</h2>
+<p>This article uses the official application, we can develop our own application and register it on <code>Server</code>. The <code>Local</code> model is suitable for development environments, but production environments are more reliable when deployed on <code>Kubernetes</code>. Let&rsquo;s explore it later.</p>
+<blockquote>
+<p>Reference <a href="https://segmentfault.com/a/1190000023465341">https://segmentfault.com/a/1190000023465341</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-cloud-dataflow/">spring-cloud-dataflow</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2022-04/spring-cloud-dataflow-shell/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Getting Started with Data Flow Shell</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2022-04/spring-boot-start-fail/">
+            <span class="next-text nav-default">Solve the problem that SpringBoot fails to start after updating to 2.6.0</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>

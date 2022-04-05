@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2021-12/dapr-spring-cloud-gateway/" />
@@ -463,14 +463,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RestController</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GreetingController</span> <span class="o">{</span>
-    <span class="nd">@GetMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#34;/hello&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getHello</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="s">&#34;Hello world!&#34;</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">GreetingController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#34;/hello&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getHello</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s">&#34;Hello world!&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>After building our greeting service app, we&rsquo;ll start it up:</p>
 <div class="highlight"><div class="chroma">
@@ -478,8 +478,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">java</span> <span class="o">-</span><span class="n">jar</span> <span class="n">greeting</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">greeting</span><span class="o">-</span><span class="n">1</span><span class="o">.</span><span class="na">0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">.</span><span class="na">jar</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">java</span> <span class="o">-</span><span class="n">jar</span> <span class="n">greeting</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">greeting</span><span class="o">-</span><span class="n">1</span><span class="o">.</span><span class="na">0</span><span class="o">-</span><span class="n">SNAPSHOT</span><span class="o">.</span><span class="na">jar</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We can test it out using <em>curl</em> to return the “Hello world!” message:</p>
 <div class="highlight"><div class="chroma">
@@ -487,8 +487,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">curl http://localhost:3001/hello
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl http://localhost:3001/hello
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="32-spring-cloud-gateway"><strong>3.2. Spring Cloud Gateway</strong></h3>
 <p>Now, we&rsquo;ll create a Spring Cloud Gateway on port 3000 as a standard Spring Boot application with <em>spring-cloud-starter-gateway</em> as the only dependency and the standard main class. We&rsquo;ll also configure the routing to access the greeting service:</p>
@@ -506,17 +506,17 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spring</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">gateway</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">routes</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">greeting-service</span><span class="w">
-</span><span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">http://localhost:3001/</span><span class="w">
-</span><span class="w">          </span><span class="nt">predicates</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span>- <span class="l">Path=/**</span><span class="w">
-</span><span class="w">          </span><span class="nt">filters</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span>- <span class="l">RewritePath=/?(?&lt;segment&gt;.*), /$\{segment}</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">gateway</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">routes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">greeting-service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">http://localhost:3001/</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">predicates</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span>- <span class="l">Path=/**</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">filters</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span>- <span class="l">RewritePath=/?(?&lt;segment&gt;.*), /$\{segment}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Once we build the gateway app, we can start the gateway:</p>
 <div class="highlight"><div class="chroma">
@@ -524,8 +524,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">java -Dspring.profiles.active<span class="o">=</span>no-dapr -jar gateway/target/gateway-1.0-SNAPSHOT.jar
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">java -Dspring.profiles.active<span class="o">=</span>no-dapr -jar gateway/target/gateway-1.0-SNAPSHOT.jar
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We can test it out using <em>curl</em> to return the “Hello world!” message from the greeting service:</p>
 <div class="highlight"><div class="chroma">
@@ -533,8 +533,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">curl http://localhost:3000/hello
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl http://localhost:3000/hello
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="4-add-dapr"><strong>4. Add Dapr</strong></h2>
 <p>Now that we have a basic example in place, let’s add Dapr to the mix.</p>
@@ -551,12 +551,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">dapr.io/v1alpha1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Configuration</span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">daprConfig</span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">dapr.io/v1alpha1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">daprConfig</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w"> </span>{}<span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Let&rsquo;s start the Dapr sidecar for the gateway on port 4000 using the dapr command:</p>
 <div class="highlight"><div class="chroma">
@@ -564,8 +564,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">dapr run --app-id gateway --dapr-http-port <span class="m">4000</span> --app-port <span class="m">3000</span> --config dapr-config/basic-config.yaml
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">dapr run --app-id gateway --dapr-http-port <span class="m">4000</span> --app-port <span class="m">3000</span> --config dapr-config/basic-config.yaml
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Next, let&rsquo;s start the Dapr sidecar for the greeting service on port 4001 using the <em>dapr</em> command:</p>
 <div class="highlight"><div class="chroma">
@@ -573,8 +573,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">dapr run --app-id greeting --dapr-http-port <span class="m">4001</span> --app-port <span class="m">3001</span> --config dapr-config/basic-config.yaml
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">dapr run --app-id greeting --dapr-http-port <span class="m">4001</span> --app-port <span class="m">3001</span> --config dapr-config/basic-config.yaml
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Now that the sidecars are running, we can see how they take care of intercepting and forwarding requests to the greeting service. When we test it out using <em>curl</em> , it should return the “Hello world!” greeting:</p>
 <div class="highlight"><div class="chroma">
@@ -582,8 +582,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">curl http://localhost:4001/v1.0/invoke/greeting/method/hello
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl http://localhost:4001/v1.0/invoke/greeting/method/hello
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Let&rsquo;s try the same test using the gateway sidecar to confirm that it also returns the “Hello world!” greeting:</p>
 <div class="highlight"><div class="chroma">
@@ -591,8 +591,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">curl http://localhost:4000/v1.0/invoke/greeting/method/hello
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl http://localhost:4000/v1.0/invoke/greeting/method/hello
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>What&rsquo;s going on here behind the scenes? <strong>The Dapr sidecar for the gateway uses service discovery</strong> (in this case, mDNS for a local environment) to find the Dapr sidecar for the greeting service. Then, it <strong>uses <a href="https://docs.dapr.io/developing-applications/building-blocks/service-invocation/service-invocation-overview/">Service Invocation</a> to call the specified endpoint</strong> on the greeting service.</p>
 <h3 id="42-update-gateway-configuration"><strong>4.2. Update Gateway Configuration</strong></h3>
@@ -611,17 +611,17 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spring</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">gateway</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">routes</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">greeting-service</span><span class="w">
-</span><span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">http://localhost:4000/</span><span class="w">
-</span><span class="w">          </span><span class="nt">predicates</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span>- <span class="l">Path=/**</span><span class="w">
-</span><span class="w">          </span><span class="nt">filters</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span>- <span class="l">RewritePath=//?(?&lt;segment&gt;.*), /v1.0/invoke/greeting/method/$\{segment}</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">gateway</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">routes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">greeting-service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">http://localhost:4000/</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">predicates</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span>- <span class="l">Path=/**</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">filters</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span>- <span class="l">RewritePath=//?(?&lt;segment&gt;.*), /v1.0/invoke/greeting/method/$\{segment}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then, we&rsquo;ll restart the gateway with the updated routing:</p>
 <div class="highlight"><div class="chroma">
@@ -629,8 +629,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">java -Dspring.profiles.active<span class="o">=</span>with-dapr -jar gateway/target/gateway-1.0-SNAPSHOT.jar
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">java -Dspring.profiles.active<span class="o">=</span>with-dapr -jar gateway/target/gateway-1.0-SNAPSHOT.jar
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We can test it out using the curl command to once again get the “Hello world” greeting from the greeting service:</p>
 <div class="highlight"><div class="chroma">
@@ -638,8 +638,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">curl http://localhost:3000/hello
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">curl http://localhost:3000/hello
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>When we look at what&rsquo;s happening on the network using <a href="https://www.wireshark.org/">Wireshark</a>, we can see that <strong>the traffic between the gateway and the service goes through the Dapr sidecars</strong> .</p>
 <p>Congratulations! We have now successfully brought Dapr into the picture. Let&rsquo;s review what this has gained us: The gateway no longer needs to be configured to find the greeting service (that is, the port number for the greeting service no longer needs to be specified in the routing configuration), and the gateway no longer needs to know the details of how the request is forwarded to the greeting service.</p>
@@ -661,16 +661,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">dapr.io/v1alpha1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Configuration</span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">daprConfig</span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">nameResolution</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">component</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;consul&#34;</span><span class="w">
-</span><span class="w">    </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">selfRegister</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">dapr.io/v1alpha1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">daprConfig</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">nameResolution</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">component</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;consul&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">selfRegister</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then we&rsquo;ll restart both Dapr sidecars with the new configuration:</p>
 <div class="highlight"><div class="chroma">
@@ -678,16 +678,16 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">dapr run --app-id greeting --dapr-http-port <span class="m">4001</span> --app-port <span class="m">3001</span> --config dapr-config/consul-config.yaml
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">dapr run --app-id greeting --dapr-http-port <span class="m">4001</span> --app-port <span class="m">3001</span> --config dapr-config/consul-config.yaml
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">dapr run --app-id gateway --dapr-http-port <span class="m">4000</span> --app-port <span class="m">3000</span> --config dapr-config/consul-config.yaml
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">dapr run --app-id gateway --dapr-http-port <span class="m">4000</span> --app-port <span class="m">3000</span> --config dapr-config/consul-config.yaml
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Once the sidecars are restarted, we can access the Services page in the consul UI and see the gateway and greeting apps listed. Notice that we did not need to restart the application itself.</p>
 <p>See how easy that was? <strong>A simple configuration change for the Dapr sidecars now gives us support for Consul</strong> and, most importantly, <strong>with no impact on the underlying application</strong> . This differs from using <a href="https://www.baeldung.com/spring-cloud-consul">Spring Cloud Consul</a>, which requires updating the application itself.</p>
@@ -711,20 +711,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">dapr.io/v1alpha1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Configuration</span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">daprConfig</span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">nameResolution</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">component</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;consul&#34;</span><span class="w">
-</span><span class="w">    </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">selfRegister</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span><span class="w">  </span><span class="nt">tracing</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">samplingRate</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1&#34;</span><span class="w">
-</span><span class="w">    </span><span class="nt">zipkin</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">endpointAddress</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;http://localhost:9411/api/v2/spans&#34;</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">dapr.io/v1alpha1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">daprConfig</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">nameResolution</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">component</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;consul&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">configuration</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">selfRegister</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">tracing</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">samplingRate</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">zipkin</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">endpointAddress</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;http://localhost:9411/api/v2/spans&#34;</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>We&rsquo;ll need to restart both Dapr sidecars to pick up the new configuration:</p>
 <div class="highlight"><div class="chroma">
@@ -732,16 +732,16 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">dapr run --app-id greeting --dapr-http-port <span class="m">4001</span> --app-port <span class="m">3001</span> --config dapr-config/consul-zipkin-config.yaml
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">dapr run --app-id greeting --dapr-http-port <span class="m">4001</span> --app-port <span class="m">3001</span> --config dapr-config/consul-zipkin-config.yaml
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">dapr run --app-id gateway --dapr-http-port <span class="m">4000</span> --app-port <span class="m">3000</span> --config dapr-config/consul-zipkin-config.yaml
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">dapr run --app-id gateway --dapr-http-port <span class="m">4000</span> --app-port <span class="m">3000</span> --config dapr-config/consul-zipkin-config.yaml
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Once Dapr is restarted, you can issue a <em>curl</em> command and check out the Zipkin UI to see the call trace.</p>
 <p>Once again, there&rsquo;s no need to restart the gateway and greeting service. It <strong>requires only</strong> <strong>an easy update to the Dapr configuration</strong> . Compare this to using <a href="https://www.baeldung.com/tracing-services-with-zipkin">Spring Cloud Zipkin</a> instead.</p>

@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-security-keycloak-interface/" />
@@ -443,16 +443,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="kd">super</span><span class="o">.</span><span class="na">configure</span><span class="o">(</span><span class="n">http</span><span class="o">);</span>
-        <span class="n">http</span>
-                <span class="o">.</span><span class="na">authorizeRequests</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">antMatchers</span><span class="o">(</span><span class="s">&#34;/customers*&#34;</span><span class="o">).</span><span class="na">hasRole</span><span class="o">(</span><span class="s">&#34;USER&#34;</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">antMatchers</span><span class="o">(</span><span class="s">&#34;/admin/**&#34;</span><span class="o">).</span><span class="na">hasRole</span><span class="o">(</span><span class="s">&#34;base_user&#34;</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">anyRequest</span><span class="o">().</span><span class="na">permitAll</span><span class="o">();</span>
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">super</span><span class="o">.</span><span class="na">configure</span><span class="o">(</span><span class="n">http</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">http</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">authorizeRequests</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">antMatchers</span><span class="o">(</span><span class="s">&#34;/customers*&#34;</span><span class="o">).</span><span class="na">hasRole</span><span class="o">(</span><span class="s">&#34;USER&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">antMatchers</span><span class="o">(</span><span class="s">&#34;/admin/**&#34;</span><span class="o">).</span><span class="na">hasRole</span><span class="o">(</span><span class="s">&#34;base_user&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">anyRequest</span><span class="o">().</span><span class="na">permitAll</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This is a typical Spring Security configuration where a user with the <code>base_user</code> role has access to <code>/admin/**</code>. What you need to understand here is that the so-called <code>user</code> and <code>base_user</code> roles are currently managed by the Keycloak platform, and our application can currently only control the access policy to resources. In order to see the flow of execution I turned on all log printing, and when I access <code>/admin/foo</code> I go through the following filters.</p>
 <div class="highlight"><div class="chroma">
@@ -476,24 +476,24 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Security</span> <span class="n">filter</span> <span class="n">chain</span><span class="o">:</span> <span class="o">[</span>
-  <span class="n">WebAsyncManagerIntegrationFilter</span>
-  <span class="n">SecurityContextPersistenceFilter</span>
-  <span class="n">HeaderWriterFilter</span>
-  <span class="n">CsrfFilter</span>
-  <span class="n">KeycloakPreAuthActionsFilter</span>
-  <span class="n">KeycloakAuthenticationProcessingFilter</span>
-  <span class="n">LogoutFilter</span>
-  <span class="n">RequestCacheAwareFilter</span>
-  <span class="n">SecurityContextHolderAwareRequestFilter</span>
-  <span class="n">KeycloakSecurityContextRequestFilter</span>
-  <span class="n">KeycloakAuthenticatedActionsFilter</span>
-  <span class="n">AnonymousAuthenticationFilter</span>
-  <span class="n">SessionManagementFilter</span>
-  <span class="n">ExceptionTranslationFilter</span>
-  <span class="n">FilterSecurityInterceptor</span>
-<span class="o">]</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Security</span> <span class="n">filter</span> <span class="n">chain</span><span class="o">:</span> <span class="o">[</span>
+</span></span><span class="line"><span class="cl">  <span class="n">WebAsyncManagerIntegrationFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">SecurityContextPersistenceFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">HeaderWriterFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">CsrfFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">KeycloakPreAuthActionsFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">KeycloakAuthenticationProcessingFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">LogoutFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">RequestCacheAwareFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">SecurityContextHolderAwareRequestFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">KeycloakSecurityContextRequestFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">KeycloakAuthenticatedActionsFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">AnonymousAuthenticationFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">SessionManagementFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">ExceptionTranslationFilter</span>
+</span></span><span class="line"><span class="cl">  <span class="n">FilterSecurityInterceptor</span>
+</span></span><span class="line"><span class="cl"><span class="o">]</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In addition to the regular built-in filters of Spring Security several filters of the Keycloak adapter have been added here, combine them with the execution flow to get to know them.</p>
 <h3 id="keycloakpreauthactionsfilter">KeycloakPreAuthActionsFilter</h3>
@@ -510,15 +510,15 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="c1">// 退出端点
-</span><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">K_LOGOUT</span> <span class="o">=</span> <span class="s">&#34;k_logout&#34;</span><span class="o">;</span>
-<span class="c1">// 重置什么公钥的？
-</span><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">K_PUSH_NOT_BEFORE</span> <span class="o">=</span> <span class="s">&#34;k_push_not_before&#34;</span><span class="o">;</span>
-<span class="c1">// 测试用的
-</span><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">K_TEST_AVAILABLE</span> <span class="o">=</span> <span class="s">&#34;k_test_available&#34;</span><span class="o">;</span>
-<span class="c1">// 获取 jwk 相关的
-</span><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">K_JWKS</span> <span class="o">=</span> <span class="s">&#34;k_jwks&#34;</span><span class="o">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 退出端点
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">K_LOGOUT</span> <span class="o">=</span> <span class="s">&#34;k_logout&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 重置什么公钥的？
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">K_PUSH_NOT_BEFORE</span> <span class="o">=</span> <span class="s">&#34;k_push_not_before&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 测试用的
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">K_TEST_AVAILABLE</span> <span class="o">=</span> <span class="s">&#34;k_test_available&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 获取 jwk 相关的
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">K_JWKS</span> <span class="o">=</span> <span class="s">&#34;k_jwks&#34;</span><span class="o">;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>You can generally ignore this filter without going deep into the bottom.</p>
@@ -541,16 +541,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">commence</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">AuthenticationException</span> <span class="n">authException</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
-        <span class="n">HttpFacade</span> <span class="n">facade</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleHttpFacade</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">apiRequestMatcher</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="n">request</span><span class="o">)</span> <span class="o">||</span> <span class="n">adapterDeploymentContext</span><span class="o">.</span><span class="na">resolveDeployment</span><span class="o">(</span><span class="n">facade</span><span class="o">).</span><span class="na">isBearerOnly</span><span class="o">())</span> <span class="o">{</span>
-            <span class="n">commenceUnauthorizedResponse</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-            <span class="n">commenceLoginRedirect</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">commence</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">AuthenticationException</span> <span class="n">authException</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">HttpFacade</span> <span class="n">facade</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleHttpFacade</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">apiRequestMatcher</span><span class="o">.</span><span class="na">matches</span><span class="o">(</span><span class="n">request</span><span class="o">)</span> <span class="o">||</span> <span class="n">adapterDeploymentContext</span><span class="o">.</span><span class="na">resolveDeployment</span><span class="o">(</span><span class="n">facade</span><span class="o">).</span><span class="na">isBearerOnly</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">commenceUnauthorizedResponse</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">commenceLoginRedirect</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>It implements two policies.</p>
 <ul>
@@ -577,23 +577,23 @@
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">commenceLoginRedirect</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getSession</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">KeycloakCookieBasedRedirect</span><span class="o">.</span><span class="na">getRedirectUrlFromCookie</span><span class="o">(</span><span class="n">request</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// If no session exists yet at this point, then apparently the redirect URL is not
-</span><span class="c1"></span>        <span class="c1">// stored in a session. We&#39;ll store it in a cookie instead.
-</span><span class="c1"></span>        <span class="n">response</span><span class="o">.</span><span class="na">addCookie</span><span class="o">(</span><span class="n">KeycloakCookieBasedRedirect</span><span class="o">.</span><span class="na">createCookieFromRedirectUrl</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getRequestURI</span><span class="o">()));</span>
-    <span class="o">}</span>
-
-    <span class="n">String</span> <span class="n">queryParameters</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">;</span>
-    <span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getQueryString</span><span class="o">()))</span> <span class="o">{</span>
-        <span class="n">queryParameters</span> <span class="o">=</span> <span class="s">&#34;?&#34;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="na">getQueryString</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="n">String</span> <span class="n">contextAwareLoginUri</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getContextPath</span><span class="o">()</span> <span class="o">+</span> <span class="n">loginUri</span> <span class="o">+</span> <span class="n">queryParameters</span><span class="o">;</span>
-    <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&#34;Redirecting to login URI {}&#34;</span><span class="o">,</span> <span class="n">contextAwareLoginUri</span><span class="o">);</span>
-    <span class="n">response</span><span class="o">.</span><span class="na">sendRedirect</span><span class="o">(</span><span class="n">contextAwareLoginUri</span><span class="o">);</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">commenceLoginRedirect</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getSession</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">KeycloakCookieBasedRedirect</span><span class="o">.</span><span class="na">getRedirectUrlFromCookie</span><span class="o">(</span><span class="n">request</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// If no session exists yet at this point, then apparently the redirect URL is not
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// stored in a session. We&#39;ll store it in a cookie instead.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">response</span><span class="o">.</span><span class="na">addCookie</span><span class="o">(</span><span class="n">KeycloakCookieBasedRedirect</span><span class="o">.</span><span class="na">createCookieFromRedirectUrl</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getRequestURI</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">queryParameters</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getQueryString</span><span class="o">()))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">queryParameters</span> <span class="o">=</span> <span class="s">&#34;?&#34;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="na">getQueryString</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">contextAwareLoginUri</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getContextPath</span><span class="o">()</span> <span class="o">+</span> <span class="n">loginUri</span> <span class="o">+</span> <span class="n">queryParameters</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">log</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&#34;Redirecting to login URI {}&#34;</span><span class="o">,</span> <span class="n">contextAwareLoginUri</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">response</span><span class="o">.</span><span class="na">sendRedirect</span><span class="o">(</span><span class="n">contextAwareLoginUri</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Our interface obviously takes the above approach, so it&rsquo;s obvious that we need to jump to the login page. At this point we need to see if <code>/admin/foo</code> is cached, because after login we have to perform the logic of <code>/admin/foo</code>. If Spring Security does not store the Session or Cookie, it will cache <code>/admin/foo</code> to the Cookie and then redirect to the Keycloak authorization page:</p>
 <div class="highlight"><div class="chroma">
@@ -601,8 +601,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">http://localhost:8011/auth/realms/felord.cn/protocol/openid-connect/auth?response_type<span class="o">=</span>code<span class="p">&amp;</span><span class="nv">client_id</span><span class="o">=</span>CLIENT<span class="p">&amp;</span><span class="nv">redirect_uri</span><span class="o">=</span>http%3A%2F%2Flocalhost%3A8080%2Fsso%2Flogin<span class="p">&amp;</span><span class="nv">state</span><span class="o">=</span>STATE<span class="p">&amp;</span><span class="nv">login</span><span class="o">=</span>true<span class="p">&amp;</span><span class="nv">scope</span><span class="o">=</span>openid
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">http://localhost:8011/auth/realms/felord.cn/protocol/openid-connect/auth?response_type<span class="o">=</span>code<span class="p">&amp;</span><span class="nv">client_id</span><span class="o">=</span>CLIENT<span class="p">&amp;</span><span class="nv">redirect_uri</span><span class="o">=</span>http%3A%2F%2Flocalhost%3A8080%2Fsso%2Flogin<span class="p">&amp;</span><span class="nv">state</span><span class="o">=</span>STATE<span class="p">&amp;</span><span class="nv">login</span><span class="o">=</span>true<span class="p">&amp;</span><span class="nv">scope</span><span class="o">=</span>openid
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="keycloakauthenticationprocessingfilter">KeycloakAuthenticationProcessingFilter</h3>
 <p>The above is a typical <strong>Authorization Code Flow</strong> pattern. When an account password is entered to agree to authorization, the authorization server requests a callback link with <code>code</code> and <code>state</code> (in this case <code>/sso/login</code>). The interceptor for <code>/sso/login</code> is the <code>KeycloakAuthenticationProcessingFilter</code>. This interface does not only handle logins, but also intercepts any authorization header <code>Authorization</code>, <code>access_token</code>, or <code>Keycloak Cookie</code>.</p>
@@ -628,20 +628,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">handledRequest</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="na">debugv</span><span class="o">(</span><span class="s">&#34;AuthenticatedActionsValve.invoke {0}&#34;</span><span class="o">,</span> <span class="n">facade</span><span class="o">.</span><span class="na">getRequest</span><span class="o">().</span><span class="na">getURI</span><span class="o">());</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">corsRequest</span><span class="o">())</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-        <span class="n">String</span> <span class="n">requestUri</span> <span class="o">=</span> <span class="n">facade</span><span class="o">.</span><span class="na">getRequest</span><span class="o">().</span><span class="na">getURI</span><span class="o">();</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">requestUri</span><span class="o">.</span><span class="na">endsWith</span><span class="o">(</span><span class="n">AdapterConstants</span><span class="o">.</span><span class="na">K_QUERY_BEARER_TOKEN</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">queryBearerToken</span><span class="o">();</span>
-            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">if</span> <span class="o">(!</span><span class="n">isAuthorized</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">handledRequest</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log</span><span class="o">.</span><span class="na">debugv</span><span class="o">(</span><span class="s">&#34;AuthenticatedActionsValve.invoke {0}&#34;</span><span class="o">,</span> <span class="n">facade</span><span class="o">.</span><span class="na">getRequest</span><span class="o">().</span><span class="na">getURI</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">corsRequest</span><span class="o">())</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">String</span> <span class="n">requestUri</span> <span class="o">=</span> <span class="n">facade</span><span class="o">.</span><span class="na">getRequest</span><span class="o">().</span><span class="na">getURI</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">requestUri</span><span class="o">.</span><span class="na">endsWith</span><span class="o">(</span><span class="n">AdapterConstants</span><span class="o">.</span><span class="na">K_QUERY_BEARER_TOKEN</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">queryBearerToken</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(!</span><span class="n">isAuthorized</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Returning <code>true</code> here blocks it from going further. It is mainly based on the policy provided by Keycloak to determine whether authorization has been granted, and the logic looks quite complicated.</p>
 <blockquote>
@@ -661,15 +661,15 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
-<span class="nd">@ComponentScan</span><span class="o">(</span>
-        <span class="n">basePackageClasses</span> <span class="o">=</span> <span class="o">{</span><span class="n">KeycloakSecurityComponents</span><span class="o">.</span><span class="na">class</span><span class="o">}</span>
-<span class="o">)</span>
-<span class="nd">@EnableWebSecurity</span><span class="o">(</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SecurityConfig</span> <span class="kd">extends</span> <span class="n">KeycloakWebSecurityConfigurerAdapter</span> <span class="o">{</span>
-<span class="c1">//ignore
-</span><span class="c1"></span><span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ComponentScan</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">basePackageClasses</span> <span class="o">=</span> <span class="o">{</span><span class="n">KeycloakSecurityComponents</span><span class="o">.</span><span class="na">class</span><span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@EnableWebSecurity</span><span class="o">(</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SecurityConfig</span> <span class="kd">extends</span> <span class="n">KeycloakWebSecurityConfigurerAdapter</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//ignore
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>To see more logs, adjust the logs for Spring Boot&rsquo;s <code>org</code> related packages to <code>debug</code> as well.</p>
 <div class="highlight"><div class="chroma">
@@ -679,10 +679,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">logging</span><span class="p">:</span><span class="w">  
-</span><span class="w">   </span><span class="nt">level</span><span class="p">:</span><span class="w">    
-</span><span class="w">     </span><span class="nt">org </span><span class="p">:</span><span class="w"> </span><span class="l">debug</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">logging</span><span class="p">:</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="nt">level</span><span class="p">:</span><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">     </span><span class="nt">org </span><span class="p">:</span><span class="w"> </span><span class="l">debug</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then the code running process will be very clear in the console Console, which greatly facilitated me to figure out the running process of Keycloak. Keycloak&rsquo;s process is simple to understand, it feels very bland and boring, and most of them do not need customization. I personally think that the focus is actually not here, how to customize Keycloak&rsquo;s user management, role management and a series of management APIs according to the business is the key to using it well. Do not go away, the follow-up will be combined with some scenarios to modify keycloak.</p>
 <blockquote>

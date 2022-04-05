@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/elegantly-read-and-write-httpbody/" />
@@ -442,12 +442,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
-<span class="nd">@ConditionalOnMissingBean</span>
-<span class="kd">public</span> <span class="n">HttpMessageConverters</span> <span class="nf">messageConverters</span><span class="o">(</span><span class="n">ObjectProvider</span><span class="o">&lt;</span><span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">converters</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="n">HttpMessageConverters</span><span class="o">((</span><span class="n">Collection</span><span class="o">)</span><span class="n">converters</span><span class="o">.</span><span class="na">orderedStream</span><span class="o">().</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">()));</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ConditionalOnMissingBean</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">HttpMessageConverters</span> <span class="nf">messageConverters</span><span class="o">(</span><span class="n">ObjectProvider</span><span class="o">&lt;</span><span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">converters</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="n">HttpMessageConverters</span><span class="o">((</span><span class="n">Collection</span><span class="o">)</span><span class="n">converters</span><span class="o">.</span><span class="na">orderedStream</span><span class="o">().</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We can just use it. So how exactly do we use it? Well, first we need to figure out what <code>HttpInputMessage</code> and <code>HttpOutputMessage</code> are for.</p>
 <h2 id="httpinputmessage">HttpInputMessage</h2>
@@ -487,30 +487,30 @@
 </span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
-</span><span class="cm"> * 处理 application/x-www-form-urlencoded 请求
-</span><span class="cm"> *
-</span><span class="cm"> * @author  felord.cn
-</span><span class="cm"> */</span>
-
-<span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">FormUrlencodedFilter</span> <span class="kd">implements</span> <span class="n">Filter</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">FormHttpMessageConverter</span> <span class="n">formHttpMessageConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FormHttpMessageConverter</span><span class="o">();</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">log</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">FormUrlencodedFilter</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">ServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">ServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">chain</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-        <span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getContentType</span><span class="o">();</span>
-        <span class="n">MediaType</span> <span class="n">type</span><span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">contentType</span><span class="o">)?</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">contentType</span><span class="o">):</span><span class="kc">null</span><span class="o">;</span>
-        <span class="n">ServletServerHttpRequest</span> <span class="n">serverHttpRequest</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServletServerHttpRequest</span><span class="o">((</span><span class="n">HttpServletRequest</span><span class="o">)</span> <span class="n">request</span><span class="o">);</span>
-        
-        <span class="k">if</span> <span class="o">(</span><span class="n">formHttpMessageConverter</span><span class="o">.</span><span class="na">canRead</span><span class="o">(</span><span class="n">MultiValueMap</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">type</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">MultiValueMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">read</span> <span class="o">=</span> <span class="n">formHttpMessageConverter</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="n">serverHttpRequest</span><span class="o">);</span>
-             <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;打印读取到的请求体：{}&#34;</span><span class="o">,</span><span class="n">read</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 处理 application/x-www-form-urlencoded 请求
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author  felord.cn
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">FormUrlencodedFilter</span> <span class="kd">implements</span> <span class="n">Filter</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">FormHttpMessageConverter</span> <span class="n">formHttpMessageConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FormHttpMessageConverter</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">log</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">FormUrlencodedFilter</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">ServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">ServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">chain</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getContentType</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">MediaType</span> <span class="n">type</span><span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">contentType</span><span class="o">)?</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">contentType</span><span class="o">):</span><span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ServletServerHttpRequest</span> <span class="n">serverHttpRequest</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServletServerHttpRequest</span><span class="o">((</span><span class="n">HttpServletRequest</span><span class="o">)</span> <span class="n">request</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">formHttpMessageConverter</span><span class="o">.</span><span class="na">canRead</span><span class="o">(</span><span class="n">MultiValueMap</span><span class="o">.</span><span class="na">class</span><span class="o">,</span><span class="n">type</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">MultiValueMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">read</span> <span class="o">=</span> <span class="n">formHttpMessageConverter</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="n">serverHttpRequest</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">             <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;打印读取到的请求体：{}&#34;</span><span class="o">,</span><span class="n">read</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then execute a request of type <code>POST</code> with <code>Content-Type</code> of <code>application/x-www-form-urlencoded</code>.</p>
 <div class="highlight"><div class="chroma">
@@ -523,13 +523,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">POST /ind HTTP/1.1
-Host: localhost:8080
-Content-Type: application/x-www-form-urlencoded
-Content-Length: 20
-
-a=b123&amp;c=d123&amp;e=f123
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">POST /ind HTTP/1.1
+</span></span><span class="line"><span class="cl">Host: localhost:8080
+</span></span><span class="line"><span class="cl">Content-Type: application/x-www-form-urlencoded
+</span></span><span class="line"><span class="cl">Content-Length: 20
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">a=b123&amp;c=d123&amp;e=f123
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The console will print the following message.</p>
 <div class="highlight"><div class="chroma">
@@ -537,8 +537,8 @@ a=b123&amp;c=d123&amp;e=f123
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">2021-12-30 6:43:56.409  INFO 12408 --- [nio-8080-exec-1] sfds: 打印读取到的请求体：{a=[b123], c=[d123], e=[f123]}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">2021-12-30 6:43:56.409  INFO 12408 --- [nio-8080-exec-1] sfds: 打印读取到的请求体：{a=[b123], c=[d123], e=[f123]}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="servletserverhttpresponse">ServletServerHttpResponse</h2>
 <p>There is <code>ServletServerHttpRequest</code> and there is <code>ServletServerHttpResponse</code>, the general principle is similar. It happens to be the opposite of <code>ServletServerHttpRequest</code>, so if we need to deal with the response, for example, if we want to write a JSON response via <code>HttpServletResponse</code>, we can probably write it like this.</p>
@@ -551,12 +551,12 @@ a=b123&amp;c=d123&amp;e=f123
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">ServletServerHttpResponse</span> <span class="n">servletServerHttpResponse</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServletServerHttpResponse</span><span class="o">(</span><span class="n">response</span><span class="o">);</span>
-<span class="c1">// 使用json converter
-</span><span class="c1"></span><span class="n">MappingJackson2HttpMessageConverter</span> <span class="n">mappingJackson2HttpMessageConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MappingJackson2HttpMessageConverter</span><span class="o">();</span>
-<span class="c1">//  authentication 指的是需要写的对象实例
-</span><span class="c1"></span><span class="n">mappingJackson2HttpMessageConverter</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">authentication</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">,</span><span class="n">servletServerHttpResponse</span><span class="o">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">ServletServerHttpResponse</span> <span class="n">servletServerHttpResponse</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServletServerHttpResponse</span><span class="o">(</span><span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 使用json converter
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">MappingJackson2HttpMessageConverter</span> <span class="n">mappingJackson2HttpMessageConverter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MappingJackson2HttpMessageConverter</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//  authentication 指的是需要写的对象实例
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">mappingJackson2HttpMessageConverter</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">authentication</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_JSON</span><span class="o">,</span><span class="n">servletServerHttpResponse</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="summary">Summary</h2>
 <p><code>HttpMessageConverter</code> abstracts the <strong>HTTP</strong> message conversion strategy and can help us handle some request response issues gracefully. One thing to note though is that the request body <strong>body</strong> can only be read once, even if it is wrapped in <code>ServletServerHttpRequest</code>, so be aware of the difference with <code>HttpServletRequestWrapper</code>.</p>

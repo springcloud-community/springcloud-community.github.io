@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/springboot-swagger3/" />
@@ -437,12 +437,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>io.springfox<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>springfox-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>3.0.0<span class="nt">&lt;/version&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>io.springfox<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>springfox-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;version&gt;</span>3.0.0<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>That&rsquo;s all it takes, isn&rsquo;t it?</p>
 <p>As for some tutorials that say you have to turn on the annotation <code>@EnableOpenApi</code>, you don&rsquo;t need it at all. Because under <code>springfox-boot-starter-3.0.0.jar</code> you can find a <code>spring.facts</code>, which anyone familiar with Spring Boot knows is a Spring Boot-specific SPI file that automatically discovers and registers the configuration of the Starter component. There is this configuration inside.</p>
@@ -453,10 +453,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># Auto Configure
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># Auto Configure
+</span></span><span class="line"><span class="cl">org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+</span></span><span class="line"><span class="cl">springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Follow the trail and find the general configuration class <code>OpenApiAutoConfiguration</code>.</p>
 <div class="highlight"><div class="chroma">
@@ -479,23 +479,23 @@ springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
-<span class="nd">@EnableConfigurationProperties</span><span class="o">(</span><span class="n">SpringfoxConfigurationProperties</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#34;springfox.documentation.enabled&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
-<span class="nd">@Import</span><span class="o">({</span>
-    <span class="n">OpenApiDocumentationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
-    <span class="n">SpringDataRestConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
-    <span class="n">BeanValidatorPluginsConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
-    <span class="n">Swagger2DocumentationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
-    <span class="n">SwaggerUiWebFluxConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
-    <span class="n">SwaggerUiWebMvcConfiguration</span><span class="o">.</span><span class="na">class</span>
-<span class="o">})</span>
-<span class="nd">@AutoConfigureAfter</span><span class="o">({</span> <span class="n">WebMvcAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">JacksonAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
-    <span class="n">HttpMessageConvertersAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">RepositoryRestMvcAutoConfiguration</span><span class="o">.</span><span class="na">class</span> <span class="o">})</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OpenApiAutoConfiguration</span> <span class="o">{</span>
-
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@EnableConfigurationProperties</span><span class="o">(</span><span class="n">SpringfoxConfigurationProperties</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#34;springfox.documentation.enabled&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Import</span><span class="o">({</span>
+</span></span><span class="line"><span class="cl">    <span class="n">OpenApiDocumentationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SpringDataRestConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BeanValidatorPluginsConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Swagger2DocumentationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SwaggerUiWebFluxConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SwaggerUiWebMvcConfiguration</span><span class="o">.</span><span class="na">class</span>
+</span></span><span class="line"><span class="cl"><span class="o">})</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@AutoConfigureAfter</span><span class="o">({</span> <span class="n">WebMvcAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">JacksonAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">HttpMessageConvertersAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">RepositoryRestMvcAutoConfiguration</span><span class="o">.</span><span class="na">class</span> <span class="o">})</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OpenApiAutoConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="some-findings">Some findings</h3>
 <p>We found a key place where the <code>@ConditionalOnProperty</code> annotation declares that configuration is enabled when <code>springfox.documentation.enabled</code> is <code>true</code>, and the default value is <code>true</code>. This is very useful, <strong>Swagger is only recommended for development</strong>, and this is just the right switch. Sometimes it&rsquo;s better to add this <strong>switch</strong> to our custom configuration as well.</p>
@@ -526,30 +526,30 @@ springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration
 </span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="c1">// 自定义swagger3文档信息
-</span><span class="c1"></span><span class="nd">@Configuration</span>
-<span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#34;springfox.documentation.enabled&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Swagger3Config</span> <span class="o">{</span>
-    <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">Docket</span> <span class="nf">createRestApi</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">Docket</span><span class="o">(</span><span class="n">DocumentationType</span><span class="o">.</span><span class="na">OAS_30</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">apiInfo</span><span class="o">(</span><span class="n">apiInfo</span><span class="o">())</span>
-                <span class="o">.</span><span class="na">select</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">apis</span><span class="o">(</span><span class="n">RequestHandlerSelectors</span><span class="o">.</span><span class="na">withMethodAnnotation</span><span class="o">(</span><span class="n">ApiOperation</span><span class="o">.</span><span class="na">class</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">paths</span><span class="o">(</span><span class="n">PathSelectors</span><span class="o">.</span><span class="na">any</span><span class="o">())</span>
-                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="n">ApiInfo</span> <span class="nf">apiInfo</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">ApiInfoBuilder</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">title</span><span class="o">(</span><span class="s">&#34;Swagger3接口文档&#34;</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">description</span><span class="o">(</span><span class="s">&#34;更多请咨询felord.cn&#34;</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">contact</span><span class="o">(</span><span class="k">new</span> <span class="n">Contact</span><span class="o">(</span><span class="s">&#34;码农小胖哥&#34;</span><span class="o">,</span> <span class="s">&#34;https://felord.cn&#34;</span><span class="o">,</span> <span class="s">&#34;dax@felord.cn&#34;</span><span class="o">))</span>
-                <span class="o">.</span><span class="na">version</span><span class="o">(</span><span class="s">&#34;1.0.0&#34;</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 自定义swagger3文档信息
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ConditionalOnProperty</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#34;springfox.documentation.enabled&#34;</span><span class="o">,</span> <span class="n">havingValue</span> <span class="o">=</span> <span class="s">&#34;true&#34;</span><span class="o">,</span> <span class="n">matchIfMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Swagger3Config</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Docket</span> <span class="nf">createRestApi</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">Docket</span><span class="o">(</span><span class="n">DocumentationType</span><span class="o">.</span><span class="na">OAS_30</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">apiInfo</span><span class="o">(</span><span class="n">apiInfo</span><span class="o">())</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">select</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">apis</span><span class="o">(</span><span class="n">RequestHandlerSelectors</span><span class="o">.</span><span class="na">withMethodAnnotation</span><span class="o">(</span><span class="n">ApiOperation</span><span class="o">.</span><span class="na">class</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">paths</span><span class="o">(</span><span class="n">PathSelectors</span><span class="o">.</span><span class="na">any</span><span class="o">())</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">ApiInfo</span> <span class="nf">apiInfo</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">ApiInfoBuilder</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">title</span><span class="o">(</span><span class="s">&#34;Swagger3接口文档&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">description</span><span class="o">(</span><span class="s">&#34;更多请咨询felord.cn&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">contact</span><span class="o">(</span><span class="k">new</span> <span class="n">Contact</span><span class="o">(</span><span class="s">&#34;码农小胖哥&#34;</span><span class="o">,</span> <span class="s">&#34;https://felord.cn&#34;</span><span class="o">,</span> <span class="s">&#34;dax@felord.cn&#34;</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">version</span><span class="o">(</span><span class="s">&#34;1.0.0&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>At the beginning we mentioned that Swagger3 does not need to be enabled with <code>@EnableOpenApi</code> or <code>@EnableSwagger2</code>, and the answer can be found here.</p>
 <div class="highlight"><div class="chroma">
@@ -559,10 +559,10 @@ springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Import</span><span class="o">(</span><span class="n">OpenApiDocumentationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-<span class="kd">public</span> <span class="nd">@interface</span> <span class="n">EnableOpenApi</span> <span class="o">{</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Import</span><span class="o">(</span><span class="n">OpenApiDocumentationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">EnableOpenApi</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -571,10 +571,10 @@ springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Import</span><span class="o">(</span><span class="n">Swagger2DocumentationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-<span class="kd">public</span> <span class="nd">@interface</span> <span class="n">EnableSwagger2</span> <span class="o">{</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Import</span><span class="o">(</span><span class="n">Swagger2DocumentationConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">EnableSwagger2</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Both of the above import classes can be found in <code>OpenApiAutoConfiguration</code>, so Swagger3 provides a fully automated integration.</p>
 <h3 id="incompatibility-with-global-unified-parameters">Incompatibility with global unified parameters</h3>
@@ -607,31 +607,31 @@ springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
-</span><span class="cm"> * 返回体统一封装器
-</span><span class="cm"> *
-</span><span class="cm"> * @author n1
-</span><span class="cm"> */</span>
-<span class="nd">@RestControllerAdvice</span> 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestBodyAdvice</span> <span class="kd">implements</span> <span class="n">ResponseBodyAdvice</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">supports</span><span class="o">(</span><span class="n">MethodParameter</span> <span class="n">returnType</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">converterType</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="o">!</span><span class="n">returnType</span><span class="o">.</span><span class="na">hasMethodAnnotation</span><span class="o">(</span><span class="n">IgnoreRestBody</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">beforeBodyWrite</span><span class="o">(</span><span class="n">Object</span> <span class="n">body</span><span class="o">,</span> <span class="n">MethodParameter</span> <span class="n">returnType</span><span class="o">,</span> <span class="n">MediaType</span> <span class="n">selectedContentType</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">selectedConverterType</span><span class="o">,</span> <span class="n">ServerHttpRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">ServerHttpResponse</span> <span class="n">response</span><span class="o">)</span> <span class="o">{</span>
-
-        <span class="k">if</span> <span class="o">(</span><span class="n">body</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">RestBody</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
-        <span class="o">}</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">Rest</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">body</span><span class="o">.</span><span class="na">getClass</span><span class="o">()))</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">body</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="n">RestBody</span><span class="o">.</span><span class="na">okData</span><span class="o">(</span><span class="n">body</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 返回体统一封装器
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author n1
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RestControllerAdvice</span> 
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RestBodyAdvice</span> <span class="kd">implements</span> <span class="n">ResponseBodyAdvice</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">supports</span><span class="o">(</span><span class="n">MethodParameter</span> <span class="n">returnType</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">converterType</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">!</span><span class="n">returnType</span><span class="o">.</span><span class="na">hasMethodAnnotation</span><span class="o">(</span><span class="n">IgnoreRestBody</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">beforeBodyWrite</span><span class="o">(</span><span class="n">Object</span> <span class="n">body</span><span class="o">,</span> <span class="n">MethodParameter</span> <span class="n">returnType</span><span class="o">,</span> <span class="n">MediaType</span> <span class="n">selectedContentType</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">HttpMessageConverter</span><span class="o">&lt;?&gt;&gt;</span> <span class="n">selectedConverterType</span><span class="o">,</span> <span class="n">ServerHttpRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">ServerHttpResponse</span> <span class="n">response</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">body</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">RestBody</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">Rest</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">body</span><span class="o">.</span><span class="na">getClass</span><span class="o">()))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">body</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">RestBody</span><span class="o">.</span><span class="na">okData</span><span class="o">(</span><span class="n">body</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>You will find that Swagger3 will report <code>Unable to infer base url......</code> error, this is because the uniform return body affects some built-in interfaces of Swagger3. The solution is <code>@RestControllerAdvice</code> to control the scope of the package in effect, that is, to configure its <code>basePackages</code> parameter on the line, this potential conflict wasted me more than an hour.</p>
 <h3 id="security-framework">Security framework</h3>
@@ -650,17 +650,17 @@ springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">WebSecurity</span> <span class="n">web</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-    <span class="c1">//忽略swagger3所需要用到的静态资源，允许访问
-</span><span class="c1"></span>    <span class="n">web</span><span class="o">.</span><span class="na">ignoring</span><span class="o">().</span><span class="na">antMatchers</span><span class="o">(</span> <span class="s">&#34;/swagger-ui.html&#34;</span><span class="o">,</span>
-            <span class="s">&#34;/swagger-ui/**&#34;</span><span class="o">,</span>
-            <span class="s">&#34;/swagger-resources/**&#34;</span><span class="o">,</span>
-            <span class="s">&#34;/v2/api-docs&#34;</span><span class="o">,</span>
-            <span class="s">&#34;/v3/api-docs&#34;</span><span class="o">,</span>
-            <span class="s">&#34;/webjars/**&#34;</span><span class="o">);</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">WebSecurity</span> <span class="n">web</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//忽略swagger3所需要用到的静态资源，允许访问
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">web</span><span class="o">.</span><span class="na">ignoring</span><span class="o">().</span><span class="na">antMatchers</span><span class="o">(</span> <span class="s">&#34;/swagger-ui.html&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#34;/swagger-ui/**&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#34;/swagger-resources/**&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#34;/v2/api-docs&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#34;/v3/api-docs&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s">&#34;/webjars/**&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>If you are using <strong>Spring Security 5.4</strong>, you can customize <code>WebSecurity</code> this way.</p>
 <div class="highlight"><div class="chroma">
@@ -672,12 +672,12 @@ springfox.boot.starter.autoconfigure.OpenApiAutoConfiguration
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@BeanWebSecurityCustomizer</span> <span class="n">swaggerWebSecurityCustomizer</span><span class="o">()</span> <span class="o">{</span>    
-    <span class="k">return</span> <span class="o">(</span><span class="n">web</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>       
-        <span class="n">web</span><span class="o">.</span><span class="na">ignoring</span><span class="o">().</span><span class="na">antMatchers</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&#34;/swagger-ui.html&#34;</span><span class="o">,</span> <span class="s">&#34;/swagger-ui/**&#34;</span><span class="o">,</span> <span class="s">&#34;/swagger-resources/**&#34;</span><span class="o">,</span> <span class="s">&#34;/v2/api-docs&#34;</span><span class="o">,</span> <span class="s">&#34;/v3/        api-docs&#34;</span><span class="o">,</span> <span class="s">&#34;/webjars/**&#34;</span><span class="o">});</span>    
-        <span class="o">};</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@BeanWebSecurityCustomizer</span> <span class="n">swaggerWebSecurityCustomizer</span><span class="o">()</span> <span class="o">{</span>    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="o">(</span><span class="n">web</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>       
+</span></span><span class="line"><span class="cl">        <span class="n">web</span><span class="o">.</span><span class="na">ignoring</span><span class="o">().</span><span class="na">antMatchers</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">&#34;/swagger-ui.html&#34;</span><span class="o">,</span> <span class="s">&#34;/swagger-ui/**&#34;</span><span class="o">,</span> <span class="s">&#34;/swagger-resources/**&#34;</span><span class="o">,</span> <span class="s">&#34;/v2/api-docs&#34;</span><span class="o">,</span> <span class="s">&#34;/v3/        api-docs&#34;</span><span class="o">,</span> <span class="s">&#34;/webjars/**&#34;</span><span class="o">});</span>    
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This way Swagger can be rendered and accessed properly.</p>
 <h2 id="summary">Summary</h2>

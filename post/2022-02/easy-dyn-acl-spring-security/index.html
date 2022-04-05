@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/easy-dyn-acl-spring-security/" />
@@ -433,10 +433,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">httpSecurity</span><span class="o">.</span><span class="na">authorizeRequests</span><span class="o">()</span>
-    <span class="o">.</span><span class="na">anyRequest</span><span class="o">()</span>
-    <span class="o">.</span><span class="na">access</span><span class="o">(</span><span class="s">&#34;hasRole(&#39;admin&#39;)&#34;</span><span class="o">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">httpSecurity</span><span class="o">.</span><span class="na">authorizeRequests</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="o">.</span><span class="na">anyRequest</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="o">.</span><span class="na">access</span><span class="o">(</span><span class="s">&#34;hasRole(&#39;admin&#39;)&#34;</span><span class="o">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Needless to say, after we configure the expression <code>hasRole('admin')</code>, Spring Security will call the <code>hasRole(String role)</code> method of <code>SecurityExpressionRoot</code> to determine if the current user holds the role <code>admin</code> and thus make a decision on whether to release or not. This approach allows for dynamic access control in addition to static access control.</p>
 <h2 id="bean-based-access-control-expressions">Bean-based access control expressions</h2>
@@ -462,24 +462,24 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
-</span><span class="cm"> * 角色检查器接口.
-</span><span class="cm"> *
-</span><span class="cm"> * @author n1
-</span><span class="cm"> * @since 2021 /4/6 16:28
-</span><span class="cm"> */</span>
-<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">RoleChecker</span> <span class="kd">extends</span> <span class="n">InitializingBean</span> <span class="o">{</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * Check boolean.
-</span><span class="cm">     *
-</span><span class="cm">     * @param authentication the authentication
-</span><span class="cm">     * @param request        the request
-</span><span class="cm">     * @return the boolean
-</span><span class="cm">     */</span>
-    <span class="kt">boolean</span> <span class="nf">check</span><span class="o">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="o">,</span> <span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">);</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 角色检查器接口.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author n1
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @since 2021 /4/6 16:28
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">RoleChecker</span> <span class="kd">extends</span> <span class="n">InitializingBean</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Check boolean.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param authentication the authentication
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param request        the request
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @return the boolean
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">boolean</span> <span class="nf">check</span><span class="o">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="o">,</span> <span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>JDBC-based role checking, preferably using caching here.</p>
 <div class="highlight"><div class="chroma">
@@ -513,34 +513,34 @@
 </span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
-</span><span class="cm"> * 基于jdbc的角色检查 最好这里做个缓存
-</span><span class="cm"> * @author n1
-</span><span class="cm"> * @since 2021/4/6 16:43
-</span><span class="cm"> */</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JdbcRoleChecker</span> <span class="kd">implements</span> <span class="n">RoleChecker</span> <span class="o">{</span>
-    <span class="c1">// 系统集合的抽象实现，这里你可以采用更加合理更加效率的方式
-</span><span class="c1"></span>    <span class="kd">private</span> <span class="n">Supplier</span><span class="o">&lt;</span><span class="n">Set</span><span class="o">&lt;</span><span class="n">AntPathRequestMatcher</span><span class="o">&gt;&gt;</span> <span class="n">supplier</span><span class="o">;</span>
-
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">check</span><span class="o">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="o">,</span> <span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">Collection</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">GrantedAuthority</span><span class="o">&gt;</span> <span class="n">authorities</span> <span class="o">=</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getAuthorities</span><span class="o">();</span>
-
-       <span class="c1">// 当前用户的角色集合
-</span><span class="c1"></span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;authorities = &#34;</span> <span class="o">+</span> <span class="n">authorities</span><span class="o">);</span>
-        <span class="c1">//todo 这里自行实现比对逻辑
-</span><span class="c1"></span>       <span class="c1">//   supplier.get().stream().filter(matcher -&gt; matcher.matches(request));
-</span><span class="c1"></span>       <span class="c1">// true false 为是否放行
-</span><span class="c1"></span>        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">afterPropertiesSet</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">supplier</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span> <span class="s">&#34;function must not be null&#34;</span><span class="o">);</span>
-    <span class="o">}</span> 
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 基于jdbc的角色检查 最好这里做个缓存
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author n1
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @since 2021/4/6 16:43
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JdbcRoleChecker</span> <span class="kd">implements</span> <span class="n">RoleChecker</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 系统集合的抽象实现，这里你可以采用更加合理更加效率的方式
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">private</span> <span class="n">Supplier</span><span class="o">&lt;</span><span class="n">Set</span><span class="o">&lt;</span><span class="n">AntPathRequestMatcher</span><span class="o">&gt;&gt;</span> <span class="n">supplier</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">check</span><span class="o">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="o">,</span> <span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Collection</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">GrantedAuthority</span><span class="o">&gt;</span> <span class="n">authorities</span> <span class="o">=</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getAuthorities</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">       <span class="c1">// 当前用户的角色集合
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;authorities = &#34;</span> <span class="o">+</span> <span class="n">authorities</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//todo 这里自行实现比对逻辑
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>       <span class="c1">//   supplier.get().stream().filter(matcher -&gt; matcher.matches(request));
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>       <span class="c1">// true false 为是否放行
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">afterPropertiesSet</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Assert</span><span class="o">.</span><span class="na">notNull</span><span class="o">(</span><span class="n">supplier</span><span class="o">.</span><span class="na">get</span><span class="o">(),</span> <span class="s">&#34;function must not be null&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span> 
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We can then configure <code>HttpSecurity</code> like this.</p>
 <div class="highlight"><div class="chroma">
@@ -550,10 +550,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">httpSecurity</span><span class="o">.</span><span class="na">authorizeRequests</span><span class="o">()</span>
-    <span class="o">.</span><span class="na">anyRequest</span><span class="o">()</span>
-    <span class="o">.</span><span class="na">access</span><span class="o">(</span><span class="s">&#34;@roleChecker.check(authentication,request)&#34;</span><span class="o">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">httpSecurity</span><span class="o">.</span><span class="na">authorizeRequests</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="o">.</span><span class="na">anyRequest</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="o">.</span><span class="na">access</span><span class="o">(</span><span class="s">&#34;@roleChecker.check(authentication,request)&#34;</span><span class="o">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>With <code>Authentication</code> in <code>RoleChecker</code> we can get the information about the current user, especially the permission set. With <code>HttpServletRequest</code> we can get the <strong>URI</strong> of the current request. This <strong>URI</strong> intersects the permission set in the system with the user&rsquo;s permission set to make the correct access decision.</p>
 <h3 id="path-parameters">Path parameters</h3>
@@ -579,24 +579,24 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
-</span><span class="cm"> * 角色检查器接口.
-</span><span class="cm"> *
-</span><span class="cm"> * @author n1
-</span><span class="cm"> * @since 2021 /4/6 16:28
-</span><span class="cm"> */</span>
-<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">RoleChecker</span> <span class="kd">extends</span> <span class="n">InitializingBean</span> <span class="o">{</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * Check boolean.
-</span><span class="cm">     *
-</span><span class="cm">     * @param authentication the authentication
-</span><span class="cm">     * @param request        the request
-</span><span class="cm">     * @return the boolean
-</span><span class="cm">     */</span>
-    <span class="kt">boolean</span> <span class="nf">check</span><span class="o">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="o">,</span> <span class="n">String</span> <span class="n">id</span><span class="o">);</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 角色检查器接口.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author n1
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @since 2021 /4/6 16:28
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">RoleChecker</span> <span class="kd">extends</span> <span class="n">InitializingBean</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Check boolean.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param authentication the authentication
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param request        the request
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @return the boolean
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">boolean</span> <span class="nf">check</span><span class="o">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="o">,</span> <span class="n">String</span> <span class="n">id</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The corresponding configurations are as follows.</p>
 <div class="highlight"><div class="chroma">
@@ -606,10 +606,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">httpSecurity</span><span class="o">.</span><span class="na">authorizeRequests</span><span class="o">()</span>
-    <span class="o">.</span><span class="na">antMatchers</span><span class="o">(</span><span class="s">&#34;/foo/{id}/**&#34;</span><span class="o">)</span>
-    <span class="o">.</span><span class="na">access</span><span class="o">(</span><span class="s">&#34;@roleChecker.check(authentication,#id)&#34;</span><span class="o">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">httpSecurity</span><span class="o">.</span><span class="na">authorizeRequests</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="o">.</span><span class="na">antMatchers</span><span class="o">(</span><span class="s">&#34;/foo/{id}/**&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="o">.</span><span class="na">access</span><span class="o">(</span><span class="s">&#34;@roleChecker.check(authentication,#id)&#34;</span><span class="o">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>So that when the <code>/foo/123</code> request is intercepted, <code>123</code> will be assigned to the <code>id</code> handler in the <code>check</code> method.</p>
 <h2 id="summary">Summary</h2>

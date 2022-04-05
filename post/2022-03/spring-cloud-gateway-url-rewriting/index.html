@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-03/spring-cloud-gateway-url-rewriting/" />
@@ -461,17 +461,17 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yml" data-lang="yml"><span class="nt">spring</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">gateway</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">routes</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">rewrite_v1</span><span class="w">
-</span><span class="w">        </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">${rewrite.backend.uri:http://example.com}</span><span class="w">
-</span><span class="w">        </span><span class="nt">predicates</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="l">Path=/v1/customer/**</span><span class="w">
-</span><span class="w">        </span><span class="nt">filters</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="l">RewritePath=/v1/customer/(?&lt;segment&gt;.*),/api/$\{segment}</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yml" data-lang="yml"><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">gateway</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">routes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">rewrite_v1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">${rewrite.backend.uri:http://example.com}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">predicates</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="l">Path=/v1/customer/**</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">filters</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="l">RewritePath=/v1/customer/(?&lt;segment&gt;.*),/api/$\{segment}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Let&rsquo;s dissect this configuration. Firstly, we have the route&rsquo;s id, which is just its identifiers. Next, we have the backend URI given by the <em>uri</em> property. <strong>Notice that only hostname/port are considered, as the final path comes from the rewrite logic</strong> .</p>
 <p>The <code>predicates</code> property defines the conditions that must be met to activate this route. In our case, we use the <code>Path</code> predicate, which takes an ant-like path expression to match against the path of the incoming request.</p>
@@ -511,34 +511,34 @@
 </span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicRewriteRoute</span> <span class="o">{</span>
-    
-    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rewrite.backend.uri}&#34;</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">backendUri</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Random</span> <span class="n">rnd</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
-    
-    <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">RouteLocator</span> <span class="nf">dynamicZipCodeRoute</span><span class="o">(</span><span class="n">RouteLocatorBuilder</span> <span class="n">builder</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">routes</span><span class="o">()</span>
-          <span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="s">&#34;dynamicRewrite&#34;</span><span class="o">,</span> <span class="n">r</span> <span class="o">-&gt;</span>
-             <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">&#34;/v2/zip/**&#34;</span><span class="o">)</span>
-              <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">filter</span><span class="o">((</span><span class="n">exchange</span><span class="o">,</span> <span class="n">chain</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
-                  <span class="n">ServerHttpRequest</span> <span class="n">req</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getRequest</span><span class="o">();</span>
-                  <span class="n">addOriginalRequestUrl</span><span class="o">(</span><span class="n">exchange</span><span class="o">,</span> <span class="n">req</span><span class="o">.</span><span class="na">getURI</span><span class="o">());</span>
-                  <span class="n">String</span> <span class="n">path</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">getURI</span><span class="o">().</span><span class="na">getRawPath</span><span class="o">();</span>
-                  <span class="n">String</span> <span class="n">newPath</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="na">replaceAll</span><span class="o">(</span>
-                    <span class="s">&#34;/v2/zip/(?&lt;zipcode&gt;.*)&#34;</span><span class="o">,</span> 
-                    <span class="s">&#34;/api/zip/${zipcode}-&#34;</span> <span class="o">+</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;%03d&#34;</span><span class="o">,</span> <span class="n">rnd</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="n">1000</span><span class="o">)));</span>
-                  <span class="n">ServerHttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">mutate</span><span class="o">().</span><span class="na">path</span><span class="o">(</span><span class="n">newPath</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
-                  <span class="n">exchange</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="n">GATEWAY_REQUEST_URL_ATTR</span><span class="o">,</span> <span class="n">request</span><span class="o">.</span><span class="na">getURI</span><span class="o">());</span>
-                  <span class="k">return</span> <span class="n">chain</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">exchange</span><span class="o">.</span><span class="na">mutate</span><span class="o">().</span><span class="na">request</span><span class="o">(</span><span class="n">request</span><span class="o">).</span><span class="na">build</span><span class="o">());</span>
-              <span class="o">}))</span>
-              <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="n">backendUri</span><span class="o">))</span>
-          <span class="o">.</span><span class="na">build</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicRewriteRoute</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${rewrite.backend.uri}&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">backendUri</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Random</span> <span class="n">rnd</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">RouteLocator</span> <span class="nf">dynamicZipCodeRoute</span><span class="o">(</span><span class="n">RouteLocatorBuilder</span> <span class="n">builder</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">routes</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">          <span class="o">.</span><span class="na">route</span><span class="o">(</span><span class="s">&#34;dynamicRewrite&#34;</span><span class="o">,</span> <span class="n">r</span> <span class="o">-&gt;</span>
+</span></span><span class="line"><span class="cl">             <span class="n">r</span><span class="o">.</span><span class="na">path</span><span class="o">(</span><span class="s">&#34;/v2/zip/**&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">              <span class="o">.</span><span class="na">filters</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">filter</span><span class="o">((</span><span class="n">exchange</span><span class="o">,</span> <span class="n">chain</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">ServerHttpRequest</span> <span class="n">req</span> <span class="o">=</span> <span class="n">exchange</span><span class="o">.</span><span class="na">getRequest</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">addOriginalRequestUrl</span><span class="o">(</span><span class="n">exchange</span><span class="o">,</span> <span class="n">req</span><span class="o">.</span><span class="na">getURI</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">String</span> <span class="n">path</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">getURI</span><span class="o">().</span><span class="na">getRawPath</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">String</span> <span class="n">newPath</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="na">replaceAll</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="s">&#34;/v2/zip/(?&lt;zipcode&gt;.*)&#34;</span><span class="o">,</span> 
+</span></span><span class="line"><span class="cl">                    <span class="s">&#34;/api/zip/${zipcode}-&#34;</span> <span class="o">+</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;%03d&#34;</span><span class="o">,</span> <span class="n">rnd</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="n">1000</span><span class="o">)));</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">ServerHttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="na">mutate</span><span class="o">().</span><span class="na">path</span><span class="o">(</span><span class="n">newPath</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">exchange</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">().</span><span class="na">put</span><span class="o">(</span><span class="n">GATEWAY_REQUEST_URL_ATTR</span><span class="o">,</span> <span class="n">request</span><span class="o">.</span><span class="na">getURI</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                  <span class="k">return</span> <span class="n">chain</span><span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">exchange</span><span class="o">.</span><span class="na">mutate</span><span class="o">().</span><span class="na">request</span><span class="o">(</span><span class="n">request</span><span class="o">).</span><span class="na">build</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">              <span class="o">}))</span>
+</span></span><span class="line"><span class="cl">              <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="n">backendUri</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl">          <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Here, the dynamic part is just a random number appended to the replacement string. A real-world application might have more complex logic, but the essential mechanism would be the same as shown.</p>
 <p>A few remarks about the steps this code went through: Firstly, it calls the <code>addOriginalRequestUrl()</code>, which comes from the <code>ServerWebExchangeUtils</code> class, to store the original URL under the exchange&rsquo;s attribute <code>GATEWAY_ORIGINAL_REQUEST_URL_ATTR</code> . The value of this attribute is a list to which we&rsquo;ll append the received URL before going any modification and used internally by the gateway as part of the <code>X-Forwarded-For</code> header&rsquo;s handling.</p>
@@ -557,14 +557,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@DynamicPropertySource</span>
-<span class="kd">static</span> <span class="kt">void</span> <span class="nf">registerBackendServer</span><span class="o">(</span><span class="n">DynamicPropertyRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">registry</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;rewrite.backend.uri&#34;</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-        <span class="n">HttpServer</span> <span class="n">s</span> <span class="o">=</span> <span class="n">startTestServer</span><span class="o">();</span>
-        <span class="k">return</span> <span class="s">&#34;http://localhost:&#34;</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="na">getAddress</span><span class="o">().</span><span class="na">getPort</span><span class="o">();</span>
-    <span class="o">});</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@DynamicPropertySource</span>
+</span></span><span class="line"><span class="cl"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">registerBackendServer</span><span class="o">(</span><span class="n">DynamicPropertyRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">registry</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;rewrite.backend.uri&#34;</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">HttpServer</span> <span class="n">s</span> <span class="o">=</span> <span class="n">startTestServer</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s">&#34;http://localhost:&#34;</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="na">getAddress</span><span class="o">().</span><span class="na">getPort</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">});</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The <a href="https://github.com/eugenp/tutorials/blob/master/spring-cloud/spring-cloud-gateway/src/test/java/com/baeldung/springcloudgateway/rewrite/URLRewriteGatewayApplicationLiveTest.java">test handler</a> simply echoes back the received URI in the response body. This allows us to verify that the rewrite rules work as expected. For instance, this is the</p>
 <div class="highlight"><div class="chroma">
@@ -582,18 +582,18 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Test</span>
-<span class="kt">void</span> <span class="nf">testWhenApiCall_thenRewriteSuccess</span><span class="o">(</span><span class="nd">@Autowired</span> <span class="n">WebTestClient</span> <span class="n">webClient</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">webClient</span><span class="o">.</span><span class="na">get</span><span class="o">()</span>
-      <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">&#34;http://localhost:&#34;</span> <span class="o">+</span> <span class="n">localPort</span> <span class="o">+</span> <span class="s">&#34;/v1/customer/customer1&#34;</span><span class="o">)</span>
-      <span class="o">.</span><span class="na">exchange</span><span class="o">()</span>
-      <span class="o">.</span><span class="na">expectBody</span><span class="o">()</span>
-      <span class="o">.</span><span class="na">consumeWith</span><span class="o">((</span><span class="n">result</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
-          <span class="n">String</span> <span class="n">body</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">getResponseBody</span><span class="o">());</span>
-          <span class="n">assertEquals</span><span class="o">(</span><span class="s">&#34;/api/customer1&#34;</span><span class="o">,</span> <span class="n">body</span><span class="o">);</span>
-      <span class="o">});</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">testWhenApiCall_thenRewriteSuccess</span><span class="o">(</span><span class="nd">@Autowired</span> <span class="n">WebTestClient</span> <span class="n">webClient</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">webClient</span><span class="o">.</span><span class="na">get</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">      <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="s">&#34;http://localhost:&#34;</span> <span class="o">+</span> <span class="n">localPort</span> <span class="o">+</span> <span class="s">&#34;/v1/customer/customer1&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="o">.</span><span class="na">exchange</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">      <span class="o">.</span><span class="na">expectBody</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">      <span class="o">.</span><span class="na">consumeWith</span><span class="o">((</span><span class="n">result</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">          <span class="n">String</span> <span class="n">body</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">getResponseBody</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">          <span class="n">assertEquals</span><span class="o">(</span><span class="s">&#34;/api/customer1&#34;</span><span class="o">,</span> <span class="n">body</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">      <span class="o">});</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="6-conclusion">6. Conclusion</h2>
 <p>In this quick tutorial, we&rsquo;ve shown different ways to rewrite URLs using the Spring Cloud Gateway library. As usual, all code is available <a href="https://github.com/eugenp/tutorials/tree/master/spring-cloud/spring-cloud-gateway">over on GitHub</a>.</p>

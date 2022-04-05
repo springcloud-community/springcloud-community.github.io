@@ -33,7 +33,7 @@ Traditional data copying (file-to-file, client-to-server, etc.) involves four us
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-03/zero-copy/" />
@@ -463,33 +463,33 @@ Traditional data copying (file-to-file, client-to-server, etc.) involves four us
 </span><span class="lnt">26
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/*
-</span><span class="cm">Transfers bytes from this channel&#39;s file to the given writable bytechannel. 
-</span><span class="cm">
-</span><span class="cm">An attempt is made to read up to count bytes starting atthe given position in this channel&#39;s file and write them to thetarget channel. An invocation of this method may or may not transferall of the requested bytes; whether or not it does so depends upon thenatures and states of the channels. Fewer than the requested number ofbytes are transferred if this channel&#39;s file contains fewer than count bytes starting at the given position, or if thetarget channel is non-blocking and it has fewer than countbytes free in its output buffer. 
-</span><span class="cm">
-</span><span class="cm">This method does not modify this channel&#39;s position. If the givenposition is greater than the file&#39;s current size then no bytes aretransferred. If the target channel has a position then bytes arewritten starting at that position and then the position is incrementedby the number of bytes written. 
-</span><span class="cm">
-</span><span class="cm">This method is potentially much more efficient than a simple loopthat reads from this channel and writes to the target channel. Manyoperating systems can transfer bytes directly from the filesystem cacheto the target channel without actually copying them. 
-</span><span class="cm">
-</span><span class="cm">*/</span>
-<span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">long</span> <span class="nf">transferTo</span><span class="o">(</span><span class="kt">long</span> <span class="n">position</span><span class="o">,</span> <span class="kt">long</span> <span class="n">count</span><span class="o">,</span>
-                                <span class="n">WritableByteChannel</span> <span class="n">target</span><span class="o">)</span>
-    <span class="kd">throws</span> <span class="n">IOException</span><span class="o">;</span>
-
-<span class="cm">/*
-</span><span class="cm">Transfers bytes into this channel&#39;s file from the given readable bytechannel. 
-</span><span class="cm">
-</span><span class="cm">An attempt is made to read up to count bytes from thesource channel and write them to this channel&#39;s file starting at thegiven position. An invocation of this method may or may nottransfer all of the requested bytes; whether or not it does so dependsupon the natures and states of the channels. Fewer than the requestednumber of bytes will be transferred if the source channel has fewer than count bytes remaining, or if the source channel is non-blockingand has fewer than count bytes immediately available in itsinput buffer. No bytes are transferred, and zero is returned, if thesource has reached end-of-stream. 
-</span><span class="cm">
-</span><span class="cm">This method does not modify this channel&#39;s position. If the givenposition is greater than the file&#39;s current size then no bytes aretransferred. If the source channel has a position then bytes are readstarting at that position and then the position is incremented by thenumber of bytes read. 
-</span><span class="cm">
-</span><span class="cm">This method is potentially much more efficient than a simple loopthat reads from the source channel and writes to this channel. Manyoperating systems can transfer bytes directly from the source channelinto the filesystem cache without actually copying them. 
-</span><span class="cm">*/</span>
-<span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">long</span> <span class="nf">transferFrom</span><span class="o">(</span><span class="n">ReadableByteChannel</span> <span class="n">src</span><span class="o">,</span>
-                                    <span class="kt">long</span> <span class="n">position</span><span class="o">,</span> <span class="kt">long</span> <span class="n">count</span><span class="o">)</span>
-    <span class="kd">throws</span> <span class="n">IOException</span><span class="o">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">Transfers bytes from this channel&#39;s file to the given writable bytechannel. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">An attempt is made to read up to count bytes starting atthe given position in this channel&#39;s file and write them to thetarget channel. An invocation of this method may or may not transferall of the requested bytes; whether or not it does so depends upon thenatures and states of the channels. Fewer than the requested number ofbytes are transferred if this channel&#39;s file contains fewer than count bytes starting at the given position, or if thetarget channel is non-blocking and it has fewer than countbytes free in its output buffer. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">This method does not modify this channel&#39;s position. If the givenposition is greater than the file&#39;s current size then no bytes aretransferred. If the target channel has a position then bytes arewritten starting at that position and then the position is incrementedby the number of bytes written. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">This method is potentially much more efficient than a simple loopthat reads from this channel and writes to the target channel. Manyoperating systems can transfer bytes directly from the filesystem cacheto the target channel without actually copying them. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">long</span> <span class="nf">transferTo</span><span class="o">(</span><span class="kt">long</span> <span class="n">position</span><span class="o">,</span> <span class="kt">long</span> <span class="n">count</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                <span class="n">WritableByteChannel</span> <span class="n">target</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">throws</span> <span class="n">IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">Transfers bytes into this channel&#39;s file from the given readable bytechannel. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">An attempt is made to read up to count bytes from thesource channel and write them to this channel&#39;s file starting at thegiven position. An invocation of this method may or may nottransfer all of the requested bytes; whether or not it does so dependsupon the natures and states of the channels. Fewer than the requestednumber of bytes will be transferred if the source channel has fewer than count bytes remaining, or if the source channel is non-blockingand has fewer than count bytes immediately available in itsinput buffer. No bytes are transferred, and zero is returned, if thesource has reached end-of-stream. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">This method does not modify this channel&#39;s position. If the givenposition is greater than the file&#39;s current size then no bytes aretransferred. If the source channel has a position then bytes are readstarting at that position and then the position is incremented by thenumber of bytes read. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">This method is potentially much more efficient than a simple loopthat reads from the source channel and writes to this channel. Manyoperating systems can transfer bytes directly from the source channelinto the filesystem cache without actually copying them. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kt">long</span> <span class="nf">transferFrom</span><span class="o">(</span><span class="n">ReadableByteChannel</span> <span class="n">src</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                    <span class="kt">long</span> <span class="n">position</span><span class="o">,</span> <span class="kt">long</span> <span class="n">count</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">throws</span> <span class="n">IOException</span><span class="o">;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="practice">Practice</h2>
 <p>In spring boot applications, you can consider using zero-copy technology when implementing large file downloads.</p>
@@ -562,72 +562,72 @@ Traditional data copying (file-to-file, client-to-server, etc.) involves four us
 </span><span class="lnt">65
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.channels.Channels</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.channels.FileChannel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.channels.WritableByteChannel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.nio.file.Paths</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">org.springframework.http.ContentDisposition</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.HttpHeaders</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.MediaType</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
-
-<span class="nd">@RestController</span>
-<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/download&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DownloadController</span> <span class="o">{</span>
-
-    <span class="nd">@GetMapping</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">download</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-
-        <span class="c1">// A movie file, 3.67 GB 
-</span><span class="c1"></span>        <span class="n">Path</span> <span class="n">file</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;E:\\movie\\NothingtoLose\\NothingtoLose.mkv&#34;</span><span class="o">);</span>
-
-        <span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">probeContentType</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">contentType</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">contentType</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_OCTET_STREAM_VALUE</span><span class="o">;</span>
-        <span class="o">}</span>
-
-        <span class="k">try</span> <span class="o">(</span><span class="n">FileChannel</span> <span class="n">fileChannel</span> <span class="o">=</span> <span class="n">FileChannel</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">file</span><span class="o">);</span> 
-                <span class="n">WritableByteChannel</span> <span class="n">outChannel</span> <span class="o">=</span> <span class="n">Channels</span><span class="o">.</span><span class="na">newChannel</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">()))</span> <span class="o">{</span>
-
-            <span class="kt">long</span> <span class="n">size</span> <span class="o">=</span> <span class="n">fileChannel</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-
-            <span class="c1">// Content-Type
-</span><span class="c1"></span>            <span class="n">response</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="n">contentType</span><span class="o">);</span>
-            <span class="c1">// Content-Disposition
-</span><span class="c1"></span>            <span class="n">response</span><span class="o">.</span><span class="na">setHeader</span><span class="o">(</span><span class="n">HttpHeaders</span><span class="o">.</span><span class="na">CONTENT_DISPOSITION</span><span class="o">,</span> <span class="n">ContentDisposition</span><span class="o">.</span><span class="na">attachment</span><span class="o">()</span>
-                    <span class="o">.</span><span class="na">filename</span><span class="o">(</span><span class="n">file</span><span class="o">.</span><span class="na">getFileName</span><span class="o">().</span><span class="na">toString</span><span class="o">(),</span> <span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">).</span><span class="na">build</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
-            <span class="c1">// Content-Length
-</span><span class="c1"></span>            <span class="n">response</span><span class="o">.</span><span class="na">setContentLengthLong</span><span class="o">(</span><span class="n">size</span><span class="o">);</span>
-
-            <span class="o">;</span>
-            
-            <span class="cm">/**
-</span><span class="cm">                * transferTo can only process up to 2147483647 bytes of data at a time. 
-</span><span class="cm">                * So it needs to be called multiple times in the loop.
-</span><span class="cm">                */</span>
-            
-            <span class="kt">long</span> <span class="n">position</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
-
-            <span class="k">while</span> <span class="o">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">position</span><span class="o">)</span> <span class="o">{</span>
-                <span class="kt">long</span> <span class="n">count</span> <span class="o">=</span> <span class="n">fileChannel</span><span class="o">.</span><span class="na">transferTo</span><span class="o">(</span><span class="n">position</span><span class="o">,</span> <span class="n">size</span> <span class="o">-</span> <span class="n">position</span><span class="o">,</span> <span class="n">outChannel</span><span class="o">);</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="n">position</span> <span class="o">+=</span> <span class="n">count</span><span class="o">;</span>
-                <span class="o">}</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.channels.Channels</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.channels.FileChannel</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.channels.WritableByteChannel</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Files</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Path</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.file.Paths</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletRequest</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.servlet.http.HttpServletResponse</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.ContentDisposition</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.HttpHeaders</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.MediaType</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/download&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DownloadController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">download</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// A movie file, 3.67 GB 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">Path</span> <span class="n">file</span> <span class="o">=</span> <span class="n">Paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;E:\\movie\\NothingtoLose\\NothingtoLose.mkv&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="n">Files</span><span class="o">.</span><span class="na">probeContentType</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">contentType</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">contentType</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">APPLICATION_OCTET_STREAM_VALUE</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">(</span><span class="n">FileChannel</span> <span class="n">fileChannel</span> <span class="o">=</span> <span class="n">FileChannel</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">file</span><span class="o">);</span> 
+</span></span><span class="line"><span class="cl">                <span class="n">WritableByteChannel</span> <span class="n">outChannel</span> <span class="o">=</span> <span class="n">Channels</span><span class="o">.</span><span class="na">newChannel</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">()))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="kt">long</span> <span class="n">size</span> <span class="o">=</span> <span class="n">fileChannel</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// Content-Type
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">response</span><span class="o">.</span><span class="na">setContentType</span><span class="o">(</span><span class="n">contentType</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// Content-Disposition
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">response</span><span class="o">.</span><span class="na">setHeader</span><span class="o">(</span><span class="n">HttpHeaders</span><span class="o">.</span><span class="na">CONTENT_DISPOSITION</span><span class="o">,</span> <span class="n">ContentDisposition</span><span class="o">.</span><span class="na">attachment</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">                    <span class="o">.</span><span class="na">filename</span><span class="o">(</span><span class="n">file</span><span class="o">.</span><span class="na">getFileName</span><span class="o">().</span><span class="na">toString</span><span class="o">(),</span> <span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">).</span><span class="na">build</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// Content-Length
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">response</span><span class="o">.</span><span class="na">setContentLengthLong</span><span class="o">(</span><span class="n">size</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="o">;</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">                * transferTo can only process up to 2147483647 bytes of data at a time. 
+</span></span></span><span class="line"><span class="cl"><span class="cm">                * So it needs to be called multiple times in the loop.
+</span></span></span><span class="line"><span class="cl"><span class="cm">                */</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="kt">long</span> <span class="n">position</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">while</span> <span class="o">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">position</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="kt">long</span> <span class="n">count</span> <span class="o">=</span> <span class="n">fileChannel</span><span class="o">.</span><span class="na">transferTo</span><span class="o">(</span><span class="n">position</span><span class="o">,</span> <span class="n">size</span> <span class="o">-</span> <span class="n">position</span><span class="o">,</span> <span class="n">outChannel</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="o">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">position</span> <span class="o">+=</span> <span class="n">count</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>Note that if you use the https protocol, then you will not enjoy the performance gains of zero-copy. This is because ssl requires encryption of the data, and encryption requires access to user space for CPU computation, so zero-copy is not possible.</p>

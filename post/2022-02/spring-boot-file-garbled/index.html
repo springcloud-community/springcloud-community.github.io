@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-boot-file-garbled/" />
@@ -443,12 +443,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="cm">/*
-</span><span class="cm">    SpringBoot中文社区
-</span><span class="cm"> */</span>
- 
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;https://springboot.io&#39;</span><span class="p">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">    SpringBoot中文社区
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;https://springboot.io&#39;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="direct-access-via-browser-chinese-appears-garbled">Direct access via browser, Chinese appears garbled</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/25/c4628fcde23c48a2aab77a02e6307cd1.png" alt="Spring Boot garbled"></p>
@@ -493,39 +493,39 @@
 </span><span class="lnt">32
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">io.undertow.servlet.api.DeploymentInfo</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">io.undertow.servlet.api.MimeMapping</span><span class="o">;</span>
-
-<span class="cm">/**
-</span><span class="cm"> * 
-</span><span class="cm"> * Undertow 服务器配置
-</span><span class="cm"> * 
-</span><span class="cm"> * @author KevinBlandy
-</span><span class="cm"> *
-</span><span class="cm"> */</span>
-<span class="nd">@Configuration</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UndertowConfiguration</span> <span class="kd">implements</span> <span class="n">UndertowDeploymentInfoCustomizer</span> <span class="o">{</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">customize</span><span class="o">(</span><span class="n">DeploymentInfo</span> <span class="n">deploymentInfo</span><span class="o">)</span> <span class="o">{</span>
-
-        <span class="cm">/**
-</span><span class="cm">            * 覆盖默认文本类型的字符ContentType， 添加UTF8编码
-</span><span class="cm">            * 
-</span><span class="cm">            * @see io.undertow.util.MimeMappings
-</span><span class="cm">            */</span>
-        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;html&#34;</span><span class="o">,</span> <span class="s">&#34;text/html; charset=utf-8&#34;</span><span class="o">));</span>
-        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;htm&#34;</span><span class="o">,</span> <span class="s">&#34;text/html; charset=utf-8&#34;</span><span class="o">));</span>
-        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;css&#34;</span><span class="o">,</span> <span class="s">&#34;text/css; charset=utf-8&#34;</span><span class="o">));</span>
-        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;js&#34;</span><span class="o">,</span> <span class="s">&#34;application/javascript; charset=utf-8&#34;</span><span class="o">));</span>
-        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;json&#34;</span><span class="o">,</span> <span class="s">&#34;application/json; charset=utf-8&#34;</span><span class="o">));</span>
-        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;md&#34;</span><span class="o">,</span> <span class="s">&#34;text/markdown; charset=utf-8&#34;</span><span class="o">));</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">io.undertow.servlet.api.DeploymentInfo</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">io.undertow.servlet.api.MimeMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Undertow 服务器配置
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author KevinBlandy
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UndertowConfiguration</span> <span class="kd">implements</span> <span class="n">UndertowDeploymentInfoCustomizer</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">customize</span><span class="o">(</span><span class="n">DeploymentInfo</span> <span class="n">deploymentInfo</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">            * 覆盖默认文本类型的字符ContentType， 添加UTF8编码
+</span></span></span><span class="line"><span class="cl"><span class="cm">            * 
+</span></span></span><span class="line"><span class="cl"><span class="cm">            * @see io.undertow.util.MimeMappings
+</span></span></span><span class="line"><span class="cl"><span class="cm">            */</span>
+</span></span><span class="line"><span class="cl">        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;html&#34;</span><span class="o">,</span> <span class="s">&#34;text/html; charset=utf-8&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;htm&#34;</span><span class="o">,</span> <span class="s">&#34;text/html; charset=utf-8&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;css&#34;</span><span class="o">,</span> <span class="s">&#34;text/css; charset=utf-8&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;js&#34;</span><span class="o">,</span> <span class="s">&#34;application/javascript; charset=utf-8&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;json&#34;</span><span class="o">,</span> <span class="s">&#34;application/json; charset=utf-8&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">deploymentInfo</span><span class="o">.</span><span class="na">addMimeMapping</span><span class="o">(</span><span class="k">new</span> <span class="n">MimeMapping</span><span class="o">(</span><span class="s">&#34;md&#34;</span><span class="o">,</span> <span class="s">&#34;text/markdown; charset=utf-8&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>After adding the configuration class, restart the application. Accessing the resource file, Chinese has been displayed normally.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/25/d764170c70f049f3b883eb74788cb630.png" alt="spring static file"></p>

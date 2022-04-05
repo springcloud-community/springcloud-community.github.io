@@ -34,7 +34,7 @@ SecurityContext Either in stateful Session mode or in the popular JWT mode you c
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-security-get-current-user/" />
@@ -440,9 +440,9 @@ SecurityContext Either in stateful Session mode or in the popular JWT mode you c
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Authentication</span> <span class="n">authentication</span> <span class="o">=</span> <span class="n">SecurityContextHolder</span><span class="o">.</span><span class="na">getContext</span><span class="o">().</span><span class="na">getAuthentication</span><span class="o">();</span>
-<span class="n">String</span> <span class="n">currentPrincipalName</span> <span class="o">=</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Authentication</span> <span class="n">authentication</span> <span class="o">=</span> <span class="n">SecurityContextHolder</span><span class="o">.</span><span class="na">getContext</span><span class="o">().</span><span class="na">getAuthentication</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">String</span> <span class="n">currentPrincipalName</span> <span class="o">=</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Of course, this approach is not rigorous enough, if the interface allows anonymous access is likely to return an anonymous user, and anonymous users can not be obtained directly through <code>getName</code>, so we need to optimize the above logic.</p>
 <div class="highlight"><div class="chroma">
@@ -456,14 +456,14 @@ SecurityContext Either in stateful Session mode or in the popular JWT mode you c
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Authentication</span> <span class="n">authentication</span> <span class="o">=</span> <span class="n">SecurityContextHolder</span><span class="o">.</span><span class="na">getContext</span><span class="o">().</span><span class="na">getAuthentication</span><span class="o">();</span>
-<span class="k">if</span> <span class="o">(!(</span><span class="n">authentication</span> <span class="k">instanceof</span> <span class="n">AnonymousAuthenticationToken</span><span class="o">))</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">currentUserName</span> <span class="o">=</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
-    <span class="k">return</span> <span class="n">currentUserName</span><span class="o">;</span>
-<span class="o">}</span><span class="k">else</span><span class="o">{</span>
-    <span class="k">throw</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;No User&#34;</span><span class="o">)</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Authentication</span> <span class="n">authentication</span> <span class="o">=</span> <span class="n">SecurityContextHolder</span><span class="o">.</span><span class="na">getContext</span><span class="o">().</span><span class="na">getAuthentication</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">(!(</span><span class="n">authentication</span> <span class="k">instanceof</span> <span class="n">AnonymousAuthenticationToken</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">String</span> <span class="n">currentUserName</span> <span class="o">=</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">currentUserName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span><span class="k">else</span><span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">throw</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">&#34;No User&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In fact, I usually use this approach the most. I like to use an abstract parent controller to encapsulate the method of getting the current user.</p>
 <h2 id="principal">Principal</h2>
@@ -476,11 +476,11 @@ SecurityContext Either in stateful Session mode or in the popular JWT mode you c
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/currentusername&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserName</span><span class="o">(</span><span class="n">Principal</span> <span class="n">principal</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">principal</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/currentusername&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserName</span><span class="o">(</span><span class="n">Principal</span> <span class="n">principal</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">principal</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Similarly, the <code>Authentication</code> object is also possible.</p>
 <div class="highlight"><div class="chroma">
@@ -491,11 +491,11 @@ SecurityContext Either in stateful Session mode or in the popular JWT mode you c
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"> <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/currentusername&#34;</span><span class="o">)</span>
- <span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserName</span><span class="o">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
- <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/currentusername&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserName</span><span class="o">(</span><span class="n">Authentication</span> <span class="n">authentication</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"> <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="authenticationprincipal">AuthenticationPrincipal</h2>
 <p>Many times we customize the user object <code>UserDetails</code> , we can get the custom <code>UserDetails</code> object for the current user by using the annotation <code>@AuthenticationPrincipal</code> provided by Spring Security 4.0. If <code>CustomUser</code> is an implementation of <code>UserDetails</code>, then we can do this.</p>
@@ -507,11 +507,11 @@ SecurityContext Either in stateful Session mode or in the popular JWT mode you c
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/currentusername&#34;</span><span class="o">)</span>
- <span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserName</span><span class="o">(</span><span class="nd">@AuthenticationPrincipal</span> <span class="n">CustomUser</span> <span class="n">customUser</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">return</span> <span class="n">customUser</span><span class="o">.</span><span class="na">getUsername</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/currentusername&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserName</span><span class="o">(</span><span class="nd">@AuthenticationPrincipal</span> <span class="n">CustomUser</span> <span class="n">customUser</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">customUser</span><span class="o">.</span><span class="na">getUsername</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>It could be simpler.</p>
 <div class="highlight"><div class="chroma">
@@ -522,11 +522,11 @@ SecurityContext Either in stateful Session mode or in the popular JWT mode you c
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/currentusername&#34;</span><span class="o">)</span>
- <span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserName</span><span class="o">(</span><span class="nd">@AuthenticationPrincipal</span><span class="o">(</span><span class="n">expression</span> <span class="o">=</span> <span class="s">&#34;username&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">return</span> <span class="n">username</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/currentusername&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"> <span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserName</span><span class="o">(</span><span class="nd">@AuthenticationPrincipal</span><span class="o">(</span><span class="n">expression</span> <span class="o">=</span> <span class="s">&#34;username&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">username</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">username</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This requires <code>CustomUser</code> to contain a <code>getUsername</code> method.</p>
 <p>It is even possible to customize an annotation.</p>
@@ -539,12 +539,12 @@ SecurityContext Either in stateful Session mode or in the popular JWT mode you c
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Target</span><span class="o">({</span><span class="n">ElementType</span><span class="o">.</span><span class="na">PARAMETER</span><span class="o">,</span> <span class="n">ElementType</span><span class="o">.</span><span class="na">TYPE</span><span class="o">})</span>
-<span class="nd">@Retention</span><span class="o">(</span><span class="n">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
-<span class="nd">@Documented</span>
-<span class="nd">@AuthenticationPrincipal</span>
-<span class="kd">public</span> <span class="nd">@interface</span> <span class="n">CurrentUser</span> <span class="o">{}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Target</span><span class="o">({</span><span class="n">ElementType</span><span class="o">.</span><span class="na">PARAMETER</span><span class="o">,</span> <span class="n">ElementType</span><span class="o">.</span><span class="na">TYPE</span><span class="o">})</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Retention</span><span class="o">(</span><span class="n">RetentionPolicy</span><span class="o">.</span><span class="na">RUNTIME</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Documented</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@AuthenticationPrincipal</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="nd">@interface</span> <span class="n">CurrentUser</span> <span class="o">{}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="currentsecuritycontext">CurrentSecurityContext</h2>
 <p>Spring Security 5 provides a new annotation <code>@CurrentSecurityContext</code> to get the current user&rsquo;s security context, which you can do.</p>
@@ -557,12 +557,12 @@ SecurityContext Either in stateful Session mode or in the popular JWT mode you c
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/currentusername&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserName</span><span class="o">(</span><span class="nd">@CurrentSecurityContext</span><span class="o">(</span><span class="n">expression</span> <span class="o">=</span> <span class="s">&#34;authentication&#34;</span><span class="o">)</span> 
-  <span class="n">Authentication</span> <span class="n">authentication</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/currentusername&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">String</span> <span class="nf">currentUserName</span><span class="o">(</span><span class="nd">@CurrentSecurityContext</span><span class="o">(</span><span class="n">expression</span> <span class="o">=</span> <span class="s">&#34;authentication&#34;</span><span class="o">)</span> 
+</span></span><span class="line"><span class="cl">  <span class="n">Authentication</span> <span class="n">authentication</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">authentication</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Of course you can also declare <strong>SpEL</strong> expressions with the <code>expression</code> parameter to get other properties, such as getting the <code>Principal</code> object.</p>
 <div class="highlight"><div class="chroma">
@@ -574,12 +574,12 @@ SecurityContext Either in stateful Session mode or in the popular JWT mode you c
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/principal&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="n">String</span> <span class="nf">getPrincipal</span><span class="o">(</span><span class="nd">@CurrentSecurityContext</span><span class="o">(</span><span class="n">expression</span> <span class="o">=</span> <span class="s">&#34;authentication.principal&#34;</span><span class="o">)</span> 
-  <span class="n">Principal</span> <span class="n">principal</span><span class="o">)</span> <span class="o">{</span> 
-    <span class="k">return</span> <span class="n">principal</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span> 
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/principal&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">String</span> <span class="nf">getPrincipal</span><span class="o">(</span><span class="nd">@CurrentSecurityContext</span><span class="o">(</span><span class="n">expression</span> <span class="o">=</span> <span class="s">&#34;authentication.principal&#34;</span><span class="o">)</span> 
+</span></span><span class="line"><span class="cl">  <span class="n">Principal</span> <span class="n">principal</span><span class="o">)</span> <span class="o">{</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">principal</span><span class="o">.</span><span class="na">getName</span><span class="o">();</span> 
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="httpservletrequest">HttpServletRequest</h2>
 <p>The <code>getUserPrincipal()</code> method of <code>HttpServletRequest</code> is said to work, but I haven&rsquo;t used it, so if you&rsquo;re interested, try getting it directly from the method in the Spring Security framework.</p>

@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-docker-ex/" />
@@ -432,8 +432,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">java -Djava.security.egd<span class="o">=</span>file:/dev/./urandom  -Dspring.profiles.active<span class="o">=</span>dev -jar spring-boot-app.jar 
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">java -Djava.security.egd<span class="o">=</span>file:/dev/./urandom  -Dspring.profiles.active<span class="o">=</span>dev -jar spring-boot-app.jar 
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Write a <strong>Dockerfile</strong> that can adapt to multiple environments based on the above command.</p>
 <div class="highlight"><div class="chroma">
@@ -454,21 +454,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="c"># 引入 openjdk 镜像</span><span class="err">
-</span><span class="err"></span><span class="k">FROM</span><span class="s"> adoptopenjdk/openjdk8</span><span class="err">
-</span><span class="err"></span><span class="c"># 声明作者</span><span class="err">
-</span><span class="err"></span><span class="k">LABEL</span> <span class="nv">AUTHOR</span><span class="o">=</span>felord <span class="nv">OG</span><span class="o">=</span>felord.cn<span class="err">
-</span><span class="err"></span><span class="c"># 挂载几个有用的文件夹 比如日志</span><span class="err">
-</span><span class="err"></span><span class="k">VOLUME</span> <span class="p">[</span><span class="s2">&#34;/tmp&#34;</span><span class="p">,</span><span class="s2">&#34;/logs&#34;</span><span class="p">]</span><span class="err">
-</span><span class="err"></span><span class="c"># 声明一个环境参数用来动态启用配置文件 默认dev</span><span class="err">
-</span><span class="err"></span><span class="k">ENV</span> <span class="nv">ACTIVE</span><span class="o">=</span>dev
-<span class="c"># 暴露端口</span><span class="err">
-</span><span class="err"></span><span class="k">EXPOSE</span><span class="s"> 8080</span><span class="err">
-</span><span class="err"></span><span class="c"># 复制并修改应用打包后的jar文件名称</span><span class="err">
-</span><span class="err"></span><span class="k">ADD</span> /target/flyway-spring-boot-1.0.0.jar app.jar<span class="err">
-</span><span class="err"></span><span class="c"># 容器启动时第一个运行的命令 用来启动应用</span><span class="err">
-</span><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;java&#34;</span><span class="p">,</span><span class="s2">&#34;-Djava.security.egd=file:/dev/./urandom&#34;</span><span class="p">,</span><span class="s2">&#34;-Dspring.profiles.active=${ACTIVE}&#34;</span><span class="p">,</span><span class="s2">&#34;-jar&#34;</span><span class="p">,</span><span class="s2">&#34;app.jar&#34;</span><span class="p">]</span><span class="err">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># 引入 openjdk 镜像</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">FROM</span><span class="s"> adoptopenjdk/openjdk8</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 声明作者</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">LABEL</span> <span class="nv">AUTHOR</span><span class="o">=</span>felord <span class="nv">OG</span><span class="o">=</span>felord.cn<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 挂载几个有用的文件夹 比如日志</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">VOLUME</span> <span class="p">[</span><span class="s2">&#34;/tmp&#34;</span><span class="p">,</span><span class="s2">&#34;/logs&#34;</span><span class="p">]</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 声明一个环境参数用来动态启用配置文件 默认dev</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">ACTIVE</span><span class="o">=</span>dev
+</span></span><span class="line"><span class="cl"><span class="c"># 暴露端口</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">EXPOSE</span><span class="s"> 8080</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 复制并修改应用打包后的jar文件名称</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ADD</span> /target/flyway-spring-boot-1.0.0.jar app.jar<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c"># 容器启动时第一个运行的命令 用来启动应用</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;java&#34;</span><span class="p">,</span><span class="s2">&#34;-Djava.security.egd=file:/dev/./urandom&#34;</span><span class="p">,</span><span class="s2">&#34;-Dspring.profiles.active=${ACTIVE}&#34;</span><span class="p">,</span><span class="s2">&#34;-jar&#34;</span><span class="p">,</span><span class="s2">&#34;app.jar&#34;</span><span class="p">]</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>This way the packaged Docker image can be dynamically changed by adding an additional <code>-env ACTIVE=test</code> to <code>docker run</code> to change the environment. Writing <strong>Dockerfile</strong> alone is not convenient for our DevOps.</p>
 <p>We need to be able to automate the process of building, pushing to repositories, pulling images, and running a series of pipeline operations. The good thing is that there are many tools on the market to help us with this process.</p>
@@ -502,31 +502,31 @@
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;project&gt;</span>
-    <span class="nt">&lt;build&gt;</span>
-        <span class="nt">&lt;plugins&gt;</span>
-            <span class="nt">&lt;plugin&gt;</span>
-                <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-                <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-                <span class="nt">&lt;configuration&gt;</span>
-                    <span class="nt">&lt;image&gt;</span>
-                    <span class="nt">&lt;name&gt;</span>docker.repo.com/library/${project.artifactId}:${project.version}<span class="nt">&lt;/name&gt;</span>
-                        <span class="nt">&lt;publish&gt;</span>true<span class="nt">&lt;/publish&gt;</span>
-                    <span class="nt">&lt;/image&gt;</span>
-                    <span class="nt">&lt;docker&gt;</span>
-                        <span class="nt">&lt;publishRegistry&gt;</span>
-                            <span class="nt">&lt;username&gt;</span>user<span class="nt">&lt;/username&gt;</span>
-                            <span class="nt">&lt;password&gt;</span>secret<span class="nt">&lt;/password&gt;</span>
-                            <span class="nt">&lt;url&gt;</span>https://docker.repo.com/v1/<span class="nt">&lt;/url&gt;</span>
-                            <span class="nt">&lt;email&gt;</span>user@example.com<span class="nt">&lt;/email&gt;</span>
-                        <span class="nt">&lt;/publishRegistry&gt;</span>
-                    <span class="nt">&lt;/docker&gt;</span>
-                <span class="nt">&lt;/configuration&gt;</span>
-            <span class="nt">&lt;/plugin&gt;</span>
-        <span class="nt">&lt;/plugins&gt;</span>
-    <span class="nt">&lt;/build&gt;</span>
-<span class="nt">&lt;/project&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;project&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;build&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;plugins&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;plugin&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;artifactId&gt;</span>spring-boot-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;configuration&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="nt">&lt;image&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="nt">&lt;name&gt;</span>docker.repo.com/library/${project.artifactId}:${project.version}<span class="nt">&lt;/name&gt;</span>
+</span></span><span class="line"><span class="cl">                        <span class="nt">&lt;publish&gt;</span>true<span class="nt">&lt;/publish&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="nt">&lt;/image&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="nt">&lt;docker&gt;</span>
+</span></span><span class="line"><span class="cl">                        <span class="nt">&lt;publishRegistry&gt;</span>
+</span></span><span class="line"><span class="cl">                            <span class="nt">&lt;username&gt;</span>user<span class="nt">&lt;/username&gt;</span>
+</span></span><span class="line"><span class="cl">                            <span class="nt">&lt;password&gt;</span>secret<span class="nt">&lt;/password&gt;</span>
+</span></span><span class="line"><span class="cl">                            <span class="nt">&lt;url&gt;</span>https://docker.repo.com/v1/<span class="nt">&lt;/url&gt;</span>
+</span></span><span class="line"><span class="cl">                            <span class="nt">&lt;email&gt;</span>user@example.com<span class="nt">&lt;/email&gt;</span>
+</span></span><span class="line"><span class="cl">                        <span class="nt">&lt;/publishRegistry&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="nt">&lt;/docker&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;/configuration&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;/plugin&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/plugins&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/build&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/project&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Once you have configured your Docker private storage, you can build the image via <code>mvn clean spring-boot:build-image</code>.</p>
 <p>The advantage of this approach is that there are no additional dependencies, but the disadvantage is that you need to download the build components from github, which can easily fail if you have a bad network.</p>
@@ -544,15 +544,15 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;plugin&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>com.spotify<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>dockerfile-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>1.4.8<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;configuration&gt;</span>
-        <span class="nt">&lt;repository&gt;</span>myorg/${project.artifactId}<span class="nt">&lt;/repository&gt;</span>
-    <span class="nt">&lt;/configuration&gt;</span>
-<span class="nt">&lt;/plugin&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;plugin&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>com.spotify<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>dockerfile-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;version&gt;</span>1.4.8<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;configuration&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;repository&gt;</span>myorg/${project.artifactId}<span class="nt">&lt;/repository&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/configuration&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/plugin&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This plugin provides <code>mvn dockerfile:build</code>, <code>mvn dockerfile:tag</code> and <code>mvn dockerfile:push</code> commands to build, tag and publish to a remote private repository respectively, very simple.</p>
 <p>This is a very easy plugin to get started with. The only requirement is that you need to be able to write a Dockerfile, so you can use this if you have high customization requirements.</p>
@@ -605,50 +605,50 @@
 </span><span class="lnt">43
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;plugin&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>com.google.cloud.tools<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>jib-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>3.0.0<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;configuration&gt;</span>
-        <span class="nt">&lt;from&gt;</span>
-            <span class="nt">&lt;image&gt;</span>adoptopenjdk/openjdk8<span class="nt">&lt;/image&gt;</span>
-        <span class="nt">&lt;/from&gt;</span>
-        <span class="nt">&lt;to&gt;</span>
-            <span class="nt">&lt;image&gt;</span>docker.repo.com/library/${project.artifactId}<span class="nt">&lt;/image&gt;</span>
-            <span class="nt">&lt;auth&gt;</span>
-                <span class="nt">&lt;username&gt;</span>felord<span class="nt">&lt;/username&gt;</span>
-                <span class="nt">&lt;password&gt;</span>xxxxxx<span class="nt">&lt;/password&gt;</span>
-            <span class="nt">&lt;/auth&gt;</span>
-            <span class="nt">&lt;tags&gt;</span>
-                <span class="nt">&lt;tag&gt;</span>${project.version}<span class="nt">&lt;/tag&gt;</span>
-            <span class="nt">&lt;/tags&gt;</span>
-        <span class="nt">&lt;/to&gt;</span>
-        <span class="nt">&lt;extraDirectories&gt;</span>
-            <span class="nt">&lt;paths&gt;</span>
-                <span class="nt">&lt;path&gt;</span>
-                    <span class="nt">&lt;from&gt;</span>target/${project.artifactId}-${project.version}.jar<span class="nt">&lt;/from&gt;</span>
-                    <span class="nt">&lt;includes&gt;</span>*.jar<span class="nt">&lt;/includes&gt;</span>
-                    <span class="nt">&lt;into&gt;</span>/app.jar<span class="nt">&lt;/into&gt;</span>
-                <span class="nt">&lt;/path&gt;</span>
-            <span class="nt">&lt;/paths&gt;</span>
-        <span class="nt">&lt;/extraDirectories&gt;</span>
-        <span class="nt">&lt;containerizingMode&gt;</span>packaged<span class="nt">&lt;/containerizingMode&gt;</span>
-        <span class="nt">&lt;container&gt;</span>
-            <span class="nt">&lt;volumes&gt;</span>/tmp,/logs<span class="nt">&lt;/volumes&gt;</span>
-            <span class="nt">&lt;ports&gt;</span>
-                <span class="nt">&lt;port&gt;</span>8080<span class="nt">&lt;/port&gt;</span>
-            <span class="nt">&lt;/ports&gt;</span>
-            <span class="nt">&lt;environment&gt;</span>
-                <span class="nt">&lt;active&gt;</span>dev<span class="nt">&lt;/active&gt;</span>
-            <span class="nt">&lt;/environment&gt;</span>
-            <span class="nt">&lt;entrypoint&gt;</span>
-                java,-Djava.security.egd=file:/dev/./urandom,-Dspring.profiles.active=${active},-jar,/app.jar
-            <span class="nt">&lt;/entrypoint&gt;</span>
-            <span class="nt">&lt;creationTime&gt;</span>USE_CURRENT_TIMESTAMP<span class="nt">&lt;/creationTime&gt;</span>
-        <span class="nt">&lt;/container&gt;</span>
-    <span class="nt">&lt;/configuration&gt;</span>
-<span class="nt">&lt;/plugin&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;plugin&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>com.google.cloud.tools<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>jib-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;version&gt;</span>3.0.0<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;configuration&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;from&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;image&gt;</span>adoptopenjdk/openjdk8<span class="nt">&lt;/image&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/from&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;to&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;image&gt;</span>docker.repo.com/library/${project.artifactId}<span class="nt">&lt;/image&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;auth&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;username&gt;</span>felord<span class="nt">&lt;/username&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;password&gt;</span>xxxxxx<span class="nt">&lt;/password&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;/auth&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;tags&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;tag&gt;</span>${project.version}<span class="nt">&lt;/tag&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;/tags&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/to&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;extraDirectories&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;paths&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;path&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="nt">&lt;from&gt;</span>target/${project.artifactId}-${project.version}.jar<span class="nt">&lt;/from&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="nt">&lt;includes&gt;</span>*.jar<span class="nt">&lt;/includes&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="nt">&lt;into&gt;</span>/app.jar<span class="nt">&lt;/into&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;/path&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;/paths&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/extraDirectories&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;containerizingMode&gt;</span>packaged<span class="nt">&lt;/containerizingMode&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;container&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;volumes&gt;</span>/tmp,/logs<span class="nt">&lt;/volumes&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;ports&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;port&gt;</span>8080<span class="nt">&lt;/port&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;/ports&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;environment&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;active&gt;</span>dev<span class="nt">&lt;/active&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;/environment&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;entrypoint&gt;</span>
+</span></span><span class="line"><span class="cl">                java,-Djava.security.egd=file:/dev/./urandom,-Dspring.profiles.active=${active},-jar,/app.jar
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;/entrypoint&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;creationTime&gt;</span>USE_CURRENT_TIMESTAMP<span class="nt">&lt;/creationTime&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/container&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/configuration&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/plugin&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The advantage is that it does not require a local Docker environment and supports layered builds, image thinning, and easy to get started; the disadvantage is that customization is more difficult.</p>
 <blockquote>

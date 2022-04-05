@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/websecurity-and-httpsecurity/" />
@@ -435,16 +435,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
-<span class="n">SecurityFilterChain</span> <span class="nf">filterChain</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="n">http</span>
-            <span class="o">.</span><span class="na">antMatcher</span><span class="o">(</span><span class="s">&#34;/**&#34;</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">authorizeRequests</span><span class="o">(</span><span class="n">authorize</span> <span class="o">-&gt;</span> <span class="n">authorize</span>
-                    <span class="o">.</span><span class="na">anyRequest</span><span class="o">().</span><span class="na">authenticated</span><span class="o">()</span>
-            <span class="o">)</span>
-            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="n">SecurityFilterChain</span> <span class="nf">filterChain</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">http</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">antMatcher</span><span class="o">(</span><span class="s">&#34;/**&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">authorizeRequests</span><span class="o">(</span><span class="n">authorize</span> <span class="o">-&gt;</span> <span class="n">authorize</span>
+</span></span><span class="line"><span class="cl">                    <span class="o">.</span><span class="na">anyRequest</span><span class="o">().</span><span class="na">authenticated</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">            <span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In fact, you can know that <code>HttpSecurity</code> is used to build a filter <code>SecurityFilterChain</code> that contains a series of filter chains, and normally our configuration is based around building <code>SecurityFilterChain</code>.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/12/4be4d7c564df43eca03e69d7dd7adc1f.png" alt="spring-security SecurityFilterChain"></p>
@@ -499,49 +499,49 @@
 </span><span class="lnt">42
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span>
-<span class="kd">protected</span> <span class="n">Filter</span> <span class="nf">performBuild</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-   <span class="n">Assert</span><span class="o">.</span><span class="na">state</span><span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">securityFilterChainBuilders</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(),</span>
-         <span class="o">()</span> <span class="o">-&gt;</span> <span class="s">&#34;At least one SecurityBuilder&lt;? extends SecurityFilterChain&gt; needs to be specified. &#34;</span>
-               <span class="o">+</span> <span class="s">&#34;Typically this is done by exposing a SecurityFilterChain bean &#34;</span>
-               <span class="o">+</span> <span class="s">&#34;or by adding a @Configuration that extends WebSecurityConfigurerAdapter. &#34;</span>
-               <span class="o">+</span> <span class="s">&#34;More advanced users can invoke &#34;</span> <span class="o">+</span> <span class="n">WebSecurity</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">()</span>
-               <span class="o">+</span> <span class="s">&#34;.addSecurityFilterChainBuilder directly&#34;</span><span class="o">);</span>
-    <span class="c1">// 被忽略请求的个数 和 httpscurity的个数 构成了过滤器链集合的大小
-</span><span class="c1"></span>   <span class="kt">int</span> <span class="n">chainSize</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">ignoredRequests</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">securityFilterChainBuilders</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-   <span class="n">List</span><span class="o">&lt;</span><span class="n">SecurityFilterChain</span><span class="o">&gt;</span> <span class="n">securityFilterChains</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">chainSize</span><span class="o">);</span>
-    <span class="c1">// 初始化过滤器链集合中的 忽略请求过滤器链    
-</span><span class="c1"></span>    <span class="k">for</span> <span class="o">(</span><span class="n">RequestMatcher</span> <span class="n">ignoredRequest</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">ignoredRequests</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">securityFilterChains</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">DefaultSecurityFilterChain</span><span class="o">(</span><span class="n">ignoredRequest</span><span class="o">));</span>
-   <span class="o">}</span>
-    <span class="c1">// 初始化过滤器链集合中的 httpsecurity定义的过滤器链
-</span><span class="c1"></span>   <span class="k">for</span> <span class="o">(</span><span class="n">SecurityBuilder</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">SecurityFilterChain</span><span class="o">&gt;</span> <span class="n">securityFilterChainBuilder</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">securityFilterChainBuilders</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">securityFilterChains</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">securityFilterChainBuilder</span><span class="o">.</span><span class="na">build</span><span class="o">());</span>
-   <span class="o">}</span>
-   <span class="n">FilterChainProxy</span> <span class="n">filterChainProxy</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FilterChainProxy</span><span class="o">(</span><span class="n">securityFilterChains</span><span class="o">);</span>
-   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">httpFirewall</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-       <span class="c1">// 请求防火墙
-</span><span class="c1"></span>      <span class="n">filterChainProxy</span><span class="o">.</span><span class="na">setFirewall</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">httpFirewall</span><span class="o">);</span>
-   <span class="o">}</span>
-   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">requestRejectedHandler</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-       <span class="c1">// 请求拒绝处理器
-</span><span class="c1"></span>      <span class="n">filterChainProxy</span><span class="o">.</span><span class="na">setRequestRejectedHandler</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">requestRejectedHandler</span><span class="o">);</span>
-   <span class="o">}</span>
-   <span class="n">filterChainProxy</span><span class="o">.</span><span class="na">afterPropertiesSet</span><span class="o">();</span>
-
-   <span class="n">Filter</span> <span class="n">result</span> <span class="o">=</span> <span class="n">filterChainProxy</span><span class="o">;</span>
-   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">debugEnabled</span><span class="o">)</span> <span class="o">{</span>
-      <span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;\n\n&#34;</span> <span class="o">+</span> <span class="s">&#34;********************************************************************\n&#34;</span>
-            <span class="o">+</span> <span class="s">&#34;**********        Security debugging is enabled.       *************\n&#34;</span>
-            <span class="o">+</span> <span class="s">&#34;**********    This may include sensitive information.  *************\n&#34;</span>
-            <span class="o">+</span> <span class="s">&#34;**********      Do not use in a production system!     *************\n&#34;</span>
-            <span class="o">+</span> <span class="s">&#34;********************************************************************\n\n&#34;</span><span class="o">);</span>
-      <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DebugFilter</span><span class="o">(</span><span class="n">filterChainProxy</span><span class="o">);</span>
-   <span class="o">}</span>
-   <span class="k">this</span><span class="o">.</span><span class="na">postBuildAction</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
-   <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl"><span class="kd">protected</span> <span class="n">Filter</span> <span class="nf">performBuild</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="n">Assert</span><span class="o">.</span><span class="na">state</span><span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">securityFilterChainBuilders</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(),</span>
+</span></span><span class="line"><span class="cl">         <span class="o">()</span> <span class="o">-&gt;</span> <span class="s">&#34;At least one SecurityBuilder&lt;? extends SecurityFilterChain&gt; needs to be specified. &#34;</span>
+</span></span><span class="line"><span class="cl">               <span class="o">+</span> <span class="s">&#34;Typically this is done by exposing a SecurityFilterChain bean &#34;</span>
+</span></span><span class="line"><span class="cl">               <span class="o">+</span> <span class="s">&#34;or by adding a @Configuration that extends WebSecurityConfigurerAdapter. &#34;</span>
+</span></span><span class="line"><span class="cl">               <span class="o">+</span> <span class="s">&#34;More advanced users can invoke &#34;</span> <span class="o">+</span> <span class="n">WebSecurity</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">               <span class="o">+</span> <span class="s">&#34;.addSecurityFilterChainBuilder directly&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 被忽略请求的个数 和 httpscurity的个数 构成了过滤器链集合的大小
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="kt">int</span> <span class="n">chainSize</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">ignoredRequests</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">securityFilterChainBuilders</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">   <span class="n">List</span><span class="o">&lt;</span><span class="n">SecurityFilterChain</span><span class="o">&gt;</span> <span class="n">securityFilterChains</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">chainSize</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 初始化过滤器链集合中的 忽略请求过滤器链    
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">for</span> <span class="o">(</span><span class="n">RequestMatcher</span> <span class="n">ignoredRequest</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">ignoredRequests</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">securityFilterChains</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">DefaultSecurityFilterChain</span><span class="o">(</span><span class="n">ignoredRequest</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 初始化过滤器链集合中的 httpsecurity定义的过滤器链
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="k">for</span> <span class="o">(</span><span class="n">SecurityBuilder</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">SecurityFilterChain</span><span class="o">&gt;</span> <span class="n">securityFilterChainBuilder</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">securityFilterChainBuilders</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">securityFilterChains</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">securityFilterChainBuilder</span><span class="o">.</span><span class="na">build</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   <span class="n">FilterChainProxy</span> <span class="n">filterChainProxy</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FilterChainProxy</span><span class="o">(</span><span class="n">securityFilterChains</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">httpFirewall</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">       <span class="c1">// 请求防火墙
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">filterChainProxy</span><span class="o">.</span><span class="na">setFirewall</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">httpFirewall</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">requestRejectedHandler</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">       <span class="c1">// 请求拒绝处理器
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">filterChainProxy</span><span class="o">.</span><span class="na">setRequestRejectedHandler</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">requestRejectedHandler</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   <span class="n">filterChainProxy</span><span class="o">.</span><span class="na">afterPropertiesSet</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="n">Filter</span> <span class="n">result</span> <span class="o">=</span> <span class="n">filterChainProxy</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">   <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">debugEnabled</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">&#34;\n\n&#34;</span> <span class="o">+</span> <span class="s">&#34;********************************************************************\n&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">+</span> <span class="s">&#34;**********        Security debugging is enabled.       *************\n&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">+</span> <span class="s">&#34;**********    This may include sensitive information.  *************\n&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">+</span> <span class="s">&#34;**********      Do not use in a production system!     *************\n&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">+</span> <span class="s">&#34;********************************************************************\n\n&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">      <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DebugFilter</span><span class="o">(</span><span class="n">filterChainProxy</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   <span class="k">this</span><span class="o">.</span><span class="na">postBuildAction</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As you can see from the source code above, <code>WebSecurity</code> is used to build a Spring bean <code>FilterChainProxy</code> called <code>springSecurityFilterChain</code>. Its role is to define those requests that ignore security controls and those that must, clearing <code>SecurityContext</code> when appropriate to avoid memory leaks, and also to define request firewalls and request rejection processors, plus we turn on Spring Seuciry Debug mode which is also configured here.</p>
 <p>There is also a role that may not be mentioned in other articles, <code>FilterChainProxy</code> is the only export of Spring Security to the Spring framework application, which is then combined with a Servlet in Spring&rsquo;s bridge proxy <code>DelegatingFilterProxy</code>. which constitutes Spring&rsquo;s only export to the Servlet system. This isolates Spring Security, Spring framework and Servlet API.</p>

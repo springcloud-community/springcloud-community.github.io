@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-01/springboot-rabbitmq-rpc/" />
@@ -69,7 +69,7 @@
 <meta itemprop="name" content="SpringBoot&#43;RabbitMQ for RPC calls">
 <meta itemprop="description" content="When we talk about RPC (Remote Procedure Call Protocol), what pops into your mind is probably RESTful API, Dubbo, WebService, Java RMI, CORBA and so on. In fact, RabbitMQ also provides us with RPC function, and it is very easy to use. Today I&rsquo;ll share with you a simple case of how to implement a simple RPC call with Spring Boot&#43;RabbitMQ. Some readers may have misunderstandings about RabbitMQ&rsquo;s implementation of"><meta itemprop="datePublished" content="2022-01-15T16:29:28+08:00" />
 <meta itemprop="dateModified" content="2022-01-15T16:29:28+08:00" />
-<meta itemprop="wordCount" content="1764">
+<meta itemprop="wordCount" content="1760">
 <meta itemprop="keywords" content="spring-boot,rabbitmq,rpc," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="SpringBoot&#43;RabbitMQ for RPC calls"/>
 <meta name="twitter:description" content="When we talk about RPC (Remote Procedure Call Protocol), what pops into your mind is probably RESTful API, Dubbo, WebService, Java RMI, CORBA and so on. In fact, RabbitMQ also provides us with RPC function, and it is very easy to use. Today I&rsquo;ll share with you a simple case of how to implement a simple RPC call with Spring Boot&#43;RabbitMQ. Some readers may have misunderstandings about RabbitMQ&rsquo;s implementation of"/>
@@ -392,7 +392,7 @@
             <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
             
           </div>
-        <span class="more-meta"> 1764 words </span>
+        <span class="more-meta"> 1760 words </span>
           <span class="more-meta"> 4 min read </span>
 
         
@@ -457,13 +457,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">spring.rabbitmq.host=localhost
-spring.rabbitmq.port=5672
-spring.rabbitmq.username=guest
-spring.rabbitmq.password=guest
-spring.rabbitmq.publisher-confirm-type=correlated
-spring.rabbitmq.publisher-returns=true
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.rabbitmq.host=localhost
+</span></span><span class="line"><span class="cl">spring.rabbitmq.port=5672
+</span></span><span class="line"><span class="cl">spring.rabbitmq.username=guest
+</span></span><span class="line"><span class="cl">spring.rabbitmq.password=guest
+</span></span><span class="line"><span class="cl">spring.rabbitmq.publisher-confirm-type=correlated
+</span></span><span class="line"><span class="cl">spring.rabbitmq.publisher-returns=true
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The first four lines of this configuration are well understood, I will not repeat, the next two lines: the first is to configure the message confirmation method, we confirm by correlated, only if this configuration is turned on, the future message will be with correlation_id, only through the correlation_id we can correlate between the sent message and the return value. The last line of the configuration is to enable the return of failure to send.</p>
 <p>Next we will provide a configuration class as follows.</p>
@@ -551,93 +551,91 @@ spring.rabbitmq.publisher-returns=true
 </span><span class="lnt">80
 </span><span class="lnt">81
 </span><span class="lnt">82
-</span><span class="lnt">83
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
-</span><span class="cm"> * @author 江南一点雨
-</span><span class="cm"> * @微信公众号 江南一点雨
-</span><span class="cm"> * @网站 http://www.itboyhub.com
-</span><span class="cm"> * @国际站 http://www.javaboy.org
-</span><span class="cm"> * @微信 a_java_boy
-</span><span class="cm"> * @GitHub https://github.com/lenve
-</span><span class="cm"> * @Gitee https://gitee.com/lenve
-</span><span class="cm"> */</span>
-<span class="nd">@Configuration</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RabbitConfig</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_QUEUE1</span> <span class="o">=</span> <span class="s">&#34;queue_1&#34;</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_QUEUE2</span> <span class="o">=</span> <span class="s">&#34;queue_2&#34;</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_EXCHANGE</span> <span class="o">=</span> <span class="s">&#34;rpc_exchange&#34;</span><span class="o">;</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 设置消息发送RPC队列
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">Queue</span> <span class="nf">msgQueue</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">(</span><span class="n">RPC_QUEUE1</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 设置返回队列
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">Queue</span> <span class="nf">replyQueue</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 设置交换机
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">TopicExchange</span> <span class="nf">exchange</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">TopicExchange</span><span class="o">(</span><span class="n">RPC_EXCHANGE</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 请求队列和交换器绑定
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">Binding</span> <span class="nf">msgBinding</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">msgQueue</span><span class="o">()).</span><span class="na">to</span><span class="o">(</span><span class="n">exchange</span><span class="o">()).</span><span class="na">with</span><span class="o">(</span><span class="n">RPC_QUEUE1</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 返回队列和交换器绑定
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">Binding</span> <span class="nf">replyBinding</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">replyQueue</span><span class="o">()).</span><span class="na">to</span><span class="o">(</span><span class="n">exchange</span><span class="o">()).</span><span class="na">with</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
-    <span class="o">}</span>
-
-
-    <span class="cm">/**
-</span><span class="cm">     * 使用 RabbitTemplate发送和接收消息
-</span><span class="cm">     * 并设置回调队列地址
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">RabbitTemplate</span> <span class="nf">rabbitTemplate</span><span class="o">(</span><span class="n">ConnectionFactory</span> <span class="n">connectionFactory</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">RabbitTemplate</span> <span class="n">template</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RabbitTemplate</span><span class="o">(</span><span class="n">connectionFactory</span><span class="o">);</span>
-        <span class="n">template</span><span class="o">.</span><span class="na">setReplyAddress</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
-        <span class="n">template</span><span class="o">.</span><span class="na">setReplyTimeout</span><span class="o">(</span><span class="n">6000</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">template</span><span class="o">;</span>
-    <span class="o">}</span>
-
-
-    <span class="cm">/**
-</span><span class="cm">     * 给返回队列设置监听器
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">SimpleMessageListenerContainer</span> <span class="nf">replyContainer</span><span class="o">(</span><span class="n">ConnectionFactory</span> <span class="n">connectionFactory</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">SimpleMessageListenerContainer</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleMessageListenerContainer</span><span class="o">();</span>
-        <span class="n">container</span><span class="o">.</span><span class="na">setConnectionFactory</span><span class="o">(</span><span class="n">connectionFactory</span><span class="o">);</span>
-        <span class="n">container</span><span class="o">.</span><span class="na">setQueueNames</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
-        <span class="n">container</span><span class="o">.</span><span class="na">setMessageListener</span><span class="o">(</span><span class="n">rabbitTemplate</span><span class="o">(</span><span class="n">connectionFactory</span><span class="o">));</span>
-        <span class="k">return</span> <span class="n">container</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author 江南一点雨
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @微信公众号 江南一点雨
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @网站 http://www.itboyhub.com
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @国际站 http://www.javaboy.org
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @微信 a_java_boy
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @GitHub https://github.com/lenve
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @Gitee https://gitee.com/lenve
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RabbitConfig</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_QUEUE1</span> <span class="o">=</span> <span class="s">&#34;queue_1&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_QUEUE2</span> <span class="o">=</span> <span class="s">&#34;queue_2&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_EXCHANGE</span> <span class="o">=</span> <span class="s">&#34;rpc_exchange&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 设置消息发送RPC队列
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Queue</span> <span class="nf">msgQueue</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">(</span><span class="n">RPC_QUEUE1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 设置返回队列
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Queue</span> <span class="nf">replyQueue</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 设置交换机
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">TopicExchange</span> <span class="nf">exchange</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">TopicExchange</span><span class="o">(</span><span class="n">RPC_EXCHANGE</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 请求队列和交换器绑定
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Binding</span> <span class="nf">msgBinding</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">msgQueue</span><span class="o">()).</span><span class="na">to</span><span class="o">(</span><span class="n">exchange</span><span class="o">()).</span><span class="na">with</span><span class="o">(</span><span class="n">RPC_QUEUE1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 返回队列和交换器绑定
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Binding</span> <span class="nf">replyBinding</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">replyQueue</span><span class="o">()).</span><span class="na">to</span><span class="o">(</span><span class="n">exchange</span><span class="o">()).</span><span class="na">with</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 使用 RabbitTemplate发送和接收消息
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 并设置回调队列地址
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">RabbitTemplate</span> <span class="nf">rabbitTemplate</span><span class="o">(</span><span class="n">ConnectionFactory</span> <span class="n">connectionFactory</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">RabbitTemplate</span> <span class="n">template</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RabbitTemplate</span><span class="o">(</span><span class="n">connectionFactory</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">template</span><span class="o">.</span><span class="na">setReplyAddress</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">template</span><span class="o">.</span><span class="na">setReplyTimeout</span><span class="o">(</span><span class="n">6000</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">template</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 给返回队列设置监听器
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SimpleMessageListenerContainer</span> <span class="nf">replyContainer</span><span class="o">(</span><span class="n">ConnectionFactory</span> <span class="n">connectionFactory</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">SimpleMessageListenerContainer</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleMessageListenerContainer</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">container</span><span class="o">.</span><span class="na">setConnectionFactory</span><span class="o">(</span><span class="n">connectionFactory</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">container</span><span class="o">.</span><span class="na">setQueueNames</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">container</span><span class="o">.</span><span class="na">setMessageListener</span><span class="o">(</span><span class="n">rabbitTemplate</span><span class="o">(</span><span class="n">connectionFactory</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">container</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In this configuration class, we configure the message sending queue msgQueue and the message return queue replyQueue, and then bind these two queues to the message switch. This is a regular RabbitMQ operation, nothing to say.</p>
 <p>The tool we use for sending messages in Spring Boot is RabbitTemplate, which is automatically provided by default, but we need to re-customize it here, <strong>mainly to add a return queue for sending messages</strong>, and finally we need to set a listener for the return queue.</p>
@@ -691,58 +689,56 @@ spring.rabbitmq.publisher-returns=true
 </span><span class="lnt">45
 </span><span class="lnt">46
 </span><span class="lnt">47
-</span><span class="lnt">48
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
-</span><span class="cm"> * @author 江南一点雨
-</span><span class="cm"> * @微信公众号 江南一点雨
-</span><span class="cm"> * @网站 http://www.itboyhub.com
-</span><span class="cm"> * @国际站 http://www.javaboy.org
-</span><span class="cm"> * @微信 a_java_boy
-</span><span class="cm"> * @GitHub https://github.com/lenve
-</span><span class="cm"> * @Gitee https://gitee.com/lenve
-</span><span class="cm"> */</span>
-<span class="nd">@RestController</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RpcClientController</span> <span class="o">{</span>
-
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">RpcClientController</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-
-    <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="n">RabbitTemplate</span> <span class="n">rabbitTemplate</span><span class="o">;</span>
-
-    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/send&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">send</span><span class="o">(</span><span class="n">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// 创建消息对象
-</span><span class="c1"></span>        <span class="n">Message</span> <span class="n">newMessage</span> <span class="o">=</span> <span class="n">MessageBuilder</span><span class="o">.</span><span class="na">withBody</span><span class="o">(</span><span class="n">message</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()).</span><span class="na">build</span><span class="o">();</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;client send：{}&#34;</span><span class="o">,</span> <span class="n">newMessage</span><span class="o">);</span>
-
-        <span class="c1">//客户端发送消息
-</span><span class="c1"></span>        <span class="n">Message</span> <span class="n">result</span> <span class="o">=</span> <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">sendAndReceive</span><span class="o">(</span><span class="n">RabbitConfig</span><span class="o">.</span><span class="na">RPC_EXCHANGE</span><span class="o">,</span> <span class="n">RabbitConfig</span><span class="o">.</span><span class="na">RPC_QUEUE1</span><span class="o">,</span> <span class="n">newMessage</span><span class="o">);</span>
-
-        <span class="n">String</span> <span class="n">response</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">;</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="c1">// 获取已发送的消息的 correlationId
-</span><span class="c1"></span>            <span class="n">String</span> <span class="n">correlationId</span> <span class="o">=</span> <span class="n">newMessage</span><span class="o">.</span><span class="na">getMessageProperties</span><span class="o">().</span><span class="na">getCorrelationId</span><span class="o">();</span>
-            <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;correlationId:{}&#34;</span><span class="o">,</span> <span class="n">correlationId</span><span class="o">);</span>
-
-            <span class="c1">// 获取响应头信息
-</span><span class="c1"></span>            <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">headers</span> <span class="o">=</span> <span class="o">(</span><span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;)</span> <span class="n">result</span><span class="o">.</span><span class="na">getMessageProperties</span><span class="o">().</span><span class="na">getHeaders</span><span class="o">();</span>
-
-            <span class="c1">// 获取 server 返回的消息 id
-</span><span class="c1"></span>            <span class="n">String</span> <span class="n">msgId</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">headers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;spring_returned_message_correlation&#34;</span><span class="o">);</span>
-
-            <span class="k">if</span> <span class="o">(</span><span class="n">msgId</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">correlationId</span><span class="o">))</span> <span class="o">{</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">getBody</span><span class="o">());</span>
-                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;client receive：{}&#34;</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="n">response</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author 江南一点雨
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @微信公众号 江南一点雨
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @网站 http://www.itboyhub.com
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @国际站 http://www.javaboy.org
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @微信 a_java_boy
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @GitHub https://github.com/lenve
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @Gitee https://gitee.com/lenve
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RpcClientController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">RpcClientController</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">RabbitTemplate</span> <span class="n">rabbitTemplate</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/send&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">send</span><span class="o">(</span><span class="n">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 创建消息对象
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">Message</span> <span class="n">newMessage</span> <span class="o">=</span> <span class="n">MessageBuilder</span><span class="o">.</span><span class="na">withBody</span><span class="o">(</span><span class="n">message</span><span class="o">.</span><span class="na">getBytes</span><span class="o">()).</span><span class="na">build</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;client send：{}&#34;</span><span class="o">,</span> <span class="n">newMessage</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">//客户端发送消息
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">Message</span> <span class="n">result</span> <span class="o">=</span> <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">sendAndReceive</span><span class="o">(</span><span class="n">RabbitConfig</span><span class="o">.</span><span class="na">RPC_EXCHANGE</span><span class="o">,</span> <span class="n">RabbitConfig</span><span class="o">.</span><span class="na">RPC_QUEUE1</span><span class="o">,</span> <span class="n">newMessage</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">String</span> <span class="n">response</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 获取已发送的消息的 correlationId
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">String</span> <span class="n">correlationId</span> <span class="o">=</span> <span class="n">newMessage</span><span class="o">.</span><span class="na">getMessageProperties</span><span class="o">().</span><span class="na">getCorrelationId</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;correlationId:{}&#34;</span><span class="o">,</span> <span class="n">correlationId</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// 获取响应头信息
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">headers</span> <span class="o">=</span> <span class="o">(</span><span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;)</span> <span class="n">result</span><span class="o">.</span><span class="na">getMessageProperties</span><span class="o">().</span><span class="na">getHeaders</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// 获取 server 返回的消息 id
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">String</span> <span class="n">msgId</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">headers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;spring_returned_message_correlation&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">msgId</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">correlationId</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">getBody</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;client receive：{}&#34;</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">response</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This piece of code is actually some conventional code, I pick a few key nodes to explain.</p>
 <ul>
@@ -817,67 +813,65 @@ spring.rabbitmq.publisher-returns=true
 </span><span class="lnt">54
 </span><span class="lnt">55
 </span><span class="lnt">56
-</span><span class="lnt">57
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
-</span><span class="cm"> * @author 江南一点雨
-</span><span class="cm"> * @微信公众号 江南一点雨
-</span><span class="cm"> * @网站 http://www.itboyhub.com
-</span><span class="cm"> * @国际站 http://www.javaboy.org
-</span><span class="cm"> * @微信 a_java_boy
-</span><span class="cm"> * @GitHub https://github.com/lenve
-</span><span class="cm"> * @Gitee https://gitee.com/lenve
-</span><span class="cm"> */</span>
-<span class="nd">@Configuration</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RabbitConfig</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_QUEUE1</span> <span class="o">=</span> <span class="s">&#34;queue_1&#34;</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_QUEUE2</span> <span class="o">=</span> <span class="s">&#34;queue_2&#34;</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_EXCHANGE</span> <span class="o">=</span> <span class="s">&#34;rpc_exchange&#34;</span><span class="o">;</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 配置消息发送队列
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">Queue</span> <span class="nf">msgQueue</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">(</span><span class="n">RPC_QUEUE1</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 设置返回队列
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">Queue</span> <span class="nf">replyQueue</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 设置交换机
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">TopicExchange</span> <span class="nf">exchange</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">TopicExchange</span><span class="o">(</span><span class="n">RPC_EXCHANGE</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 请求队列和交换器绑定
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">Binding</span> <span class="nf">msgBinding</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">msgQueue</span><span class="o">()).</span><span class="na">to</span><span class="o">(</span><span class="n">exchange</span><span class="o">()).</span><span class="na">with</span><span class="o">(</span><span class="n">RPC_QUEUE1</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 返回队列和交换器绑定
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span>
-    <span class="n">Binding</span> <span class="nf">replyBinding</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">replyQueue</span><span class="o">()).</span><span class="na">to</span><span class="o">(</span><span class="n">exchange</span><span class="o">()).</span><span class="na">with</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author 江南一点雨
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @微信公众号 江南一点雨
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @网站 http://www.itboyhub.com
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @国际站 http://www.javaboy.org
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @微信 a_java_boy
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @GitHub https://github.com/lenve
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @Gitee https://gitee.com/lenve
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RabbitConfig</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_QUEUE1</span> <span class="o">=</span> <span class="s">&#34;queue_1&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_QUEUE2</span> <span class="o">=</span> <span class="s">&#34;queue_2&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">RPC_EXCHANGE</span> <span class="o">=</span> <span class="s">&#34;rpc_exchange&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 配置消息发送队列
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Queue</span> <span class="nf">msgQueue</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">(</span><span class="n">RPC_QUEUE1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 设置返回队列
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Queue</span> <span class="nf">replyQueue</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">Queue</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 设置交换机
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">TopicExchange</span> <span class="nf">exchange</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">TopicExchange</span><span class="o">(</span><span class="n">RPC_EXCHANGE</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 请求队列和交换器绑定
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Binding</span> <span class="nf">msgBinding</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">msgQueue</span><span class="o">()).</span><span class="na">to</span><span class="o">(</span><span class="n">exchange</span><span class="o">()).</span><span class="na">with</span><span class="o">(</span><span class="n">RPC_QUEUE1</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 返回队列和交换器绑定
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Binding</span> <span class="nf">replyBinding</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">BindingBuilder</span><span class="o">.</span><span class="na">bind</span><span class="o">(</span><span class="n">replyQueue</span><span class="o">()).</span><span class="na">to</span><span class="o">(</span><span class="n">exchange</span><span class="o">()).</span><span class="na">with</span><span class="o">(</span><span class="n">RPC_QUEUE2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Finally, let&rsquo;s look at the consumption of the message.</p>
 <div class="highlight"><div class="chroma">
@@ -896,25 +890,23 @@ spring.rabbitmq.publisher-returns=true
 </span><span class="lnt">12
 </span><span class="lnt">13
 </span><span class="lnt">14
-</span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">RpcServerController</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">RpcServerController</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-    <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="n">RabbitTemplate</span> <span class="n">rabbitTemplate</span><span class="o">;</span>
-
-    <span class="nd">@RabbitListener</span><span class="o">(</span><span class="n">queues</span> <span class="o">=</span> <span class="n">RabbitConfig</span><span class="o">.</span><span class="na">RPC_QUEUE1</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;server receive : {}&#34;</span><span class="o">,</span><span class="n">msg</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
-        <span class="n">Message</span> <span class="n">response</span> <span class="o">=</span> <span class="n">MessageBuilder</span><span class="o">.</span><span class="na">withBody</span><span class="o">((</span><span class="s">&#34;i&#39;m receive:&#34;</span><span class="o">+</span><span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getBody</span><span class="o">())).</span><span class="na">getBytes</span><span class="o">()).</span><span class="na">build</span><span class="o">();</span>
-        <span class="n">CorrelationData</span> <span class="n">correlationData</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CorrelationData</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getMessageProperties</span><span class="o">().</span><span class="na">getCorrelationId</span><span class="o">());</span>
-        <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">sendAndReceive</span><span class="o">(</span><span class="n">RabbitConfig</span><span class="o">.</span><span class="na">RPC_EXCHANGE</span><span class="o">,</span> <span class="n">RabbitConfig</span><span class="o">.</span><span class="na">RPC_QUEUE2</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">correlationData</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RpcServerController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">RpcServerController</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">RabbitTemplate</span> <span class="n">rabbitTemplate</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@RabbitListener</span><span class="o">(</span><span class="n">queues</span> <span class="o">=</span> <span class="n">RabbitConfig</span><span class="o">.</span><span class="na">RPC_QUEUE1</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="n">Message</span> <span class="n">msg</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;server receive : {}&#34;</span><span class="o">,</span><span class="n">msg</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Message</span> <span class="n">response</span> <span class="o">=</span> <span class="n">MessageBuilder</span><span class="o">.</span><span class="na">withBody</span><span class="o">((</span><span class="s">&#34;i&#39;m receive:&#34;</span><span class="o">+</span><span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getBody</span><span class="o">())).</span><span class="na">getBytes</span><span class="o">()).</span><span class="na">build</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">CorrelationData</span> <span class="n">correlationData</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CorrelationData</span><span class="o">(</span><span class="n">msg</span><span class="o">.</span><span class="na">getMessageProperties</span><span class="o">().</span><span class="na">getCorrelationId</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rabbitTemplate</span><span class="o">.</span><span class="na">sendAndReceive</span><span class="o">(</span><span class="n">RabbitConfig</span><span class="o">.</span><span class="na">RPC_EXCHANGE</span><span class="o">,</span> <span class="n">RabbitConfig</span><span class="o">.</span><span class="na">RPC_QUEUE2</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">correlationData</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The logic here is relatively simple.</p>
 <ol>

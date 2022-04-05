@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-03/spring-cache-source-code-analysis/" />
@@ -68,7 +68,7 @@
 <meta itemprop="name" content="Spring cache source code analysis">
 <meta itemprop="description" content="This article analyzes the source code of spring cache and introduces the parsing and execution process of spring cache."><meta itemprop="datePublished" content="2022-03-31T18:02:46+08:00" />
 <meta itemprop="dateModified" content="2022-03-31T18:02:46+08:00" />
-<meta itemprop="wordCount" content="2663">
+<meta itemprop="wordCount" content="2658">
 <meta itemprop="keywords" content="spring-cache," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Spring cache source code analysis"/>
 <meta name="twitter:description" content="This article analyzes the source code of spring cache and introduces the parsing and execution process of spring cache."/>
@@ -391,7 +391,7 @@
             <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
             
           </div>
-        <span class="more-meta"> 2663 words </span>
+        <span class="more-meta"> 2658 words </span>
           <span class="more-meta"> 6 min read </span>
 
         
@@ -511,68 +511,68 @@
 </span><span class="lnt">61
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SpringCacheAnnotationParser</span> <span class="kd">implements</span> <span class="n">CacheAnnotationParser</span><span class="o">,</span> <span class="n">Serializable</span> <span class="o">{</span>
-
-        <span class="c1">// Parsing class-level cache annotations
-</span><span class="c1"></span>	<span class="nd">@Override</span>
-	<span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">parseCacheAnnotations</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">DefaultCacheConfig</span> <span class="n">defaultConfig</span> <span class="o">=</span> <span class="n">getDefaultCacheConfig</span><span class="o">(</span><span class="n">type</span><span class="o">);</span>
-		<span class="k">return</span> <span class="n">parseCacheAnnotations</span><span class="o">(</span><span class="n">defaultConfig</span><span class="o">,</span> <span class="n">type</span><span class="o">);</span>
-	<span class="o">}</span>
-
-        <span class="c1">// 解析方法级别的缓存注解
-</span><span class="c1"></span>	<span class="nd">@Override</span>
-	<span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">parseCacheAnnotations</span><span class="o">(</span><span class="n">Method</span> <span class="n">method</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">DefaultCacheConfig</span> <span class="n">defaultConfig</span> <span class="o">=</span> <span class="n">getDefaultCacheConfig</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">());</span>
-		<span class="k">return</span> <span class="n">parseCacheAnnotations</span><span class="o">(</span><span class="n">defaultConfig</span><span class="o">,</span> <span class="n">method</span><span class="o">);</span>
-	<span class="o">}</span>
-
-        <span class="c1">// Parsing cache annotations
-</span><span class="c1"></span>	<span class="kd">private</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">parseCacheAnnotations</span><span class="o">(</span><span class="n">DefaultCacheConfig</span> <span class="n">cachingConfig</span><span class="o">,</span> <span class="n">AnnotatedElement</span> <span class="n">ae</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">ops</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-
-                <span class="c1">// Parsing the @Cacheable annotation
-</span><span class="c1"></span>		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">Cacheable</span><span class="o">&gt;</span> <span class="n">cacheables</span> <span class="o">=</span> <span class="n">AnnotatedElementUtils</span><span class="o">.</span><span class="na">getAllMergedAnnotations</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">Cacheable</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-		<span class="k">if</span> <span class="o">(!</span><span class="n">cacheables</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
-			<span class="n">ops</span> <span class="o">=</span> <span class="n">lazyInit</span><span class="o">(</span><span class="n">ops</span><span class="o">);</span>
-			<span class="k">for</span> <span class="o">(</span><span class="n">Cacheable</span> <span class="n">cacheable</span> <span class="o">:</span> <span class="n">cacheables</span><span class="o">)</span> <span class="o">{</span>
-				<span class="n">ops</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">parseCacheableAnnotation</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">cachingConfig</span><span class="o">,</span> <span class="n">cacheable</span><span class="o">));</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-
-                <span class="c1">// Parsing the @CacheEvict annotation
-</span><span class="c1"></span>		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheEvict</span><span class="o">&gt;</span> <span class="n">evicts</span> <span class="o">=</span> <span class="n">AnnotatedElementUtils</span><span class="o">.</span><span class="na">getAllMergedAnnotations</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">CacheEvict</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-		<span class="k">if</span> <span class="o">(!</span><span class="n">evicts</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
-			<span class="n">ops</span> <span class="o">=</span> <span class="n">lazyInit</span><span class="o">(</span><span class="n">ops</span><span class="o">);</span>
-			<span class="k">for</span> <span class="o">(</span><span class="n">CacheEvict</span> <span class="n">evict</span> <span class="o">:</span> <span class="n">evicts</span><span class="o">)</span> <span class="o">{</span>
-				<span class="n">ops</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">parseEvictAnnotation</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">cachingConfig</span><span class="o">,</span> <span class="n">evict</span><span class="o">));</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-
-                <span class="c1">// Parsing the @CachePut annotation
-</span><span class="c1"></span>		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CachePut</span><span class="o">&gt;</span> <span class="n">puts</span> <span class="o">=</span> <span class="n">AnnotatedElementUtils</span><span class="o">.</span><span class="na">getAllMergedAnnotations</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">CachePut</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-		<span class="k">if</span> <span class="o">(!</span><span class="n">puts</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
-			<span class="n">ops</span> <span class="o">=</span> <span class="n">lazyInit</span><span class="o">(</span><span class="n">ops</span><span class="o">);</span>
-			<span class="k">for</span> <span class="o">(</span><span class="n">CachePut</span> <span class="n">put</span> <span class="o">:</span> <span class="n">puts</span><span class="o">)</span> <span class="o">{</span>
-				<span class="n">ops</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">parsePutAnnotation</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">cachingConfig</span><span class="o">,</span> <span class="n">put</span><span class="o">));</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-
-                <span class="c1">// Parsing the @Caching annotation
-</span><span class="c1"></span>		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">Caching</span><span class="o">&gt;</span> <span class="n">cachings</span> <span class="o">=</span> <span class="n">AnnotatedElementUtils</span><span class="o">.</span><span class="na">getAllMergedAnnotations</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">Caching</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-		<span class="k">if</span> <span class="o">(!</span><span class="n">cachings</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
-			<span class="n">ops</span> <span class="o">=</span> <span class="n">lazyInit</span><span class="o">(</span><span class="n">ops</span><span class="o">);</span>
-			<span class="k">for</span> <span class="o">(</span><span class="n">Caching</span> <span class="n">caching</span> <span class="o">:</span> <span class="n">cachings</span><span class="o">)</span> <span class="o">{</span>
-				<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">cachingOps</span> <span class="o">=</span> <span class="n">parseCachingAnnotation</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">cachingConfig</span><span class="o">,</span> <span class="n">caching</span><span class="o">);</span>
-				<span class="k">if</span> <span class="o">(</span><span class="n">cachingOps</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-					<span class="n">ops</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">cachingOps</span><span class="o">);</span>
-				<span class="o">}</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-
-		<span class="k">return</span> <span class="n">ops</span><span class="o">;</span>
-	<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SpringCacheAnnotationParser</span> <span class="kd">implements</span> <span class="n">CacheAnnotationParser</span><span class="o">,</span> <span class="n">Serializable</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Parsing class-level cache annotations
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">parseCacheAnnotations</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">DefaultCacheConfig</span> <span class="n">defaultConfig</span> <span class="o">=</span> <span class="n">getDefaultCacheConfig</span><span class="o">(</span><span class="n">type</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">parseCacheAnnotations</span><span class="o">(</span><span class="n">defaultConfig</span><span class="o">,</span> <span class="n">type</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// 解析方法级别的缓存注解
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">parseCacheAnnotations</span><span class="o">(</span><span class="n">Method</span> <span class="n">method</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">DefaultCacheConfig</span> <span class="n">defaultConfig</span> <span class="o">=</span> <span class="n">getDefaultCacheConfig</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">parseCacheAnnotations</span><span class="o">(</span><span class="n">defaultConfig</span><span class="o">,</span> <span class="n">method</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Parsing cache annotations
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kd">private</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">parseCacheAnnotations</span><span class="o">(</span><span class="n">DefaultCacheConfig</span> <span class="n">cachingConfig</span><span class="o">,</span> <span class="n">AnnotatedElement</span> <span class="n">ae</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">ops</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// Parsing the @Cacheable annotation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">Cacheable</span><span class="o">&gt;</span> <span class="n">cacheables</span> <span class="o">=</span> <span class="n">AnnotatedElementUtils</span><span class="o">.</span><span class="na">getAllMergedAnnotations</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">Cacheable</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(!</span><span class="n">cacheables</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">ops</span> <span class="o">=</span> <span class="n">lazyInit</span><span class="o">(</span><span class="n">ops</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">for</span> <span class="o">(</span><span class="n">Cacheable</span> <span class="n">cacheable</span> <span class="o">:</span> <span class="n">cacheables</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">ops</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">parseCacheableAnnotation</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">cachingConfig</span><span class="o">,</span> <span class="n">cacheable</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// Parsing the @CacheEvict annotation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheEvict</span><span class="o">&gt;</span> <span class="n">evicts</span> <span class="o">=</span> <span class="n">AnnotatedElementUtils</span><span class="o">.</span><span class="na">getAllMergedAnnotations</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">CacheEvict</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(!</span><span class="n">evicts</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">ops</span> <span class="o">=</span> <span class="n">lazyInit</span><span class="o">(</span><span class="n">ops</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">for</span> <span class="o">(</span><span class="n">CacheEvict</span> <span class="n">evict</span> <span class="o">:</span> <span class="n">evicts</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">ops</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">parseEvictAnnotation</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">cachingConfig</span><span class="o">,</span> <span class="n">evict</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// Parsing the @CachePut annotation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CachePut</span><span class="o">&gt;</span> <span class="n">puts</span> <span class="o">=</span> <span class="n">AnnotatedElementUtils</span><span class="o">.</span><span class="na">getAllMergedAnnotations</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">CachePut</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(!</span><span class="n">puts</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">ops</span> <span class="o">=</span> <span class="n">lazyInit</span><span class="o">(</span><span class="n">ops</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">for</span> <span class="o">(</span><span class="n">CachePut</span> <span class="n">put</span> <span class="o">:</span> <span class="n">puts</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">ops</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">parsePutAnnotation</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">cachingConfig</span><span class="o">,</span> <span class="n">put</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// Parsing the @Caching annotation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">Caching</span><span class="o">&gt;</span> <span class="n">cachings</span> <span class="o">=</span> <span class="n">AnnotatedElementUtils</span><span class="o">.</span><span class="na">getAllMergedAnnotations</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">Caching</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(!</span><span class="n">cachings</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">ops</span> <span class="o">=</span> <span class="n">lazyInit</span><span class="o">(</span><span class="n">ops</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">for</span> <span class="o">(</span><span class="n">Caching</span> <span class="n">caching</span> <span class="o">:</span> <span class="n">cachings</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">cachingOps</span> <span class="o">=</span> <span class="n">parseCachingAnnotation</span><span class="o">(</span><span class="n">ae</span><span class="o">,</span> <span class="n">cachingConfig</span><span class="o">,</span> <span class="n">caching</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="o">(</span><span class="n">cachingOps</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">					<span class="n">ops</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">cachingOps</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">				<span class="o">}</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">ops</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="annotationcacheoperationsource">AnnotationCacheOperationSource</h4>
 <p>call SpringCacheAnnotationParser to get the annotation corresponding to the CacheOperation.</p>
@@ -604,37 +604,35 @@
 </span><span class="lnt">24
 </span><span class="lnt">25
 </span><span class="lnt">26
-</span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AnnotationCacheOperationSource</span> <span class="kd">extends</span> <span class="n">AbstractFallbackCacheOperationSource</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
-
-        <span class="c1">// Find a list of CacheOperation at the class level
-</span><span class="c1"></span>	<span class="nd">@Override</span>
-	<span class="kd">protected</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">findCacheOperations</span><span class="o">(</span><span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="n">determineCacheOperations</span><span class="o">(</span><span class="k">new</span> <span class="n">CacheOperationProvider</span><span class="o">()</span> <span class="o">{</span>
-			<span class="nd">@Override</span>
-			<span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">getCacheOperations</span><span class="o">(</span><span class="n">CacheAnnotationParser</span> <span class="n">parser</span><span class="o">)</span> <span class="o">{</span>
-				<span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="na">parseCacheAnnotations</span><span class="o">(</span><span class="n">clazz</span><span class="o">);</span>
-			<span class="o">}</span>
-		<span class="o">});</span>
-
-	<span class="o">}</span>
-
-        <span class="c1">// Find the list of CacheOperation at the method level
-</span><span class="c1"></span>	<span class="nd">@Override</span>
-	<span class="kd">protected</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">findCacheOperations</span><span class="o">(</span><span class="kd">final</span> <span class="n">Method</span> <span class="n">method</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">return</span> <span class="n">determineCacheOperations</span><span class="o">(</span><span class="k">new</span> <span class="n">CacheOperationProvider</span><span class="o">()</span> <span class="o">{</span>
-			<span class="nd">@Override</span>
-			<span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">getCacheOperations</span><span class="o">(</span><span class="n">CacheAnnotationParser</span> <span class="n">parser</span><span class="o">)</span> <span class="o">{</span>
-				<span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="na">parseCacheAnnotations</span><span class="o">(</span><span class="n">method</span><span class="o">);</span>
-			<span class="o">}</span>
-		<span class="o">});</span>
-	<span class="o">}</span>
-
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AnnotationCacheOperationSource</span> <span class="kd">extends</span> <span class="n">AbstractFallbackCacheOperationSource</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Find a list of CacheOperation at the class level
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">protected</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">findCacheOperations</span><span class="o">(</span><span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">determineCacheOperations</span><span class="o">(</span><span class="k">new</span> <span class="n">CacheOperationProvider</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">getCacheOperations</span><span class="o">(</span><span class="n">CacheAnnotationParser</span> <span class="n">parser</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="na">parseCacheAnnotations</span><span class="o">(</span><span class="n">clazz</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Find the list of CacheOperation at the method level
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">protected</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">findCacheOperations</span><span class="o">(</span><span class="kd">final</span> <span class="n">Method</span> <span class="n">method</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">determineCacheOperations</span><span class="o">(</span><span class="k">new</span> <span class="n">CacheOperationProvider</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">getCacheOperations</span><span class="o">(</span><span class="n">CacheAnnotationParser</span> <span class="n">parser</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="na">parseCacheAnnotations</span><span class="o">(</span><span class="n">method</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">});</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="abstractfallbackcacheoperationsource">AbstractFallbackCacheOperationSource</h4>
 <p>The parent class of AnnotationCacheOperationSource, which implements the common logic of getting CacheOperation.</p>
@@ -723,94 +721,92 @@
 </span><span class="lnt">81
 </span><span class="lnt">82
 </span><span class="lnt">83
-</span><span class="lnt">84
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractFallbackCacheOperationSource</span> <span class="kd">implements</span> <span class="n">CacheOperationSource</span> <span class="o">{</span>
-
-	<span class="cm">/**
-</span><span class="cm">	 * Cache of CacheOperations, keyed by method on a specific target class.
-</span><span class="cm">	 * &lt;p&gt;As this base class is not marked Serializable, the cache will be recreated
-</span><span class="cm">	 * after serialization - provided that the concrete subclass is Serializable.
-</span><span class="cm">	 */</span>
-	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;&gt;</span> <span class="n">attributeCache</span> <span class="o">=</span>
-			<span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;&gt;(</span><span class="n">1024</span><span class="o">);</span>
-
-
-	<span class="c1">// According to Method, Class reflection information, get the corresponding CacheOperation list
-</span><span class="c1"></span>	<span class="nd">@Override</span>
-	<span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">getCacheOperations</span><span class="o">(</span><span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">()</span> <span class="o">==</span> <span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
-			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-		<span class="o">}</span>
-
-		<span class="n">Object</span> <span class="n">cacheKey</span> <span class="o">=</span> <span class="n">getCacheKey</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">);</span>
-		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">cached</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">attributeCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">cacheKey</span><span class="o">);</span>
-
-                <span class="c1">// Because parsing reflection information is time-consuming, so use map cache to avoid double counting
-</span><span class="c1"></span>                <span class="c1">// If already recorded in map, return directly
-</span><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="n">cached</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-			<span class="k">return</span> <span class="o">(</span><span class="n">cached</span> <span class="o">!=</span> <span class="n">NULL_CACHING_ATTRIBUTE</span> <span class="o">?</span> <span class="n">cached</span> <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
-		<span class="o">}</span>
-                <span class="c1">// Otherwise do a calculation and write to map
-</span><span class="c1"></span>		<span class="k">else</span> <span class="o">{</span>
-			<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">cacheOps</span> <span class="o">=</span> <span class="n">computeCacheOperations</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">);</span>
-			<span class="k">if</span> <span class="o">(</span><span class="n">cacheOps</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-				<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
-					<span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&#34;Adding cacheable method &#39;&#34;</span> <span class="o">+</span> <span class="n">method</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;&#39; with attribute: &#34;</span> <span class="o">+</span> <span class="n">cacheOps</span><span class="o">);</span>
-				<span class="o">}</span>
-				<span class="k">this</span><span class="o">.</span><span class="na">attributeCache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">cacheKey</span><span class="o">,</span> <span class="n">cacheOps</span><span class="o">);</span>
-			<span class="o">}</span>
-			<span class="k">else</span> <span class="o">{</span>
-				<span class="k">this</span><span class="o">.</span><span class="na">attributeCache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">cacheKey</span><span class="o">,</span> <span class="n">NULL_CACHING_ATTRIBUTE</span><span class="o">);</span>
-			<span class="o">}</span>
-			<span class="k">return</span> <span class="n">cacheOps</span><span class="o">;</span>
-		<span class="o">}</span>
-	<span class="o">}</span>
-
-        <span class="c1">// Calculate the list of cache operations, giving priority to the annotations on the methods of the target proxy class, followed by the target proxy class if it does not exist, then the methods of the original class, and finally the original class
-</span><span class="c1"></span>	<span class="kd">private</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">computeCacheOperations</span><span class="o">(</span><span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span><span class="o">)</span> <span class="o">{</span>
-		<span class="c1">// Don&#39;t allow no-public methods as required.
-</span><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="n">allowPublicMethodsOnly</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">Modifier</span><span class="o">.</span><span class="na">isPublic</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getModifiers</span><span class="o">()))</span> <span class="o">{</span>
-			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-		<span class="o">}</span>
-
-		<span class="c1">// The method may be on an interface, but we need attributes from the target class.
-</span><span class="c1"></span>		<span class="c1">// If the target class is null, the method will be unchanged.
-</span><span class="c1"></span>		<span class="n">Method</span> <span class="n">specificMethod</span> <span class="o">=</span> <span class="n">ClassUtils</span><span class="o">.</span><span class="na">getMostSpecificMethod</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">);</span>
-		<span class="c1">// If we are dealing with method with generic parameters, find the original method.
-</span><span class="c1"></span>		<span class="n">specificMethod</span> <span class="o">=</span> <span class="n">BridgeMethodResolver</span><span class="o">.</span><span class="na">findBridgedMethod</span><span class="o">(</span><span class="n">specificMethod</span><span class="o">);</span>
-
-                <span class="c1">// call findCacheOperations (implemented by the subclass AnnotationCacheOperationSource), which is eventually parsed by the SpringCacheAnnotationParser
-</span><span class="c1"></span>		<span class="c1">// First try is the method in the target class.
-</span><span class="c1"></span>		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">opDef</span> <span class="o">=</span> <span class="n">findCacheOperations</span><span class="o">(</span><span class="n">specificMethod</span><span class="o">);</span>
-		<span class="k">if</span> <span class="o">(</span><span class="n">opDef</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-			<span class="k">return</span> <span class="n">opDef</span><span class="o">;</span>
-		<span class="o">}</span>
-
-		<span class="c1">// Second try is the caching operation on the target class.
-</span><span class="c1"></span>		<span class="n">opDef</span> <span class="o">=</span> <span class="n">findCacheOperations</span><span class="o">(</span><span class="n">specificMethod</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">());</span>
-		<span class="k">if</span> <span class="o">(</span><span class="n">opDef</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">ClassUtils</span><span class="o">.</span><span class="na">isUserLevelMethod</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
-			<span class="k">return</span> <span class="n">opDef</span><span class="o">;</span>
-		<span class="o">}</span>
-
-		<span class="k">if</span> <span class="o">(</span><span class="n">specificMethod</span> <span class="o">!=</span> <span class="n">method</span><span class="o">)</span> <span class="o">{</span>
-			<span class="c1">// Fallback is to look at the original method.
-</span><span class="c1"></span>			<span class="n">opDef</span> <span class="o">=</span> <span class="n">findCacheOperations</span><span class="o">(</span><span class="n">method</span><span class="o">);</span>
-			<span class="k">if</span> <span class="o">(</span><span class="n">opDef</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-				<span class="k">return</span> <span class="n">opDef</span><span class="o">;</span>
-			<span class="o">}</span>
-			<span class="c1">// Last fallback is the class of the original method.
-</span><span class="c1"></span>			<span class="n">opDef</span> <span class="o">=</span> <span class="n">findCacheOperations</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">());</span>
-			<span class="k">if</span> <span class="o">(</span><span class="n">opDef</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">ClassUtils</span><span class="o">.</span><span class="na">isUserLevelMethod</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
-				<span class="k">return</span> <span class="n">opDef</span><span class="o">;</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-
-		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-	<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractFallbackCacheOperationSource</span> <span class="kd">implements</span> <span class="n">CacheOperationSource</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * Cache of CacheOperations, keyed by method on a specific target class.
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * &lt;p&gt;As this base class is not marked Serializable, the cache will be recreated
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 * after serialization - provided that the concrete subclass is Serializable.
+</span></span></span><span class="line"><span class="cl"><span class="cm">	 */</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">private</span> <span class="kd">final</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;&gt;</span> <span class="n">attributeCache</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">			<span class="k">new</span> <span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;&gt;(</span><span class="n">1024</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="c1">// According to Method, Class reflection information, get the corresponding CacheOperation list
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">getCacheOperations</span><span class="o">(</span><span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">()</span> <span class="o">==</span> <span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="n">Object</span> <span class="n">cacheKey</span> <span class="o">=</span> <span class="n">getCacheKey</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">cached</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">attributeCache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">cacheKey</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// Because parsing reflection information is time-consuming, so use map cache to avoid double counting
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="c1">// If already recorded in map, return directly
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="n">cached</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="o">(</span><span class="n">cached</span> <span class="o">!=</span> <span class="n">NULL_CACHING_ATTRIBUTE</span> <span class="o">?</span> <span class="n">cached</span> <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Otherwise do a calculation and write to map
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">cacheOps</span> <span class="o">=</span> <span class="n">computeCacheOperations</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="o">(</span><span class="n">cacheOps</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">					<span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">&#34;Adding cacheable method &#39;&#34;</span> <span class="o">+</span> <span class="n">method</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;&#39; with attribute: &#34;</span> <span class="o">+</span> <span class="n">cacheOps</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">				<span class="o">}</span>
+</span></span><span class="line"><span class="cl">				<span class="k">this</span><span class="o">.</span><span class="na">attributeCache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">cacheKey</span><span class="o">,</span> <span class="n">cacheOps</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">			<span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">this</span><span class="o">.</span><span class="na">attributeCache</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">cacheKey</span><span class="o">,</span> <span class="n">NULL_CACHING_ATTRIBUTE</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="n">cacheOps</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Calculate the list of cache operations, giving priority to the annotations on the methods of the target proxy class, followed by the target proxy class if it does not exist, then the methods of the original class, and finally the original class
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kd">private</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="nf">computeCacheOperations</span><span class="o">(</span><span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// Don&#39;t allow no-public methods as required.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="n">allowPublicMethodsOnly</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">Modifier</span><span class="o">.</span><span class="na">isPublic</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getModifiers</span><span class="o">()))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// The method may be on an interface, but we need attributes from the target class.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// If the target class is null, the method will be unchanged.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">Method</span> <span class="n">specificMethod</span> <span class="o">=</span> <span class="n">ClassUtils</span><span class="o">.</span><span class="na">getMostSpecificMethod</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// If we are dealing with method with generic parameters, find the original method.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">specificMethod</span> <span class="o">=</span> <span class="n">BridgeMethodResolver</span><span class="o">.</span><span class="na">findBridgedMethod</span><span class="o">(</span><span class="n">specificMethod</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// call findCacheOperations (implemented by the subclass AnnotationCacheOperationSource), which is eventually parsed by the SpringCacheAnnotationParser
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// First try is the method in the target class.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">opDef</span> <span class="o">=</span> <span class="n">findCacheOperations</span><span class="o">(</span><span class="n">specificMethod</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(</span><span class="n">opDef</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="n">opDef</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// Second try is the caching operation on the target class.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">opDef</span> <span class="o">=</span> <span class="n">findCacheOperations</span><span class="o">(</span><span class="n">specificMethod</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(</span><span class="n">opDef</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">ClassUtils</span><span class="o">.</span><span class="na">isUserLevelMethod</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="n">opDef</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(</span><span class="n">specificMethod</span> <span class="o">!=</span> <span class="n">method</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// Fallback is to look at the original method.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="n">opDef</span> <span class="o">=</span> <span class="n">findCacheOperations</span><span class="o">(</span><span class="n">method</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="o">(</span><span class="n">opDef</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="n">opDef</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// Last fallback is the class of the original method.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="n">opDef</span> <span class="o">=</span> <span class="n">findCacheOperations</span><span class="o">(</span><span class="n">method</span><span class="o">.</span><span class="na">getDeclaringClass</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="o">(</span><span class="n">opDef</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">ClassUtils</span><span class="o">.</span><span class="na">isUserLevelMethod</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="n">opDef</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="2-logic-execution">2. Logic execution</h3>
 <p>Take the logic behind <code>@Cacheable</code> as an example. The expectation is to check the cache first and use the cache value directly if the cache hits, otherwise execute the business logic and write the result to the cache.</p>
@@ -852,43 +848,41 @@
 </span><span class="lnt">30
 </span><span class="lnt">31
 </span><span class="lnt">32
-</span><span class="lnt">33
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="c1">// Core class, cache interceptor
-</span><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CacheInterceptor</span> <span class="kd">extends</span> <span class="n">CacheAspectSupport</span> <span class="kd">implements</span> <span class="n">MethodInterceptor</span><span class="o">,</span> <span class="n">Serializable</span> <span class="o">{</span>
-
-        <span class="c1">// Intercept the execution of the original method and add logic before and after
-</span><span class="c1"></span>	<span class="nd">@Override</span>
-	<span class="kd">public</span> <span class="n">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="kd">final</span> <span class="n">MethodInvocation</span> <span class="n">invocation</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Throwable</span> <span class="o">{</span>
-		<span class="n">Method</span> <span class="n">method</span> <span class="o">=</span> <span class="n">invocation</span><span class="o">.</span><span class="na">getMethod</span><span class="o">();</span>
-
-                <span class="c1">// Encapsulate the execution of the original method into a callback interface for subsequent calls
-</span><span class="c1"></span>		<span class="n">CacheOperationInvoker</span> <span class="n">aopAllianceInvoker</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CacheOperationInvoker</span><span class="o">()</span> <span class="o">{</span>
-			<span class="nd">@Override</span>
-			<span class="kd">public</span> <span class="n">Object</span> <span class="nf">invoke</span><span class="o">()</span> <span class="o">{</span>
-				<span class="k">try</span> <span class="o">{</span>
-                                        <span class="c1">// Execution of the original method
-</span><span class="c1"></span>					<span class="k">return</span> <span class="n">invocation</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
-				<span class="o">}</span>
-				<span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-					<span class="k">throw</span> <span class="k">new</span> <span class="n">ThrowableWrapper</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
-				<span class="o">}</span>
-			<span class="o">}</span>
-		<span class="o">};</span>
-
-		<span class="k">try</span> <span class="o">{</span>
-                        <span class="c1">// Call the methods of the parent class CacheAspectSupport
-</span><span class="c1"></span>			<span class="k">return</span> <span class="n">execute</span><span class="o">(</span><span class="n">aopAllianceInvoker</span><span class="o">,</span> <span class="n">invocation</span><span class="o">.</span><span class="na">getThis</span><span class="o">(),</span> <span class="n">method</span><span class="o">,</span> <span class="n">invocation</span><span class="o">.</span><span class="na">getArguments</span><span class="o">());</span>
-		<span class="o">}</span>
-		<span class="k">catch</span> <span class="o">(</span><span class="n">CacheOperationInvoker</span><span class="o">.</span><span class="na">ThrowableWrapper</span> <span class="n">th</span><span class="o">)</span> <span class="o">{</span>
-			<span class="k">throw</span> <span class="n">th</span><span class="o">.</span><span class="na">getOriginal</span><span class="o">();</span>
-		<span class="o">}</span>
-	<span class="o">}</span>
-
-<span class="o">}</span>
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Core class, cache interceptor
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CacheInterceptor</span> <span class="kd">extends</span> <span class="n">CacheAspectSupport</span> <span class="kd">implements</span> <span class="n">MethodInterceptor</span><span class="o">,</span> <span class="n">Serializable</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// Intercept the execution of the original method and add logic before and after
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">public</span> <span class="n">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="kd">final</span> <span class="n">MethodInvocation</span> <span class="n">invocation</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Throwable</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">Method</span> <span class="n">method</span> <span class="o">=</span> <span class="n">invocation</span><span class="o">.</span><span class="na">getMethod</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// Encapsulate the execution of the original method into a callback interface for subsequent calls
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">CacheOperationInvoker</span> <span class="n">aopAllianceInvoker</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CacheOperationInvoker</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">			<span class="kd">public</span> <span class="n">Object</span> <span class="nf">invoke</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                                        <span class="c1">// Execution of the original method
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					<span class="k">return</span> <span class="n">invocation</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">				<span class="o">}</span>
+</span></span><span class="line"><span class="cl">				<span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">					<span class="k">throw</span> <span class="k">new</span> <span class="n">ThrowableWrapper</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">				<span class="o">}</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="c1">// Call the methods of the parent class CacheAspectSupport
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">return</span> <span class="n">execute</span><span class="o">(</span><span class="n">aopAllianceInvoker</span><span class="o">,</span> <span class="n">invocation</span><span class="o">.</span><span class="na">getThis</span><span class="o">(),</span> <span class="n">method</span><span class="o">,</span> <span class="n">invocation</span><span class="o">.</span><span class="na">getArguments</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">catch</span> <span class="o">(</span><span class="n">CacheOperationInvoker</span><span class="o">.</span><span class="na">ThrowableWrapper</span> <span class="n">th</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="k">throw</span> <span class="n">th</span><span class="o">.</span><span class="na">getOriginal</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="cacheaspectsupport">CacheAspectSupport</h4>
 <p>CacheAspectSupport class, the parent class of CacheInterceptor, encapsulates the main logic of all cache operations.</p>
@@ -1040,148 +1034,144 @@
 </span><span class="lnt">133
 </span><span class="lnt">134
 </span><span class="lnt">135
-</span><span class="lnt">136
-</span><span class="lnt">137
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="c1">// The core class, the cache cut support class, encapsulates the main logic of all cache operations
-</span><span class="c1"></span><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">CacheAspectSupport</span> <span class="kd">extends</span> <span class="n">AbstractCacheInvoker</span>
-		<span class="kd">implements</span> <span class="n">BeanFactoryAware</span><span class="o">,</span> <span class="n">InitializingBean</span><span class="o">,</span> <span class="n">SmartInitializingSingleton</span> <span class="o">{</span>
-
-        <span class="c1">// CacheInterceptor calls this method of the parent class
-</span><span class="c1"></span>	<span class="kd">protected</span> <span class="n">Object</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CacheOperationInvoker</span> <span class="n">invoker</span><span class="o">,</span> <span class="n">Object</span> <span class="n">target</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-		<span class="c1">// Check whether aspect is enabled (to cope with cases where the AJ is pulled in automatically)
-</span><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">initialized</span><span class="o">)</span> <span class="o">{</span>
-			<span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span> <span class="o">=</span> <span class="n">getTargetClass</span><span class="o">(</span><span class="n">target</span><span class="o">);</span>
-                        <span class="c1">// Get a list of all CacheOperations via CacheOperationSource
-</span><span class="c1"></span>			<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">operations</span> <span class="o">=</span> <span class="n">getCacheOperationSource</span><span class="o">().</span><span class="na">getCacheOperations</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">);</span>
-			<span class="k">if</span> <span class="o">(!</span><span class="n">CollectionUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">operations</span><span class="o">))</span> <span class="o">{</span>
-                                <span class="c1">// Continue to call a private execute method to execute
-</span><span class="c1"></span>				<span class="k">return</span> <span class="n">execute</span><span class="o">(</span><span class="n">invoker</span><span class="o">,</span> <span class="n">method</span><span class="o">,</span> <span class="k">new</span> <span class="n">CacheOperationContexts</span><span class="o">(</span><span class="n">operations</span><span class="o">,</span> <span class="n">method</span><span class="o">,</span> <span class="n">args</span><span class="o">,</span> <span class="n">target</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">));</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-
-                <span class="c1">// If the spring bean is not initialized, the original method is called directly. This is equivalent to the original method not having caching capabilities.
-</span><span class="c1"></span>		<span class="k">return</span> <span class="n">invoker</span><span class="o">.</span><span class="na">invoke</span><span class="o">();</span>
-	<span class="o">}</span>
-
-        <span class="n">private的execute方法</span>
-	<span class="kd">private</span> <span class="n">Object</span> <span class="nf">execute</span><span class="o">(</span><span class="kd">final</span> <span class="n">CacheOperationInvoker</span> <span class="n">invoker</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">CacheOperationContexts</span> <span class="n">contexts</span><span class="o">)</span> <span class="o">{</span>
-		<span class="c1">// Special handling of synchronized invocation
-</span><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">isSynchronized</span><span class="o">())</span> <span class="o">{</span>
-			<span class="n">CacheOperationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CacheableOperation</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">iterator</span><span class="o">().</span><span class="na">next</span><span class="o">();</span>
-			<span class="k">if</span> <span class="o">(</span><span class="n">isConditionPassing</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">CacheOperationExpressionEvaluator</span><span class="o">.</span><span class="na">NO_RESULT</span><span class="o">))</span> <span class="o">{</span>
-				<span class="n">Object</span> <span class="n">key</span> <span class="o">=</span> <span class="n">generateKey</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">CacheOperationExpressionEvaluator</span><span class="o">.</span><span class="na">NO_RESULT</span><span class="o">);</span>
-				<span class="n">Cache</span> <span class="n">cache</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getCaches</span><span class="o">().</span><span class="na">iterator</span><span class="o">().</span><span class="na">next</span><span class="o">();</span>
-				<span class="k">try</span> <span class="o">{</span>
-					<span class="k">return</span> <span class="n">wrapCacheValue</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;()</span> <span class="o">{</span>
-						<span class="nd">@Override</span>
-						<span class="kd">public</span> <span class="n">Object</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-							<span class="k">return</span> <span class="n">unwrapReturnValue</span><span class="o">(</span><span class="n">invokeOperation</span><span class="o">(</span><span class="n">invoker</span><span class="o">));</span>
-						<span class="o">}</span>
-					<span class="o">}));</span>
-				<span class="o">}</span>
-				<span class="k">catch</span> <span class="o">(</span><span class="n">Cache</span><span class="o">.</span><span class="na">ValueRetrievalException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-					<span class="c1">// The invoker wraps any Throwable in a ThrowableWrapper instance so we
-</span><span class="c1"></span>					<span class="c1">// can just make sure that one bubbles up the stack.
-</span><span class="c1"></span>					<span class="k">throw</span> <span class="o">(</span><span class="n">CacheOperationInvoker</span><span class="o">.</span><span class="na">ThrowableWrapper</span><span class="o">)</span> <span class="n">ex</span><span class="o">.</span><span class="na">getCause</span><span class="o">();</span>
-				<span class="o">}</span>
-			<span class="o">}</span>
-			<span class="k">else</span> <span class="o">{</span>
-				<span class="c1">// No caching required, only call the underlying method
-</span><span class="c1"></span>				<span class="k">return</span> <span class="n">invokeOperation</span><span class="o">(</span><span class="n">invoker</span><span class="o">);</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-
-                <span class="c1">// If there is a @CacheEvict annotation and it is marked as executed before the call, then do the delete/empty cache operation
-</span><span class="c1"></span>		<span class="c1">// Process any early evictions
-</span><span class="c1"></span>		<span class="n">processCacheEvicts</span><span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CacheEvictOperation</span><span class="o">.</span><span class="na">class</span><span class="o">),</span> <span class="kc">true</span><span class="o">,</span>
-				<span class="n">CacheOperationExpressionEvaluator</span><span class="o">.</span><span class="na">NO_RESULT</span><span class="o">);</span>
-
-                <span class="c1">// If the @Cacheable annotation is present, the query cache
-</span><span class="c1"></span>		<span class="c1">// Check if we have a cached item matching the conditions
-</span><span class="c1"></span>		<span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="n">cacheHit</span> <span class="o">=</span> <span class="n">findCachedItem</span><span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CacheableOperation</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
-
-                <span class="c1">// If the cache is not hit (the query result is null), it will be added to cachePutRequests, and the subsequent execution of the original method will be written to the cache
-</span><span class="c1"></span>		<span class="c1">// Collect puts from any @Cacheable miss, if no cached item is found
-</span><span class="c1"></span>		<span class="n">List</span><span class="o">&lt;</span><span class="n">CachePutRequest</span><span class="o">&gt;</span> <span class="n">cachePutRequests</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">CachePutRequest</span><span class="o">&gt;();</span>
-		<span class="k">if</span> <span class="o">(</span><span class="n">cacheHit</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-			<span class="n">collectPutRequests</span><span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CacheableOperation</span><span class="o">.</span><span class="na">class</span><span class="o">),</span>
-					<span class="n">CacheOperationExpressionEvaluator</span><span class="o">.</span><span class="na">NO_RESULT</span><span class="o">,</span> <span class="n">cachePutRequests</span><span class="o">);</span>
-		<span class="o">}</span>
-
-		<span class="n">Object</span> <span class="n">cacheValue</span><span class="o">;</span>
-		<span class="n">Object</span> <span class="n">returnValue</span><span class="o">;</span>
-
-		<span class="k">if</span> <span class="o">(</span><span class="n">cacheHit</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">cachePutRequests</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">hasCachePut</span><span class="o">(</span><span class="n">contexts</span><span class="o">))</span> <span class="o">{</span>
-                        <span class="c1">// For cache hits, use the cache value as the result
-</span><span class="c1"></span>			<span class="c1">// If there are no put requests, just use the cache hit
-</span><span class="c1"></span>			<span class="n">cacheValue</span> <span class="o">=</span> <span class="n">cacheHit</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
-			<span class="n">returnValue</span> <span class="o">=</span> <span class="n">wrapCacheValue</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">cacheValue</span><span class="o">);</span>
-		<span class="o">}</span>
-		<span class="k">else</span> <span class="o">{</span>
-                        <span class="c1">// If the cache is not hit, or if there is a @CachePut annotation, the original method needs to be called
-</span><span class="c1"></span>			<span class="c1">// Invoke the method if we don&#39;t have a cache hit
-</span><span class="c1"></span>                        <span class="c1">// Call the original method and get the result value
-</span><span class="c1"></span>			<span class="n">returnValue</span> <span class="o">=</span> <span class="n">invokeOperation</span><span class="o">(</span><span class="n">invoker</span><span class="o">);</span>
-			<span class="n">cacheValue</span> <span class="o">=</span> <span class="n">unwrapReturnValue</span><span class="o">(</span><span class="n">returnValue</span><span class="o">);</span>
-		<span class="o">}</span>
-
-                <span class="c1">// If there is a @CachePut annotation, then add to cachePutRequests
-</span><span class="c1"></span>		<span class="c1">// Collect any explicit @CachePuts
-</span><span class="c1"></span>		<span class="n">collectPutRequests</span><span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CachePutOperation</span><span class="o">.</span><span class="na">class</span><span class="o">),</span> <span class="n">cacheValue</span><span class="o">,</span> <span class="n">cachePutRequests</span><span class="o">);</span>
-
-                <span class="c1">// If the cache is not hit, the query result value is written to the cache; if the @CachePut annotation is present, the method execution result is also written to the cache
-</span><span class="c1"></span>		<span class="c1">// Process any collected put requests, either from @CachePut or a @Cacheable miss
-</span><span class="c1"></span>		<span class="k">for</span> <span class="o">(</span><span class="n">CachePutRequest</span> <span class="n">cachePutRequest</span> <span class="o">:</span> <span class="n">cachePutRequests</span><span class="o">)</span> <span class="o">{</span>
-			<span class="n">cachePutRequest</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">cacheValue</span><span class="o">);</span>
-		<span class="o">}</span>
-
-                <span class="c1">// If there is a @CacheEvict annotation and it is marked as executed after the call, then do the delete/empty cache operation
-</span><span class="c1"></span>		<span class="c1">// Process any late evictions
-</span><span class="c1"></span>		<span class="n">processCacheEvicts</span><span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CacheEvictOperation</span><span class="o">.</span><span class="na">class</span><span class="o">),</span> <span class="kc">false</span><span class="o">,</span> <span class="n">cacheValue</span><span class="o">);</span>
-
-		<span class="k">return</span> <span class="n">returnValue</span><span class="o">;</span>
-	<span class="o">}</span>
-
-	<span class="kd">private</span> <span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="nf">findCachedItem</span><span class="o">(</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperationContext</span><span class="o">&gt;</span> <span class="n">contexts</span><span class="o">)</span> <span class="o">{</span>
-		<span class="n">Object</span> <span class="n">result</span> <span class="o">=</span> <span class="n">CacheOperationExpressionEvaluator</span><span class="o">.</span><span class="na">NO_RESULT</span><span class="o">;</span>
-		<span class="k">for</span> <span class="o">(</span><span class="n">CacheOperationContext</span> <span class="n">context</span> <span class="o">:</span> <span class="n">contexts</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="c1">// Query the cache only if the condition is met
-</span><span class="c1"></span>			<span class="k">if</span> <span class="o">(</span><span class="n">isConditionPassing</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">result</span><span class="o">))</span> <span class="o">{</span>
-                                <span class="c1">// Generate the cache key, if the key is specified in the annotation, it is parsed according to the Spring expression, otherwise it is generated using the KeyGenerator class
-</span><span class="c1"></span>				<span class="n">Object</span> <span class="n">key</span> <span class="o">=</span> <span class="n">generateKey</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
-                                <span class="c1">// Query the cache value according to the cache key
-</span><span class="c1"></span>				<span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="n">cached</span> <span class="o">=</span> <span class="n">findInCaches</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
-				<span class="k">if</span> <span class="o">(</span><span class="n">cached</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-					<span class="k">return</span> <span class="n">cached</span><span class="o">;</span>
-				<span class="o">}</span>
-				<span class="k">else</span> <span class="o">{</span>
-					<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isTraceEnabled</span><span class="o">())</span> <span class="o">{</span>
-						<span class="n">logger</span><span class="o">.</span><span class="na">trace</span><span class="o">(</span><span class="s">&#34;No cache entry for key &#39;&#34;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">&#34;&#39; in cache(s) &#34;</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="na">getCacheNames</span><span class="o">());</span>
-					<span class="o">}</span>
-				<span class="o">}</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-	<span class="o">}</span>
-
-	<span class="kd">private</span> <span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="nf">findInCaches</span><span class="o">(</span><span class="n">CacheOperationContext</span> <span class="n">context</span><span class="o">,</span> <span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">for</span> <span class="o">(</span><span class="n">Cache</span> <span class="n">cache</span> <span class="o">:</span> <span class="n">context</span><span class="o">.</span><span class="na">getCaches</span><span class="o">())</span> <span class="o">{</span>
-                        <span class="c1">// Call the doGet method of the parent class AbstractCacheInvoker to query the cache
-</span><span class="c1"></span>			<span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="n">wrapper</span> <span class="o">=</span> <span class="n">doGet</span><span class="o">(</span><span class="n">cache</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
-			<span class="k">if</span> <span class="o">(</span><span class="n">wrapper</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-				<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isTraceEnabled</span><span class="o">())</span> <span class="o">{</span>
-					<span class="n">logger</span><span class="o">.</span><span class="na">trace</span><span class="o">(</span><span class="s">&#34;Cache entry for key &#39;&#34;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">&#34;&#39; found in cache &#39;&#34;</span> <span class="o">+</span> <span class="n">cache</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;&#39;&#34;</span><span class="o">);</span>
-				<span class="o">}</span>
-				<span class="k">return</span> <span class="n">wrapper</span><span class="o">;</span>
-			<span class="o">}</span>
-		<span class="o">}</span>
-		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-	<span class="o">}</span>
-
-
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// The core class, the cache cut support class, encapsulates the main logic of all cache operations
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">CacheAspectSupport</span> <span class="kd">extends</span> <span class="n">AbstractCacheInvoker</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">implements</span> <span class="n">BeanFactoryAware</span><span class="o">,</span> <span class="n">InitializingBean</span><span class="o">,</span> <span class="n">SmartInitializingSingleton</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1">// CacheInterceptor calls this method of the parent class
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kd">protected</span> <span class="n">Object</span> <span class="nf">execute</span><span class="o">(</span><span class="n">CacheOperationInvoker</span> <span class="n">invoker</span><span class="o">,</span> <span class="n">Object</span> <span class="n">target</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">Object</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// Check whether aspect is enabled (to cope with cases where the AJ is pulled in automatically)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">initialized</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">targetClass</span> <span class="o">=</span> <span class="n">getTargetClass</span><span class="o">(</span><span class="n">target</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                        <span class="c1">// Get a list of all CacheOperations via CacheOperationSource
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperation</span><span class="o">&gt;</span> <span class="n">operations</span> <span class="o">=</span> <span class="n">getCacheOperationSource</span><span class="o">().</span><span class="na">getCacheOperations</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="o">(!</span><span class="n">CollectionUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">operations</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                                <span class="c1">// Continue to call a private execute method to execute
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="k">return</span> <span class="n">execute</span><span class="o">(</span><span class="n">invoker</span><span class="o">,</span> <span class="n">method</span><span class="o">,</span> <span class="k">new</span> <span class="n">CacheOperationContexts</span><span class="o">(</span><span class="n">operations</span><span class="o">,</span> <span class="n">method</span><span class="o">,</span> <span class="n">args</span><span class="o">,</span> <span class="n">target</span><span class="o">,</span> <span class="n">targetClass</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// If the spring bean is not initialized, the original method is called directly. This is equivalent to the original method not having caching capabilities.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">return</span> <span class="n">invoker</span><span class="o">.</span><span class="na">invoke</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">private的execute方法</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">private</span> <span class="n">Object</span> <span class="nf">execute</span><span class="o">(</span><span class="kd">final</span> <span class="n">CacheOperationInvoker</span> <span class="n">invoker</span><span class="o">,</span> <span class="n">Method</span> <span class="n">method</span><span class="o">,</span> <span class="n">CacheOperationContexts</span> <span class="n">contexts</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// Special handling of synchronized invocation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">isSynchronized</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">CacheOperationContext</span> <span class="n">context</span> <span class="o">=</span> <span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CacheableOperation</span><span class="o">.</span><span class="na">class</span><span class="o">).</span><span class="na">iterator</span><span class="o">().</span><span class="na">next</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="o">(</span><span class="n">isConditionPassing</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">CacheOperationExpressionEvaluator</span><span class="o">.</span><span class="na">NO_RESULT</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Object</span> <span class="n">key</span> <span class="o">=</span> <span class="n">generateKey</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">CacheOperationExpressionEvaluator</span><span class="o">.</span><span class="na">NO_RESULT</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">				<span class="n">Cache</span> <span class="n">cache</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getCaches</span><span class="o">().</span><span class="na">iterator</span><span class="o">().</span><span class="na">next</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">				<span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">					<span class="k">return</span> <span class="n">wrapCacheValue</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="k">new</span> <span class="n">Callable</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">						<span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">						<span class="kd">public</span> <span class="n">Object</span> <span class="nf">call</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">							<span class="k">return</span> <span class="n">unwrapReturnValue</span><span class="o">(</span><span class="n">invokeOperation</span><span class="o">(</span><span class="n">invoker</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">						<span class="o">}</span>
+</span></span><span class="line"><span class="cl">					<span class="o">}));</span>
+</span></span><span class="line"><span class="cl">				<span class="o">}</span>
+</span></span><span class="line"><span class="cl">				<span class="k">catch</span> <span class="o">(</span><span class="n">Cache</span><span class="o">.</span><span class="na">ValueRetrievalException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">					<span class="c1">// The invoker wraps any Throwable in a ThrowableWrapper instance so we
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					<span class="c1">// can just make sure that one bubbles up the stack.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					<span class="k">throw</span> <span class="o">(</span><span class="n">CacheOperationInvoker</span><span class="o">.</span><span class="na">ThrowableWrapper</span><span class="o">)</span> <span class="n">ex</span><span class="o">.</span><span class="na">getCause</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">				<span class="o">}</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">			<span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// No caching required, only call the underlying method
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="k">return</span> <span class="n">invokeOperation</span><span class="o">(</span><span class="n">invoker</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// If there is a @CacheEvict annotation and it is marked as executed before the call, then do the delete/empty cache operation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// Process any early evictions
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">processCacheEvicts</span><span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CacheEvictOperation</span><span class="o">.</span><span class="na">class</span><span class="o">),</span> <span class="kc">true</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">				<span class="n">CacheOperationExpressionEvaluator</span><span class="o">.</span><span class="na">NO_RESULT</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// If the @Cacheable annotation is present, the query cache
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// Check if we have a cached item matching the conditions
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="n">cacheHit</span> <span class="o">=</span> <span class="n">findCachedItem</span><span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CacheableOperation</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// If the cache is not hit (the query result is null), it will be added to cachePutRequests, and the subsequent execution of the original method will be written to the cache
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// Collect puts from any @Cacheable miss, if no cached item is found
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">List</span><span class="o">&lt;</span><span class="n">CachePutRequest</span><span class="o">&gt;</span> <span class="n">cachePutRequests</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LinkedList</span><span class="o">&lt;</span><span class="n">CachePutRequest</span><span class="o">&gt;();</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(</span><span class="n">cacheHit</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">collectPutRequests</span><span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CacheableOperation</span><span class="o">.</span><span class="na">class</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">					<span class="n">CacheOperationExpressionEvaluator</span><span class="o">.</span><span class="na">NO_RESULT</span><span class="o">,</span> <span class="n">cachePutRequests</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="n">Object</span> <span class="n">cacheValue</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">		<span class="n">Object</span> <span class="n">returnValue</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="o">(</span><span class="n">cacheHit</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">cachePutRequests</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">hasCachePut</span><span class="o">(</span><span class="n">contexts</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="c1">// For cache hits, use the cache value as the result
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="c1">// If there are no put requests, just use the cache hit
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="n">cacheValue</span> <span class="o">=</span> <span class="n">cacheHit</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">			<span class="n">returnValue</span> <span class="o">=</span> <span class="n">wrapCacheValue</span><span class="o">(</span><span class="n">method</span><span class="o">,</span> <span class="n">cacheValue</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="c1">// If the cache is not hit, or if there is a @CachePut annotation, the original method needs to be called
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="c1">// Invoke the method if we don&#39;t have a cache hit
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                        <span class="c1">// Call the original method and get the result value
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="n">returnValue</span> <span class="o">=</span> <span class="n">invokeOperation</span><span class="o">(</span><span class="n">invoker</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="n">cacheValue</span> <span class="o">=</span> <span class="n">unwrapReturnValue</span><span class="o">(</span><span class="n">returnValue</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// If there is a @CachePut annotation, then add to cachePutRequests
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// Collect any explicit @CachePuts
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">collectPutRequests</span><span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CachePutOperation</span><span class="o">.</span><span class="na">class</span><span class="o">),</span> <span class="n">cacheValue</span><span class="o">,</span> <span class="n">cachePutRequests</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// If the cache is not hit, the query result value is written to the cache; if the @CachePut annotation is present, the method execution result is also written to the cache
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// Process any collected put requests, either from @CachePut or a @Cacheable miss
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">for</span> <span class="o">(</span><span class="n">CachePutRequest</span> <span class="n">cachePutRequest</span> <span class="o">:</span> <span class="n">cachePutRequests</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">cachePutRequest</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">cacheValue</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// If there is a @CacheEvict annotation and it is marked as executed after the call, then do the delete/empty cache operation
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="c1">// Process any late evictions
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="n">processCacheEvicts</span><span class="o">(</span><span class="n">contexts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">CacheEvictOperation</span><span class="o">.</span><span class="na">class</span><span class="o">),</span> <span class="kc">false</span><span class="o">,</span> <span class="n">cacheValue</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">returnValue</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">private</span> <span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="nf">findCachedItem</span><span class="o">(</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">CacheOperationContext</span><span class="o">&gt;</span> <span class="n">contexts</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">Object</span> <span class="n">result</span> <span class="o">=</span> <span class="n">CacheOperationExpressionEvaluator</span><span class="o">.</span><span class="na">NO_RESULT</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="o">(</span><span class="n">CacheOperationContext</span> <span class="n">context</span> <span class="o">:</span> <span class="n">contexts</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="c1">// Query the cache only if the condition is met
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">if</span> <span class="o">(</span><span class="n">isConditionPassing</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">result</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                                <span class="c1">// Generate the cache key, if the key is specified in the annotation, it is parsed according to the Spring expression, otherwise it is generated using the KeyGenerator class
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="n">Object</span> <span class="n">key</span> <span class="o">=</span> <span class="n">generateKey</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">result</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                                <span class="c1">// Query the cache value according to the cache key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="n">cached</span> <span class="o">=</span> <span class="n">findInCaches</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="o">(</span><span class="n">cached</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">					<span class="k">return</span> <span class="n">cached</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">				<span class="o">}</span>
+</span></span><span class="line"><span class="cl">				<span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">					<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isTraceEnabled</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">						<span class="n">logger</span><span class="o">.</span><span class="na">trace</span><span class="o">(</span><span class="s">&#34;No cache entry for key &#39;&#34;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">&#34;&#39; in cache(s) &#34;</span> <span class="o">+</span> <span class="n">context</span><span class="o">.</span><span class="na">getCacheNames</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">					<span class="o">}</span>
+</span></span><span class="line"><span class="cl">				<span class="o">}</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="kd">private</span> <span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="nf">findInCaches</span><span class="o">(</span><span class="n">CacheOperationContext</span> <span class="n">context</span><span class="o">,</span> <span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">for</span> <span class="o">(</span><span class="n">Cache</span> <span class="n">cache</span> <span class="o">:</span> <span class="n">context</span><span class="o">.</span><span class="na">getCaches</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="c1">// Call the doGet method of the parent class AbstractCacheInvoker to query the cache
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="n">wrapper</span> <span class="o">=</span> <span class="n">doGet</span><span class="o">(</span><span class="n">cache</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="o">(</span><span class="n">wrapper</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isTraceEnabled</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">					<span class="n">logger</span><span class="o">.</span><span class="na">trace</span><span class="o">(</span><span class="s">&#34;Cache entry for key &#39;&#34;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s">&#34;&#39; found in cache &#39;&#34;</span> <span class="o">+</span> <span class="n">cache</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&#34;&#39;&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">				<span class="o">}</span>
+</span></span><span class="line"><span class="cl">				<span class="k">return</span> <span class="n">wrapper</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="abstractcacheinvoker">AbstractCacheInvoker</h4>
 <p>Parent class of CacheAspectSupport, encapsulating the logic of the final query Cache interface.</p>
@@ -1202,20 +1192,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractCacheInvoker</span> <span class="o">{</span>
-        <span class="c1">// The final query cache method
-</span><span class="c1"></span>	<span class="kd">protected</span> <span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">Cache</span> <span class="n">cache</span><span class="o">,</span> <span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
-		<span class="k">try</span> <span class="o">{</span>
-                        <span class="c1">// Calling the query method of the Spring Cache interface
-</span><span class="c1"></span>			<span class="k">return</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
-		<span class="o">}</span>
-		<span class="k">catch</span> <span class="o">(</span><span class="n">RuntimeException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-			<span class="n">getErrorHandler</span><span class="o">().</span><span class="na">handleCacheGetError</span><span class="o">(</span><span class="n">ex</span><span class="o">,</span> <span class="n">cache</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
-			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>  <span class="c1">// If the exception is handled, return a cache miss
-</span><span class="c1"></span>		<span class="o">}</span>
-	<span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractCacheInvoker</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// The final query cache method
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kd">protected</span> <span class="n">Cache</span><span class="o">.</span><span class="na">ValueWrapper</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">Cache</span> <span class="n">cache</span><span class="o">,</span> <span class="n">Object</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="c1">// Calling the query method of the Spring Cache interface
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">return</span> <span class="n">cache</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">catch</span> <span class="o">(</span><span class="n">RuntimeException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">			<span class="n">getErrorHandler</span><span class="o">().</span><span class="na">handleCacheGetError</span><span class="o">(</span><span class="n">ex</span><span class="o">,</span> <span class="n">cache</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>  <span class="c1">// If the exception is handled, return a cache miss
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div>
     </div>

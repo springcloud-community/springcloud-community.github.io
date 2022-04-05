@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/api-version/" />
@@ -454,16 +454,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">POST /foo/upload HTTP/1.1
-Host: localhost:8080
-Api-Version: v1
-Content-Type: application/json
-
-{
-    &#34;name&#34;: &#34;felord&#34;,
-    &#34;age&#34;: 18
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">POST /foo/upload HTTP/1.1
+</span></span><span class="line"><span class="cl">Host: localhost:8080
+</span></span><span class="line"><span class="cl">Api-Version: v1
+</span></span><span class="line"><span class="cl">Content-Type: application/json
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    &#34;name&#34;: &#34;felord&#34;,
+</span></span><span class="line"><span class="cl">    &#34;age&#34;: 18
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -479,17 +479,17 @@ Content-Type: application/json
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">POST /foo/upload HTTP/1.1
-Host: localhost:8080
-Api-Version: v2
-Content-Type: application/json
-
-{
-    &#34;name&#34;: &#34;felord&#34;,
-    &#34;age&#34;: 18
-    &#34;gender&#34; 1
-}
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">POST /foo/upload HTTP/1.1
+</span></span><span class="line"><span class="cl">Host: localhost:8080
+</span></span><span class="line"><span class="cl">Api-Version: v2
+</span></span><span class="line"><span class="cl">Content-Type: application/json
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    &#34;name&#34;: &#34;felord&#34;,
+</span></span><span class="line"><span class="cl">    &#34;age&#34;: 18
+</span></span><span class="line"><span class="cl">    &#34;gender&#34; 1
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We identify the API version we expect to request by adding <code>Api-Version</code> to the Header.</p>
 <h2 id="3-how-to-route">3. How to route</h2>
@@ -528,36 +528,36 @@ Content-Type: application/json
 </span><span class="lnt">29
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="k">upstream</span> <span class="s">v1</span> <span class="p">{</span>
-    <span class="kn">server</span> <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">8081</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="k">upstream</span> <span class="s">v2</span> <span class="p">{</span>
-    <span class="kn">server</span> <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">8082</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="k">server</span> <span class="p">{</span>  
-    <span class="kn">listen</span> <span class="mi">8080</span><span class="p">;</span>
-    <span class="kn">server_name</span> <span class="s">localhost</span><span class="p">;</span>
-    <span class="kn">charset</span> <span class="s">utf-8</span><span class="p">;</span>
-    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
-        <span class="kn">set</span> <span class="nv">$not_match</span> <span class="mi">0</span><span class="p">;</span>
-         <span class="c1"># 根据 Api-Version 来进行路由
-</span><span class="c1"></span>        <span class="kn">if</span> <span class="s">(</span><span class="nv">$http_app_version</span> <span class="p">=</span> <span class="s">&#34;v1&#34;)</span> <span class="p">{</span>
-            <span class="kn">proxy_pass</span> <span class="s">http://v1</span><span class="p">;</span>
-            <span class="kn">set</span> <span class="nv">$not_match</span> <span class="mi">1</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="kn">if</span> <span class="s">(</span><span class="nv">$http_app_version</span> <span class="p">=</span> <span class="s">&#34;v2&#34;)</span> <span class="p">{</span>
-            <span class="kn">proxy_pass</span> <span class="s">http://v2</span><span class="p">;</span>
-            <span class="kn">set</span> <span class="nv">$not_match</span> <span class="mi">1</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="kn">if($not_match</span> <span class="p">=</span> <span class="mi">0</span><span class="s">)</span><span class="p">{</span>
-            <span class="c1"># 处理无匹配的问题   
-</span><span class="c1"></span>        <span class="p">}</span>
-    <span class="p">}</span>  
-<span class="p">}</span> 
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">upstream</span> <span class="s">v1</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">8081</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">upstream</span> <span class="s">v2</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">8082</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">server</span> <span class="p">{</span>  
+</span></span><span class="line"><span class="cl">    <span class="kn">listen</span> <span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server_name</span> <span class="s">localhost</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">charset</span> <span class="s">utf-8</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">set</span> <span class="nv">$not_match</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">         <span class="c1"># 根据 Api-Version 来进行路由
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kn">if</span> <span class="s">(</span><span class="nv">$http_app_version</span> <span class="p">=</span> <span class="s">&#34;v1&#34;)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_pass</span> <span class="s">http://v1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">set</span> <span class="nv">$not_match</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">if</span> <span class="s">(</span><span class="nv">$http_app_version</span> <span class="p">=</span> <span class="s">&#34;v2&#34;)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_pass</span> <span class="s">http://v2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">set</span> <span class="nv">$not_match</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">if($not_match</span> <span class="p">=</span> <span class="mi">0</span><span class="s">)</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 处理无匹配的问题   
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>  
+</span></span><span class="line"><span class="cl"><span class="p">}</span> 
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Host, URI can be similarly routed for distribution.</p>
 <p><em>By here you can also consider how a simple canary distribution can be done.</em></p>

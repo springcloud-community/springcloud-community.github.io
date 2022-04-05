@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/writing-spring-tests-with-kotlin/" />
@@ -448,11 +448,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;properties&gt;</span>
-  <span class="nt">&lt;java.version&gt;</span>11<span class="nt">&lt;/java.version&gt;</span>
-  <span class="nt">&lt;kotlin.version&gt;</span>1.5.0<span class="nt">&lt;/kotlin.version&gt;</span>
-<span class="nt">&lt;/properties&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;properties&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;java.version&gt;</span>11<span class="nt">&lt;/java.version&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;kotlin.version&gt;</span>1.5.0<span class="nt">&lt;/kotlin.version&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/properties&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then add the dependencies for the Kotlin standard library. Note that we only need to use Kotlin in our test environment, so define <code>scope</code> as <code>test</code> .</p>
 <div class="highlight"><div class="chroma">
@@ -465,13 +465,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-  <span class="nt">&lt;groupId&gt;</span>org.jetbrains.kotlin<span class="nt">&lt;/groupId&gt;</span>
-  <span class="nt">&lt;artifactId&gt;</span>kotlin-stdlib<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>${kotlin.version}<span class="nt">&lt;/version&gt;</span>
-  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;groupId&gt;</span>org.jetbrains.kotlin<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;artifactId&gt;</span>kotlin-stdlib<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;version&gt;</span>${kotlin.version}<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Next is to configure the Maven plugin for compiling Kotlin code, copy the following code directly into the <code>build.plugins</code> tag. Be careful not to delete Spring&rsquo;s Maven.</p>
 <div class="highlight"><div class="chroma">
@@ -540,69 +540,69 @@
 </span><span class="lnt">62
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;plugin&gt;</span>
-  <span class="nt">&lt;groupId&gt;</span>org.jetbrains.kotlin<span class="nt">&lt;/groupId&gt;</span>
-  <span class="nt">&lt;artifactId&gt;</span>kotlin-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>${kotlin.version}<span class="nt">&lt;/version&gt;</span>
-  <span class="nt">&lt;executions&gt;</span>
-    <span class="nt">&lt;execution&gt;</span>
-      <span class="nt">&lt;id&gt;</span>compile<span class="nt">&lt;/id&gt;</span>
-      <span class="nt">&lt;goals&gt;</span>
-        <span class="nt">&lt;goal&gt;</span>compile<span class="nt">&lt;/goal&gt;</span>
-      <span class="nt">&lt;/goals&gt;</span>
-      <span class="nt">&lt;configuration&gt;</span>
-        <span class="nt">&lt;sourceDirs&gt;</span>
-          <span class="nt">&lt;sourceDir&gt;</span>${project.basedir}/src/main/kotlin<span class="nt">&lt;/sourceDir&gt;</span>
-          <span class="nt">&lt;sourceDir&gt;</span>${project.basedir}/src/main/java<span class="nt">&lt;/sourceDir&gt;</span>
-        <span class="nt">&lt;/sourceDirs&gt;</span>
-      <span class="nt">&lt;/configuration&gt;</span>
-    <span class="nt">&lt;/execution&gt;</span>
-    <span class="nt">&lt;execution&gt;</span>
-      <span class="nt">&lt;id&gt;</span>test-compile<span class="nt">&lt;/id&gt;</span>
-      <span class="nt">&lt;goals&gt;</span>
-        <span class="nt">&lt;goal&gt;</span>test-compile<span class="nt">&lt;/goal&gt;</span>
-      <span class="nt">&lt;/goals&gt;</span>
-      <span class="nt">&lt;configuration&gt;</span>
-        <span class="nt">&lt;sourceDirs&gt;</span>
-          <span class="nt">&lt;sourceDir&gt;</span>${project.basedir}/src/test/kotlin<span class="nt">&lt;/sourceDir&gt;</span>
-          <span class="nt">&lt;sourceDir&gt;</span>${project.basedir}/src/test/java<span class="nt">&lt;/sourceDir&gt;</span>
-        <span class="nt">&lt;/sourceDirs&gt;</span>
-      <span class="nt">&lt;/configuration&gt;</span>
-    <span class="nt">&lt;/execution&gt;</span>
-  <span class="nt">&lt;/executions&gt;</span>
-<span class="nt">&lt;/plugin&gt;</span>
-<span class="nt">&lt;plugin&gt;</span>
-  <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
-  <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>3.5.1<span class="nt">&lt;/version&gt;</span>
-  <span class="nt">&lt;executions&gt;</span>
-    <span class="c">&lt;!-- Replacing default-compile as it is treated specially by maven --&gt;</span>
-    <span class="nt">&lt;execution&gt;</span>
-      <span class="nt">&lt;id&gt;</span>default-compile<span class="nt">&lt;/id&gt;</span>
-      <span class="nt">&lt;phase&gt;</span>none<span class="nt">&lt;/phase&gt;</span>
-    <span class="nt">&lt;/execution&gt;</span>
-    <span class="c">&lt;!-- Replacing default-testCompile as it is treated specially by maven --&gt;</span>
-    <span class="nt">&lt;execution&gt;</span>
-      <span class="nt">&lt;id&gt;</span>default-testCompile<span class="nt">&lt;/id&gt;</span>
-      <span class="nt">&lt;phase&gt;</span>none<span class="nt">&lt;/phase&gt;</span>
-    <span class="nt">&lt;/execution&gt;</span>
-    <span class="nt">&lt;execution&gt;</span>
-      <span class="nt">&lt;id&gt;</span>java-compile<span class="nt">&lt;/id&gt;</span>
-      <span class="nt">&lt;phase&gt;</span>compile<span class="nt">&lt;/phase&gt;</span>
-      <span class="nt">&lt;goals&gt;</span>
-        <span class="nt">&lt;goal&gt;</span>compile<span class="nt">&lt;/goal&gt;</span>
-      <span class="nt">&lt;/goals&gt;</span>
-    <span class="nt">&lt;/execution&gt;</span>
-    <span class="nt">&lt;execution&gt;</span>
-      <span class="nt">&lt;id&gt;</span>java-test-compile<span class="nt">&lt;/id&gt;</span>
-      <span class="nt">&lt;phase&gt;</span>test-compile<span class="nt">&lt;/phase&gt;</span>
-      <span class="nt">&lt;goals&gt;</span>
-        <span class="nt">&lt;goal&gt;</span>testCompile<span class="nt">&lt;/goal&gt;</span>
-      <span class="nt">&lt;/goals&gt;</span>
-    <span class="nt">&lt;/execution&gt;</span>
-  <span class="nt">&lt;/executions&gt;</span>
-<span class="nt">&lt;/plugin&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;plugin&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;groupId&gt;</span>org.jetbrains.kotlin<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;artifactId&gt;</span>kotlin-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;version&gt;</span>${kotlin.version}<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;executions&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;execution&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;id&gt;</span>compile<span class="nt">&lt;/id&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;goals&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;goal&gt;</span>compile<span class="nt">&lt;/goal&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;/goals&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;configuration&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;sourceDirs&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&lt;sourceDir&gt;</span>${project.basedir}/src/main/kotlin<span class="nt">&lt;/sourceDir&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&lt;sourceDir&gt;</span>${project.basedir}/src/main/java<span class="nt">&lt;/sourceDir&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/sourceDirs&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;/configuration&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/execution&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;execution&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;id&gt;</span>test-compile<span class="nt">&lt;/id&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;goals&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;goal&gt;</span>test-compile<span class="nt">&lt;/goal&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;/goals&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;configuration&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;sourceDirs&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&lt;sourceDir&gt;</span>${project.basedir}/src/test/kotlin<span class="nt">&lt;/sourceDir&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&lt;sourceDir&gt;</span>${project.basedir}/src/test/java<span class="nt">&lt;/sourceDir&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/sourceDirs&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;/configuration&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/execution&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/executions&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/plugin&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;plugin&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;version&gt;</span>3.5.1<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;executions&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="c">&lt;!-- Replacing default-compile as it is treated specially by maven --&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;execution&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;id&gt;</span>default-compile<span class="nt">&lt;/id&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;phase&gt;</span>none<span class="nt">&lt;/phase&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/execution&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="c">&lt;!-- Replacing default-testCompile as it is treated specially by maven --&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;execution&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;id&gt;</span>default-testCompile<span class="nt">&lt;/id&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;phase&gt;</span>none<span class="nt">&lt;/phase&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/execution&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;execution&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;id&gt;</span>java-compile<span class="nt">&lt;/id&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;phase&gt;</span>compile<span class="nt">&lt;/phase&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;goals&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;goal&gt;</span>compile<span class="nt">&lt;/goal&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;/goals&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/execution&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;execution&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;id&gt;</span>java-test-compile<span class="nt">&lt;/id&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;phase&gt;</span>test-compile<span class="nt">&lt;/phase&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;goals&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;goal&gt;</span>testCompile<span class="nt">&lt;/goal&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;/goals&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/execution&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/executions&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/plugin&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>At this point, the project has the ability to compile Kotlin. However, we have not imported any Kotlin test libraries yet, so it is not convenient to use JUnit only, so we can add some assertion libraries for writing tests easily.</p>
 <div class="highlight"><div class="chroma">
@@ -627,25 +627,25 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-  <span class="nt">&lt;groupId&gt;</span>io.kotest<span class="nt">&lt;/groupId&gt;</span>
-  <span class="nt">&lt;artifactId&gt;</span>kotest-runner-junit5-jvm<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>4.5.0<span class="nt">&lt;/version&gt;</span>
-  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;dependency&gt;</span>
-  <span class="nt">&lt;groupId&gt;</span>io.kotest<span class="nt">&lt;/groupId&gt;</span>
-  <span class="nt">&lt;artifactId&gt;</span>kotest-assertions-core-jvm<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>4.5.0<span class="nt">&lt;/version&gt;</span>
-  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;dependency&gt;</span>
-  <span class="nt">&lt;groupId&gt;</span>io.kotest<span class="nt">&lt;/groupId&gt;</span>
-  <span class="nt">&lt;artifactId&gt;</span>kotest-assertions-json<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>4.5.0<span class="nt">&lt;/version&gt;</span>
-  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;groupId&gt;</span>io.kotest<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;artifactId&gt;</span>kotest-runner-junit5-jvm<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;version&gt;</span>4.5.0<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;groupId&gt;</span>io.kotest<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;artifactId&gt;</span>kotest-assertions-core-jvm<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;version&gt;</span>4.5.0<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;groupId&gt;</span>io.kotest<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;artifactId&gt;</span>kotest-assertions-json<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;version&gt;</span>4.5.0<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Kotest is also a unit testing tool similar to JUnit, but we will only use the assertion feature, because Kotest has Spring testing support, but you may encounter a lot of strange problems (at least I didn&rsquo;t get it right, I might as well just use JUnit).</p>
 <h3 id="writing-business">Writing business</h3>
@@ -672,25 +672,25 @@
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@RestController</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">IndexController</span> <span class="o">{</span>
-
-    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/index&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="s">&#34;index&#34;</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@PostMapping</span><span class="o">(</span><span class="s">&#34;/index&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">post</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;value&#34;</span><span class="o">)</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@PutMapping</span><span class="o">(</span><span class="s">&#34;/json&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">JsonNode</span> <span class="nf">json</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">JsonNode</span> <span class="n">node</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">node</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">IndexController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/index&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">get</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s">&#34;index&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@PostMapping</span><span class="o">(</span><span class="s">&#34;/index&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">post</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="s">&#34;value&#34;</span><span class="o">)</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@PutMapping</span><span class="o">(</span><span class="s">&#34;/json&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">JsonNode</span> <span class="nf">json</span><span class="o">(</span><span class="nd">@RequestBody</span> <span class="n">JsonNode</span> <span class="n">node</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">node</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -703,14 +703,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Service</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserService</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUserName</span><span class="o">(</span><span class="kd">final</span> <span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="s">&#34;username: &#34;</span> <span class="o">+</span> <span class="n">id</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserService</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getUserName</span><span class="o">(</span><span class="kd">final</span> <span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s">&#34;username: &#34;</span> <span class="o">+</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="writing-tests">Writing tests</h3>
 <p>We need to create a <code>kotlin</code> folder in the <code>test</code> folder to store the Kotlin test code (you can write it directly in the java folder, but it&rsquo;s better to standardize it), and then set <code>kotlin</code> as the test folder (IDEA will not recognize it automatically).</p>
@@ -734,21 +734,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@SpringBootTest</span>
-<span class="kd">class</span> <span class="nc">UserServiceTest</span> <span class="o">{</span>
-    <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="n">lateinit</span> <span class="n">var</span> <span class="n">userService</span><span class="o">:</span> <span class="n">UserService</span>
-
-    <span class="nd">@Test</span>
-    <span class="n">fun</span> <span class="nf">getUserName</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">userService</span><span class="o">.</span><span class="na">getUserName</span><span class="o">(</span><span class="n">1</span><span class="o">)</span> <span class="n">shouldBe</span> <span class="s">&#34;username: 1&#34;</span>
-        <span class="n">userService</span><span class="o">.</span><span class="na">getUserName</span><span class="o">(</span><span class="n">2</span><span class="o">)</span> <span class="n">should</span> <span class="o">{</span>
-            <span class="n">it</span> <span class="n">shouldBe</span> <span class="s">&#34;username: 2&#34;</span>
-            <span class="n">it</span><span class="o">.</span><span class="na">length</span> <span class="n">shouldBe</span> <span class="n">11</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@SpringBootTest</span>
+</span></span><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">UserServiceTest</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">lateinit</span> <span class="n">var</span> <span class="n">userService</span><span class="o">:</span> <span class="n">UserService</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fun</span> <span class="nf">getUserName</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">userService</span><span class="o">.</span><span class="na">getUserName</span><span class="o">(</span><span class="n">1</span><span class="o">)</span> <span class="n">shouldBe</span> <span class="s">&#34;username: 1&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">userService</span><span class="o">.</span><span class="na">getUserName</span><span class="o">(</span><span class="n">2</span><span class="o">)</span> <span class="n">should</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">it</span> <span class="n">shouldBe</span> <span class="s">&#34;username: 2&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">it</span><span class="o">.</span><span class="na">length</span> <span class="n">shouldBe</span> <span class="n">11</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>You can see that Kotlin provides a lot of syntactic sugar to avoid writing unintuitive and repetitive code when testing. Java&rsquo;s code is a bit less intuitive in comparison.</p>
 <div class="highlight"><div class="chroma">
@@ -769,21 +769,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@SpringBootTest</span>
-<span class="kd">class</span> <span class="nc">UserServiceTest</span> <span class="o">{</span>
-
-    <span class="nd">@Autowired</span>
-    <span class="kd">private</span> <span class="n">UserService</span> <span class="n">userService</span><span class="o">;</span>
-
-    <span class="nd">@Test</span>
-    <span class="kt">void</span> <span class="nf">getUserName</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">assertEquals</span><span class="o">(</span><span class="s">&#34;username: 1&#34;</span><span class="o">,</span> <span class="n">userService</span><span class="o">.</span><span class="na">getUserName</span><span class="o">(</span><span class="n">1L</span><span class="o">));</span>
-        <span class="kd">final</span> <span class="n">String</span> <span class="n">userName</span> <span class="o">=</span> <span class="n">userService</span><span class="o">.</span><span class="na">getUserName</span><span class="o">(</span><span class="n">2L</span><span class="o">);</span>
-        <span class="n">assertEquals</span><span class="o">(</span><span class="s">&#34;username: 2&#34;</span><span class="o">,</span> <span class="n">userName</span><span class="o">);</span>
-        <span class="n">assertEquals</span><span class="o">(</span><span class="n">11</span><span class="o">,</span> <span class="n">userName</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@SpringBootTest</span>
+</span></span><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">UserServiceTest</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">UserService</span> <span class="n">userService</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">getUserName</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">assertEquals</span><span class="o">(</span><span class="s">&#34;username: 1&#34;</span><span class="o">,</span> <span class="n">userService</span><span class="o">.</span><span class="na">getUserName</span><span class="o">(</span><span class="n">1L</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">final</span> <span class="n">String</span> <span class="n">userName</span> <span class="o">=</span> <span class="n">userService</span><span class="o">.</span><span class="na">getUserName</span><span class="o">(</span><span class="n">2L</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">assertEquals</span><span class="o">(</span><span class="s">&#34;username: 2&#34;</span><span class="o">,</span> <span class="n">userName</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">assertEquals</span><span class="o">(</span><span class="n">11</span><span class="o">,</span> <span class="n">userName</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="mockmvc-testing">MockMvc testing</h3>
 <p>Java is fine for normal unit test code, but the advantages of Kotlin come into play in MockMvc testing. Spring provides a lot of DSL support for Kotlin.</p>
@@ -851,67 +851,67 @@
 </span><span class="lnt">60
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-kt" data-lang="kt"><span class="nd">@WebMvcTest</span><span class="p">(</span><span class="n">IndexController</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">MockMvcTest</span> <span class="p">{</span>
-    <span class="nd">@Autowired</span>
-    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">mockMvc</span><span class="p">:</span> <span class="n">MockMvc</span>
-
-    <span class="nd">@Test</span>
-    <span class="k">fun</span> <span class="nf">get</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">mockMvc</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="s2">&#34;/index&#34;</span><span class="p">).</span><span class="n">andExpect</span> <span class="p">{</span>
-            <span class="n">status</span> <span class="p">{</span> <span class="n">isOk</span><span class="p">()</span> <span class="p">}</span>
-            <span class="n">content</span> <span class="p">{</span>
-                <span class="n">contentTypeCompatibleWith</span><span class="p">(</span><span class="s2">&#34;text/plain&#34;</span><span class="p">)</span>
-                <span class="n">string</span><span class="p">(</span><span class="s2">&#34;index&#34;</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="nd">@Test</span>
-    <span class="k">fun</span> <span class="nf">post</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">mockMvc</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&#34;/index&#34;</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">param</span><span class="p">(</span><span class="s2">&#34;value&#34;</span><span class="p">,</span> <span class="s2">&#34;test value&#34;</span><span class="p">)</span>
-        <span class="p">}.</span><span class="n">andExpect</span> <span class="p">{</span>
-            <span class="n">status</span> <span class="p">{</span> <span class="n">isOk</span><span class="p">()</span> <span class="p">}</span>
-            <span class="n">content</span> <span class="p">{</span>
-                <span class="n">string</span><span class="p">(</span><span class="s2">&#34;test value&#34;</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">}.</span><span class="n">andDo</span> <span class="p">{</span>
-            <span class="n">print</span><span class="p">()</span>
-            <span class="n">handle</span> <span class="p">{</span>
-                <span class="n">println</span><span class="p">(</span><span class="k">it</span><span class="p">.</span><span class="n">response</span><span class="p">.</span><span class="n">characterEncoding</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="nd">@Test</span>
-    <span class="k">fun</span> <span class="nf">json</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">mockMvc</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&#34;/json&#34;</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">contentType</span> <span class="p">=</span> <span class="n">MediaType</span><span class="p">.</span><span class="n">APPLICATION_JSON</span>
-            <span class="n">accept</span> <span class="p">=</span> <span class="n">MediaType</span><span class="p">.</span><span class="n">APPLICATION_JSON</span>
-            <span class="n">content</span> <span class="p">=</span> <span class="s">&#34;&#34;&#34;
-</span><span class="s">                {
-</span><span class="s">                  &#34;key&#34;: &#34;value&#34;,
-</span><span class="s">                  &#34;key2&#34;: {
-</span><span class="s">                    &#34;key3&#34;: [1, 2, 3]
-</span><span class="s">                  }
-</span><span class="s">                }
-</span><span class="s">            &#34;&#34;&#34;</span><span class="p">.</span><span class="n">trimIndent</span><span class="p">()</span>
-        <span class="p">}.</span><span class="n">andExpect</span> <span class="p">{</span>
-            <span class="n">status</span> <span class="p">{</span> <span class="n">isOk</span><span class="p">()</span> <span class="p">}</span>
-            <span class="n">content</span> <span class="p">{</span>
-                <span class="n">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="n">APPLICATION_JSON</span><span class="p">)</span>
-            <span class="p">}</span>
-            <span class="n">jsonPath</span><span class="p">(</span><span class="s2">&#34;$.key&#34;</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">value</span><span class="p">(</span><span class="s2">&#34;value&#34;</span><span class="p">)</span>
-            <span class="p">}</span>
-            <span class="n">jsonPath</span><span class="p">(</span><span class="s2">&#34;$.key2.key3.length()&#34;</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">value</span><span class="p">(</span><span class="m">3</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-kt" data-lang="kt"><span class="line"><span class="cl"><span class="nd">@WebMvcTest</span><span class="p">(</span><span class="n">IndexController</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MockMvcTest</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">lateinit</span> <span class="k">var</span> <span class="py">mockMvc</span><span class="p">:</span> <span class="n">MockMvc</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fun</span> <span class="nf">get</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">mockMvc</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="s2">&#34;/index&#34;</span><span class="p">).</span><span class="n">andExpect</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">status</span> <span class="p">{</span> <span class="n">isOk</span><span class="p">()</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">content</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">contentTypeCompatibleWith</span><span class="p">(</span><span class="s2">&#34;text/plain&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">string</span><span class="p">(</span><span class="s2">&#34;index&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fun</span> <span class="nf">post</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">mockMvc</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&#34;/index&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">param</span><span class="p">(</span><span class="s2">&#34;value&#34;</span><span class="p">,</span> <span class="s2">&#34;test value&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}.</span><span class="n">andExpect</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">status</span> <span class="p">{</span> <span class="n">isOk</span><span class="p">()</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">content</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">string</span><span class="p">(</span><span class="s2">&#34;test value&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}.</span><span class="n">andDo</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">print</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">handle</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">println</span><span class="p">(</span><span class="k">it</span><span class="p">.</span><span class="n">response</span><span class="p">.</span><span class="n">characterEncoding</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fun</span> <span class="nf">json</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">mockMvc</span><span class="p">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&#34;/json&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">contentType</span> <span class="p">=</span> <span class="n">MediaType</span><span class="p">.</span><span class="n">APPLICATION_JSON</span>
+</span></span><span class="line"><span class="cl">            <span class="n">accept</span> <span class="p">=</span> <span class="n">MediaType</span><span class="p">.</span><span class="n">APPLICATION_JSON</span>
+</span></span><span class="line"><span class="cl">            <span class="n">content</span> <span class="p">=</span> <span class="s">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">                {
+</span></span></span><span class="line"><span class="cl"><span class="s">                  &#34;key&#34;: &#34;value&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">                  &#34;key2&#34;: {
+</span></span></span><span class="line"><span class="cl"><span class="s">                    &#34;key3&#34;: [1, 2, 3]
+</span></span></span><span class="line"><span class="cl"><span class="s">                  }
+</span></span></span><span class="line"><span class="cl"><span class="s">                }
+</span></span></span><span class="line"><span class="cl"><span class="s">            &#34;&#34;&#34;</span><span class="p">.</span><span class="n">trimIndent</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}.</span><span class="n">andExpect</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">status</span> <span class="p">{</span> <span class="n">isOk</span><span class="p">()</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">content</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">contentType</span><span class="p">(</span><span class="n">MediaType</span><span class="p">.</span><span class="n">APPLICATION_JSON</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">jsonPath</span><span class="p">(</span><span class="s2">&#34;$.key&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">value</span><span class="p">(</span><span class="s2">&#34;value&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">jsonPath</span><span class="p">(</span><span class="s2">&#34;$.key2.key3.length()&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">value</span><span class="p">(</span><span class="m">3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>Reference <code>https://blog.ixk.me/post/writing-spring-tests-with-kotlin</code></p>

@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-03/notes-rabbitmq-spring-boot/" />
@@ -455,22 +455,22 @@
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">interface</span> <span class="nc">DomainEventListener</span> <span class="p">{</span>
-  <span class="k">val</span> <span class="py">topic</span><span class="p">:</span> <span class="n">String</span>
-  <span class="k">fun</span> <span class="nf">handle</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">DomainEvent</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="nd">@Component</span>
-<span class="k">class</span> <span class="nc">UserRegistered</span><span class="p">:</span> <span class="n">DomainEventListener</span> <span class="p">{</span>
-  <span class="k">override</span> <span class="k">val</span> <span class="py">topic</span> <span class="p">=</span> <span class="s2">&#34;user:registered&#34;</span>
-  
-  <span class="c1">// How deserialization is performed is left out.
-</span><span class="c1"></span>  
-  <span class="k">override</span> <span class="k">fun</span> <span class="nf">handle</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">DomainEvent</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// perform business logic
-</span><span class="c1"></span>  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="k">interface</span> <span class="nc">DomainEventListener</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">val</span> <span class="py">topic</span><span class="p">:</span> <span class="n">String</span>
+</span></span><span class="line"><span class="cl">  <span class="k">fun</span> <span class="nf">handle</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">DomainEvent</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">UserRegistered</span><span class="p">:</span> <span class="n">DomainEventListener</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">override</span> <span class="k">val</span> <span class="py">topic</span> <span class="p">=</span> <span class="s2">&#34;user:registered&#34;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="c1">// How deserialization is performed is left out.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  
+</span></span><span class="line"><span class="cl">  <span class="k">override</span> <span class="k">fun</span> <span class="nf">handle</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">DomainEvent</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// perform business logic
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This post shows how to integrate these listeners with Spring AMQP by taking advantage of Spring&rsquo;s infrastructure. We
 also briefly discuss several important topics on using messaging middleware.</p>
@@ -480,8 +480,8 @@ also briefly discuss several important topics on using messaging middleware.</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">--</span><span class="n">rm</span> <span class="o">--</span><span class="n">name</span> <span class="n">rabbitmq</span> <span class="o">-</span><span class="n">p</span> <span class="n">5672</span><span class="o">:</span><span class="n">5672</span> <span class="o">-</span><span class="n">p</span> <span class="n">15672</span><span class="o">:</span><span class="n">15672</span> <span class="n">rabbitmq</span><span class="o">:</span><span class="n">3</span><span class="o">-</span><span class="n">management</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">it</span> <span class="o">--</span><span class="n">rm</span> <span class="o">--</span><span class="n">name</span> <span class="n">rabbitmq</span> <span class="o">-</span><span class="n">p</span> <span class="n">5672</span><span class="o">:</span><span class="n">5672</span> <span class="o">-</span><span class="n">p</span> <span class="n">15672</span><span class="o">:</span><span class="n">15672</span> <span class="n">rabbitmq</span><span class="o">:</span><span class="n">3</span><span class="o">-</span><span class="n">management</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The web management UI is available at <a href="http://localhost:15672">http://localhost:15672</a>. The default username and
 password are both <code>guest</code>.</p>
@@ -554,34 +554,34 @@ application context. At runtime, Spring AMQP will issue requests to the broker a
 </span><span class="lnt">27
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="nd">@Configuration</span>
-<span class="k">class</span> <span class="nc">RabbitMqConfig</span> <span class="p">{</span>
-  <span class="nd">@Bean</span>
-  <span class="k">fun</span> <span class="nf">domainEventExchange</span><span class="p">()</span> <span class="p">=</span> 
-    <span class="n">DirectExchange</span><span class="p">(</span><span class="s2">&#34;domain_events&#34;</span><span class="p">)</span>
-
-  <span class="nd">@Bean</span>
-  <span class="k">fun</span> <span class="nf">queues</span><span class="p">(</span><span class="n">listeners</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">DomainEventListener</span><span class="p">&gt;)</span> <span class="p">=</span> 
-    <span class="n">Declarables</span><span class="p">(</span> <span class="c1">// highlight-line
-</span><span class="c1"></span>      <span class="n">listeners</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span>
-        <span class="n">QueueBuilder</span>
-          <span class="p">.</span><span class="n">durable</span><span class="p">(</span><span class="k">it</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">simpleName</span><span class="p">)</span> <span class="c1">// highlight-line
-</span><span class="c1"></span>          <span class="p">.</span><span class="n">build</span><span class="p">()</span>
-      <span class="p">}</span>
-    <span class="p">)</span>
-
-  <span class="nd">@Bean</span>
-  <span class="k">fun</span> <span class="nf">bindings</span><span class="p">(</span><span class="n">listeners</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">DomainEventListener</span><span class="p">&gt;)</span> <span class="p">=</span> 
-    <span class="n">Declarables</span><span class="p">(</span>
-      <span class="n">queues</span><span class="p">.</span><span class="n">zip</span><span class="p">(</span><span class="n">listeners</span><span class="p">)</span> <span class="p">{</span> <span class="n">queue</span><span class="p">,</span> <span class="n">listener</span> <span class="o">-&gt;</span>
-        <span class="n">BindingBuilder</span>
-          <span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span>
-          <span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">domainEventExchange</span><span class="p">())</span>
-          <span class="p">.</span><span class="n">with</span><span class="p">(</span><span class="n">listener</span><span class="p">.</span><span class="n">topic</span><span class="p">)</span>
-      <span class="p">}</span>
-    <span class="p">)</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">RabbitMqConfig</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">  <span class="k">fun</span> <span class="nf">domainEventExchange</span><span class="p">()</span> <span class="p">=</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">DirectExchange</span><span class="p">(</span><span class="s2">&#34;domain_events&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">  <span class="k">fun</span> <span class="nf">queues</span><span class="p">(</span><span class="n">listeners</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">DomainEventListener</span><span class="p">&gt;)</span> <span class="p">=</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">Declarables</span><span class="p">(</span> <span class="c1">// highlight-line
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">listeners</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">QueueBuilder</span>
+</span></span><span class="line"><span class="cl">          <span class="p">.</span><span class="n">durable</span><span class="p">(</span><span class="k">it</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">simpleName</span><span class="p">)</span> <span class="c1">// highlight-line
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>          <span class="p">.</span><span class="n">build</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">  <span class="k">fun</span> <span class="nf">bindings</span><span class="p">(</span><span class="n">listeners</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">DomainEventListener</span><span class="p">&gt;)</span> <span class="p">=</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">Declarables</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">      <span class="n">queues</span><span class="p">.</span><span class="n">zip</span><span class="p">(</span><span class="n">listeners</span><span class="p">)</span> <span class="p">{</span> <span class="n">queue</span><span class="p">,</span> <span class="n">listener</span> <span class="o">-&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">BindingBuilder</span>
+</span></span><span class="line"><span class="cl">          <span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">domainEventExchange</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">          <span class="p">.</span><span class="n">with</span><span class="p">(</span><span class="n">listener</span><span class="p">.</span><span class="n">topic</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>In this code snippet, we first declare an application-wide <code>domainEventExchange</code>. Then, we loop over
 the <code>DomainEventListener</code>&rsquo;s in the application context and create the necessary queues and bindings.</p>
@@ -626,30 +626,30 @@ the <code>RabbitListenerEndpointRegistrar</code> like this:</p>
 </span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="nd">@Configuration</span>
-<span class="nd">@EnableRabbit</span>
-<span class="k">class</span> <span class="nc">ContainerConfig</span><span class="p">(</span>
-  <span class="k">val</span> <span class="py">listeners</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">DomainEventListener</span><span class="p">&gt;,</span>
-  <span class="k">val</span> <span class="py">containerFactory</span><span class="p">:</span> <span class="n">SimpleRabbitListenerContainerFactory</span>
-<span class="p">):</span> <span class="n">RabbitListenerConfigurer</span> <span class="p">{</span>
-
-  <span class="k">override</span> <span class="k">fun</span> <span class="nf">configureRabbitListeners</span><span class="p">(</span>
-    <span class="n">registrar</span><span class="p">:</span> <span class="n">RabbitListenerEndpointRegistrar</span>
-  <span class="p">)</span> <span class="p">{</span>
-    <span class="n">registrar</span><span class="p">.</span><span class="n">setContainerFactory</span><span class="p">(</span><span class="n">containerFactory</span><span class="p">)</span> <span class="c1">// highlight-line
-</span><span class="c1"></span>    <span class="n">listeners</span><span class="p">.</span><span class="n">forEach</span> <span class="p">{</span> <span class="n">listener</span> <span class="o">-&gt;</span>
-      <span class="k">val</span> <span class="py">endpoint</span> <span class="p">=</span> <span class="n">SimpleRabbitListenerEndpoint</span><span class="p">().</span><span class="n">apply</span> <span class="p">{</span>
-        <span class="n">id</span> <span class="p">=</span> <span class="n">listener</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">simpleName</span><span class="o">!!</span>
-        <span class="n">setQueueNames</span><span class="p">(</span><span class="n">listener</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">simpleName</span><span class="p">)</span>
-        <span class="n">setMessageListener</span> <span class="p">{</span> <span class="n">message</span> <span class="o">-&gt;</span>
-          <span class="n">listener</span><span class="p">.</span><span class="n">handle</span><span class="p">(</span><span class="n">message</span><span class="p">.</span><span class="n">toDomainEvent</span><span class="p">())</span>
-        <span class="p">}</span>
-      <span class="p">}</span>
-      <span class="n">registrar</span><span class="p">.</span><span class="n">registerEndpoint</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span> <span class="c1">// highlight-line
-</span><span class="c1"></span>    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@EnableRabbit</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ContainerConfig</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="k">val</span> <span class="py">listeners</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">DomainEventListener</span><span class="p">&gt;,</span>
+</span></span><span class="line"><span class="cl">  <span class="k">val</span> <span class="py">containerFactory</span><span class="p">:</span> <span class="n">SimpleRabbitListenerContainerFactory</span>
+</span></span><span class="line"><span class="cl"><span class="p">):</span> <span class="n">RabbitListenerConfigurer</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">override</span> <span class="k">fun</span> <span class="nf">configureRabbitListeners</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">registrar</span><span class="p">:</span> <span class="n">RabbitListenerEndpointRegistrar</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">registrar</span><span class="p">.</span><span class="n">setContainerFactory</span><span class="p">(</span><span class="n">containerFactory</span><span class="p">)</span> <span class="c1">// highlight-line
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">listeners</span><span class="p">.</span><span class="n">forEach</span> <span class="p">{</span> <span class="n">listener</span> <span class="o">-&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">val</span> <span class="py">endpoint</span> <span class="p">=</span> <span class="n">SimpleRabbitListenerEndpoint</span><span class="p">().</span><span class="n">apply</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">id</span> <span class="p">=</span> <span class="n">listener</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">simpleName</span><span class="o">!!</span>
+</span></span><span class="line"><span class="cl">        <span class="n">setQueueNames</span><span class="p">(</span><span class="n">listener</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">simpleName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">setMessageListener</span> <span class="p">{</span> <span class="n">message</span> <span class="o">-&gt;</span>
+</span></span><span class="line"><span class="cl">          <span class="n">listener</span><span class="p">.</span><span class="n">handle</span><span class="p">(</span><span class="n">message</span><span class="p">.</span><span class="n">toDomainEvent</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="n">registrar</span><span class="p">.</span><span class="n">registerEndpoint</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span> <span class="c1">// highlight-line
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Spring AMQP will take care of creating the listener containers at runtime. Note that we passed an instance
 of <code>RabbitListenerContainerFactory</code> to the registrar. We will see that we can configure common properties of the
@@ -700,8 +700,8 @@ with a policy or specified when creating a queue.</p>
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">rabbitmqctl set_policy DLX <span class="s2">&#34;.*&#34;</span> <span class="s1">&#39;{&#34;dead-letter-exchange&#34;:&#34;my-dlx&#34;}&#39;</span> --apply-to queues
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">rabbitmqctl set_policy DLX <span class="s2">&#34;.*&#34;</span> <span class="s1">&#39;{&#34;dead-letter-exchange&#34;:&#34;my-dlx&#34;}&#39;</span> --apply-to queues
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>You can also apply a policy in the RabbitMQ web UI under the &ldquo;admin&rdquo; tag.</p>
 <p>Note that the dead letter exchange is just a regular exchange. If you specify a non-existent exchange, RabbitMQ does not
@@ -729,25 +729,25 @@ create it automatically. This is a type of misconfiguration that can cause lost 
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="nd">@Bean</span>
-<span class="k">fun</span> <span class="nf">deadLetterExchange</span><span class="p">()</span> <span class="p">=</span> <span class="n">DirectExchange</span><span class="p">(</span><span class="s2">&#34;dlx&#34;</span><span class="p">)</span>
-
-<span class="nd">@Bean</span>
-<span class="k">fun</span> <span class="nf">deadLetterQueues</span><span class="p">(</span>
-  <span class="n">listeners</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">DomainEventListener</span><span class="p">&gt;</span>
-<span class="p">)</span> <span class="p">=</span> <span class="n">Declarables</span><span class="p">(</span>
-  <span class="k">val</span> <span class="py">name</span> <span class="p">=</span> <span class="k">it</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">simpleName</span>
-  <span class="n">listeners</span><span class="p">.</span><span class="n">flatMap</span> <span class="p">{</span> <span class="c1">// highlight-line
-</span><span class="c1"></span>    <span class="k">val</span> <span class="py">deadLetterQueue</span> <span class="p">=</span> <span class="n">QueueBuilder</span><span class="p">.</span><span class="n">durable</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">$name</span><span class="s2">.dlq&#34;</span><span class="p">).</span><span class="n">build</span><span class="p">()</span>
-    <span class="k">val</span> <span class="py">deadLetterBinding</span> <span class="p">=</span> <span class="n">BindingBuilder</span>
-      <span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="n">deadLetterQueue</span><span class="p">)</span>
-      <span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">deadLetterExchange</span><span class="p">())</span>
-      <span class="p">.</span><span class="n">with</span><span class="p">(</span><span class="k">it</span><span class="p">.</span><span class="n">topic</span><span class="p">)</span>
-
-    <span class="n">listOf</span><span class="p">(</span><span class="n">deadLetterQueue</span><span class="p">,</span> <span class="n">deadLetterBinding</span><span class="p">)</span> <span class="c1">// highlight-line
-</span><span class="c1"></span>  <span class="p">}</span>
-<span class="p">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="k">fun</span> <span class="nf">deadLetterExchange</span><span class="p">()</span> <span class="p">=</span> <span class="n">DirectExchange</span><span class="p">(</span><span class="s2">&#34;dlx&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="k">fun</span> <span class="nf">deadLetterQueues</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="n">listeners</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">DomainEventListener</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="p">=</span> <span class="n">Declarables</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="k">val</span> <span class="py">name</span> <span class="p">=</span> <span class="k">it</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">simpleName</span>
+</span></span><span class="line"><span class="cl">  <span class="n">listeners</span><span class="p">.</span><span class="n">flatMap</span> <span class="p">{</span> <span class="c1">// highlight-line
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">val</span> <span class="py">deadLetterQueue</span> <span class="p">=</span> <span class="n">QueueBuilder</span><span class="p">.</span><span class="n">durable</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">$name</span><span class="s2">.dlq&#34;</span><span class="p">).</span><span class="n">build</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">val</span> <span class="py">deadLetterBinding</span> <span class="p">=</span> <span class="n">BindingBuilder</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">bind</span><span class="p">(</span><span class="n">deadLetterQueue</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">to</span><span class="p">(</span><span class="n">deadLetterExchange</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">with</span><span class="p">(</span><span class="k">it</span><span class="p">.</span><span class="n">topic</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">listOf</span><span class="p">(</span><span class="n">deadLetterQueue</span><span class="p">,</span> <span class="n">deadLetterBinding</span><span class="p">)</span> <span class="c1">// highlight-line
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>For each listener, we create:</p>
 <ul>
@@ -755,7 +755,7 @@ create it automatically. This is a type of misconfiguration that can cause lost 
 <li>its binding to the application-wide <code>deadLetterExchange()</code>.</li>
 </ul>
 <p>By properly configuring listening queues and bindings, we ensure dead letters won&rsquo;t get lost.</p>
-<p>Then, update our <code>queues()</code> code to configure the queues' dead letter exchange.</p>
+<p>Then, update our <code>queues()</code> code to configure the queues&rsquo; dead letter exchange.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -774,21 +774,21 @@ create it automatically. This is a type of misconfiguration that can cause lost 
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="nd">@Bean</span>
-<span class="k">fun</span> <span class="nf">deadLetterExchange</span><span class="p">()</span> <span class="p">=</span> <span class="n">DirectExchange</span><span class="p">(</span><span class="s2">&#34;dlx&#34;</span><span class="p">)</span>
-
-<span class="nd">@Bean</span>
-<span class="k">fun</span> <span class="nf">queues</span><span class="p">(</span><span class="n">listeners</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">DomainEventListener</span><span class="p">&gt;)</span> <span class="p">=</span> <span class="n">Declarables</span><span class="p">(</span>
-  <span class="n">listeners</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span>
-    <span class="n">QueueBuilder</span><span class="p">.</span><span class="n">durable</span><span class="p">(</span><span class="k">it</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">simpleName</span><span class="p">)</span>
-      <span class="p">.</span><span class="n">withDeadLetterExchange</span><span class="p">(</span><span class="n">deadLetterExchange</span><span class="p">())</span> <span class="c1">// highlight-line
-</span><span class="c1"></span>      <span class="p">.</span><span class="n">build</span><span class="p">()</span>
-  <span class="p">}</span>
-<span class="p">)</span>
-
-<span class="k">private</span> <span class="k">fun</span> <span class="nf">QueueBuilder</span><span class="p">.</span><span class="n">withDeadLetterExchange</span><span class="p">(</span><span class="n">exchange</span><span class="p">:</span> <span class="n">Exchange</span><span class="p">):</span> <span class="n">QueueBuilder</span> <span class="p">=</span>
-  <span class="n">withArgument</span><span class="p">(</span><span class="s2">&#34;x-dead-letter-exchange&#34;</span><span class="p">,</span> <span class="n">exchange</span><span class="p">.</span><span class="n">name</span><span class="p">)</span> <span class="c1">// highlight-line
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="k">fun</span> <span class="nf">deadLetterExchange</span><span class="p">()</span> <span class="p">=</span> <span class="n">DirectExchange</span><span class="p">(</span><span class="s2">&#34;dlx&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="k">fun</span> <span class="nf">queues</span><span class="p">(</span><span class="n">listeners</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">DomainEventListener</span><span class="p">&gt;)</span> <span class="p">=</span> <span class="n">Declarables</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="n">listeners</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">QueueBuilder</span><span class="p">.</span><span class="n">durable</span><span class="p">(</span><span class="k">it</span><span class="o">::</span><span class="k">class</span><span class="p">.</span><span class="n">simpleName</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="n">withDeadLetterExchange</span><span class="p">(</span><span class="n">deadLetterExchange</span><span class="p">())</span> <span class="c1">// highlight-line
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="p">.</span><span class="n">build</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">private</span> <span class="k">fun</span> <span class="nf">QueueBuilder</span><span class="p">.</span><span class="n">withDeadLetterExchange</span><span class="p">(</span><span class="n">exchange</span><span class="p">:</span> <span class="n">Exchange</span><span class="p">):</span> <span class="n">QueueBuilder</span> <span class="p">=</span>
+</span></span><span class="line"><span class="cl">  <span class="n">withArgument</span><span class="p">(</span><span class="s2">&#34;x-dead-letter-exchange&#34;</span><span class="p">,</span> <span class="n">exchange</span><span class="p">.</span><span class="n">name</span><span class="p">)</span> <span class="c1">// highlight-line
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>We also need to set up our listener containers to instruct RabbitMQ not to requeue rejected messages. If a dead letter
 exchange is configured on the queue, the message will be routed to it. Otherwise, the message will be dropped.</p>
@@ -800,11 +800,11 @@ exchange is configured on the queue, the message will be routed to it. Otherwise
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">SimpleRabbitListenerContainerFactory</span><span class="p">().</span><span class="n">apply</span> <span class="p">{</span>
-  <span class="n">setDefaultRequeueRejected</span><span class="p">(</span><span class="k">false</span><span class="p">)</span>
-  <span class="n">setConnectionFactory</span><span class="p">(</span><span class="n">connectionFactory</span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="n">SimpleRabbitListenerContainerFactory</span><span class="p">().</span><span class="n">apply</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">setDefaultRequeueRejected</span><span class="p">(</span><span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">setConnectionFactory</span><span class="p">(</span><span class="n">connectionFactory</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>Laravel&rsquo;s <a href="https://laravel.com/docs/8.x/queues#dealing-with-failed-jobs">failed jobs</a> table is the equivalent concept.</p>
@@ -829,20 +829,20 @@ retry helpers, and we can configure them in the container factory like this:</p>
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="nd">@Bean</span>
-<span class="k">fun</span> <span class="nf">retryInterceptor</span><span class="p">()</span> <span class="p">=</span> <span class="n">RetryInterceptorBuilder</span><span class="p">()</span>
-  <span class="p">.</span><span class="n">stateless</span><span class="p">()</span>
-  <span class="p">.</span><span class="n">maxAttemtps</span><span class="p">(</span><span class="m">2</span><span class="p">)</span>
-  <span class="p">.</span><span class="n">backOffOptions</span><span class="p">(</span><span class="m">1000</span><span class="p">,</span> <span class="m">2.0</span><span class="p">,</span> <span class="m">10</span><span class="n">_000</span><span class="p">)</span>
-  <span class="p">.</span><span class="n">recoverer</span><span class="p">(</span><span class="n">RejectAndDontRequeueRecoverer</span><span class="p">())</span> <span class="c1">// highlight-line
-</span><span class="c1"></span>  <span class="p">.</span><span class="n">build</span><span class="p">()</span>
-
-<span class="n">SimpleRabbitListenerContainerFactory</span><span class="p">().</span><span class="n">apply</span> <span class="p">{</span>
-  <span class="n">setDefaultRequeueRejected</span><span class="p">(</span><span class="k">false</span><span class="p">)</span>
-  <span class="n">setConnectionFactory</span><span class="p">(</span><span class="n">connectionFactory</span><span class="p">)</span>
-  <span class="n">setAdviceChain</span><span class="p">(</span><span class="n">retryInterceptor</span><span class="p">())</span> <span class="c1">// highlight-line
-</span><span class="c1"></span><span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="k">fun</span> <span class="nf">retryInterceptor</span><span class="p">()</span> <span class="p">=</span> <span class="n">RetryInterceptorBuilder</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">stateless</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">maxAttemtps</span><span class="p">(</span><span class="m">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">backOffOptions</span><span class="p">(</span><span class="m">1000</span><span class="p">,</span> <span class="m">2.0</span><span class="p">,</span> <span class="m">10</span><span class="n">_000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="n">recoverer</span><span class="p">(</span><span class="n">RejectAndDontRequeueRecoverer</span><span class="p">())</span> <span class="c1">// highlight-line
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">.</span><span class="n">build</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">SimpleRabbitListenerContainerFactory</span><span class="p">().</span><span class="n">apply</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">setDefaultRequeueRejected</span><span class="p">(</span><span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">setConnectionFactory</span><span class="p">(</span><span class="n">connectionFactory</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">setAdviceChain</span><span class="p">(</span><span class="n">retryInterceptor</span><span class="p">())</span> <span class="c1">// highlight-line
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>Reference <code>https://blog.yujinyan.me/posts/notes-rabbitmq-spring-boot/</code></p>

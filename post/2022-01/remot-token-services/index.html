@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-01/remot-token-services/" />
@@ -451,28 +451,28 @@
 </span><span class="lnt">21
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ResourceServerTokenServices</span> <span class="o">{</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * Load the credentials for the specified access token.
-</span><span class="cm">     *
-</span><span class="cm">     * @param accessToken The access token value.
-</span><span class="cm">     * @return The authentication for the access token.
-</span><span class="cm">     * @throws AuthenticationException If the access token is expired
-</span><span class="cm">     * @throws InvalidTokenException if the token isn&#39;t valid
-</span><span class="cm">     */</span>
-    <span class="n">OAuth2Authentication</span> <span class="nf">loadAuthentication</span><span class="o">(</span><span class="n">String</span> <span class="n">accessToken</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">AuthenticationException</span><span class="o">,</span> <span class="n">InvalidTokenException</span><span class="o">;</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * Retrieve the full access token details from just the value.
-</span><span class="cm">     * 
-</span><span class="cm">     * @param accessToken the token value
-</span><span class="cm">     * @return the full access token with client id etc.
-</span><span class="cm">     */</span>
-    <span class="n">OAuth2AccessToken</span> <span class="nf">readAccessToken</span><span class="o">(</span><span class="n">String</span> <span class="n">accessToken</span><span class="o">);</span>
-
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ResourceServerTokenServices</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Load the credentials for the specified access token.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param accessToken The access token value.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @return The authentication for the access token.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @throws AuthenticationException If the access token is expired
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @throws InvalidTokenException if the token isn&#39;t valid
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="n">OAuth2Authentication</span> <span class="nf">loadAuthentication</span><span class="o">(</span><span class="n">String</span> <span class="n">accessToken</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">AuthenticationException</span><span class="o">,</span> <span class="n">InvalidTokenException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Retrieve the full access token details from just the value.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param accessToken the token value
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @return the full access token with client id etc.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="n">OAuth2AccessToken</span> <span class="nf">readAccessToken</span><span class="o">(</span><span class="n">String</span> <span class="n">accessToken</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>So, I&rsquo;ll take a step-by-step approach here, using <code>RemoteTokenServices</code> as an example, to see how the process is done.</p>
 <h2 id="1-how-to-configure-remotetokenservices">1. How to configure <code>RemoteTokenServices</code>?</h2>
@@ -482,8 +482,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">resources</span><span class="o">.</span><span class="na">tokenServices</span><span class="o">(</span><span class="n">xxx</span><span class="o">);</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">resources</span><span class="o">.</span><span class="na">tokenServices</span><span class="o">(</span><span class="n">xxx</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/01/10/4966b991cb24415bae480fe7f7c024d4.png" alt="image"></p>
 <div class="highlight"><div class="chroma">
@@ -494,11 +494,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">remoteTokenServices</span><span class="o">.</span><span class="na">setClientId</span><span class="o">(</span><span class="n">resourceServerProperties</span><span class="o">.</span><span class="na">getClientId</span><span class="o">());</span>
-<span class="n">remoteTokenServices</span><span class="o">.</span><span class="na">setClientSecret</span><span class="o">(</span><span class="n">resourceServerProperties</span><span class="o">.</span><span class="na">getClientSecret</span><span class="o">());</span>
-<span class="c1">// 设置/oauth/check_token端点
-</span><span class="c1"></span><span class="n">remoteTokenServices</span><span class="o">.</span><span class="na">setCheckTokenEndpointUrl</span><span class="o">(</span><span class="n">resourceServerProperties</span><span class="o">.</span><span class="na">getTokenInfoUri</span><span class="o">());</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">remoteTokenServices</span><span class="o">.</span><span class="na">setClientId</span><span class="o">(</span><span class="n">resourceServerProperties</span><span class="o">.</span><span class="na">getClientId</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="n">remoteTokenServices</span><span class="o">.</span><span class="na">setClientSecret</span><span class="o">(</span><span class="n">resourceServerProperties</span><span class="o">.</span><span class="na">getClientSecret</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 设置/oauth/check_token端点
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">remoteTokenServices</span><span class="o">.</span><span class="na">setCheckTokenEndpointUrl</span><span class="o">(</span><span class="n">resourceServerProperties</span><span class="o">.</span><span class="na">getTokenInfoUri</span><span class="o">());</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Configure <code>application.yml</code> :</p>
 <div class="highlight"><div class="chroma">
@@ -530,32 +530,32 @@
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># oauth2配置</span><span class="w">
-</span><span class="w"></span><span class="nt">security</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">oauth2</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">client</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="c"># 客户端ID</span><span class="w">
-</span><span class="w">      </span><span class="nt">client-id</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_CLIENT_ID:lzhpo}</span><span class="w">
-</span><span class="w">      </span><span class="c"># 客户端秘钥（加密前）</span><span class="w">
-</span><span class="w">      </span><span class="nt">client-secret</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_CLIENT_SECRET:lzhpo1024}</span><span class="w">
-</span><span class="w">      </span><span class="c"># 授权类型</span><span class="w">
-</span><span class="w">      </span><span class="nt">grant-type</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_GRANT_TYPE:authorization_code,password,refresh_token,implicit,client_credentials}</span><span class="w">
-</span><span class="w">      </span><span class="c"># 权限范围</span><span class="w">
-</span><span class="w">      </span><span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_SCOPE:all}</span><span class="w">
-</span><span class="w">      </span><span class="c"># 用于密码模式，获取访问令牌的地址（org.springframework.security.oauth2.provider.endpoint.TokenEndpoint）</span><span class="w">
-</span><span class="w">      </span><span class="nt">access-token-uri</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_ACCESS_TOKEN_URI:http://localhost:9999/api/auth/oauth/token}</span><span class="w">
-</span><span class="w">      </span><span class="c"># 用于授权码模式，获取授权码的地址（org.springframework.security.oauth2.provider.endpoint.AuthorizationEndpoint）</span><span class="w">
-</span><span class="w">      </span><span class="nt">user-authorization-uri</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_USER_AUTHORIZATION_URI:http://localhost:9999/api/auth/oauth/authorize}</span><span class="w">
-</span><span class="w">    </span><span class="nt">resource</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="c"># 资源服务器编号</span><span class="w">
-</span><span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}</span><span class="w">
-</span><span class="w">      </span><span class="c"># 校验访问令牌是否有效的地址（org.springframework.security.oauth2.provider.endpoint.CheckTokenEndpoint.checkToken）</span><span class="w">
-</span><span class="w">      </span><span class="nt">token-info-uri</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_TOKEN_INFO_URI:http://localhost:9999/api/auth/oauth/check_token}</span><span class="w">
-</span><span class="w">      </span><span class="c"># 获取用户信息</span><span class="w">
-</span><span class="w">      </span><span class="nt">user-info-uri</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_USER_INFO_URI:http://localhost:9999/api/auth/oauth/check_user}</span><span class="w">
-</span><span class="w">      </span><span class="c"># 默认使用token-info-uri，可以设置为false以使用user-info-uri</span><span class="w">
-</span><span class="w">      </span><span class="nt">prefer-token-info</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># oauth2配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">security</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">oauth2</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">client</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 客户端ID</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">client-id</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_CLIENT_ID:lzhpo}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 客户端秘钥（加密前）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">client-secret</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_CLIENT_SECRET:lzhpo1024}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 授权类型</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">grant-type</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_GRANT_TYPE:authorization_code,password,refresh_token,implicit,client_credentials}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 权限范围</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_SCOPE:all}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 用于密码模式，获取访问令牌的地址（org.springframework.security.oauth2.provider.endpoint.TokenEndpoint）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">access-token-uri</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_ACCESS_TOKEN_URI:http://localhost:9999/api/auth/oauth/token}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 用于授权码模式，获取授权码的地址（org.springframework.security.oauth2.provider.endpoint.AuthorizationEndpoint）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">user-authorization-uri</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_USER_AUTHORIZATION_URI:http://localhost:9999/api/auth/oauth/authorize}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">resource</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 资源服务器编号</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 校验访问令牌是否有效的地址（org.springframework.security.oauth2.provider.endpoint.CheckTokenEndpoint.checkToken）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">token-info-uri</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_TOKEN_INFO_URI:http://localhost:9999/api/auth/oauth/check_token}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 获取用户信息</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">user-info-uri</span><span class="p">:</span><span class="w"> </span><span class="l">${OAUTH2_USER_INFO_URI:http://localhost:9999/api/auth/oauth/check_user}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 默认使用token-info-uri，可以设置为false以使用user-info-uri</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">prefer-token-info</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Then configure on the authentication server (inherits the <code>AuthorizationServerConfigurerAdapter</code> class).</p>
 <div class="highlight"><div class="chroma">
@@ -592,37 +592,37 @@
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"> <span class="cm">/**
-</span><span class="cm">   * Authorization server security
-</span><span class="cm">   *
-</span><span class="cm">   * &lt;p&gt;isAuthenticated()、permitAll() &lt;br&gt;
-</span><span class="cm">   * If the endpoint /oauth/check_token is Authenticated, header Authorization is required. &lt;br&gt;
-</span><span class="cm">   * e.g: {@code Authorization:Basic bHpocG86bHpocG8xMDI0}
-</span><span class="cm">   *
-</span><span class="cm">   * &lt;pre&gt;
-</span><span class="cm">   * Reference：{@link AuthorizationServerProperties}
-</span><span class="cm">   *
-</span><span class="cm">   * Also can configure in application.properties or application.yml:
-</span><span class="cm">   * {@code
-</span><span class="cm">   *  security.oauth2.authorization.token-key-access: isAuthenticated()
-</span><span class="cm">   *  security.oauth2.authorization.check-token-access: isAuthenticated()
-</span><span class="cm">   * }
-</span><span class="cm">   * &lt;/pre&gt;
-</span><span class="cm">   *
-</span><span class="cm">   * @param security security
-</span><span class="cm">   */</span>
-  <span class="nd">@Override</span>
-  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">AuthorizationServerSecurityConfigurer</span> <span class="n">security</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">security</span>
-        <span class="c1">// Allow the client to send a form for permission authentication to obtain a token
-</span><span class="c1"></span>        <span class="o">.</span><span class="na">allowFormAuthenticationForClients</span><span class="o">()</span>
-        <span class="c1">// Endpoint: /oauth/token_key
-</span><span class="c1"></span>        <span class="c1">// If you use jwt, the public key that can be obtained is used for token verification
-</span><span class="c1"></span>        <span class="o">.</span><span class="na">tokenKeyAccess</span><span class="o">(</span><span class="s">&#34;isAuthenticated()&#34;</span><span class="o">)</span>
-        <span class="c1">// Endpoint: /oauth/check_token
-</span><span class="c1"></span>        <span class="o">.</span><span class="na">checkTokenAccess</span><span class="o">(</span><span class="s">&#34;isAuthenticated()&#34;</span><span class="o">);</span>
-  <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"> <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * Authorization server security
+</span></span></span><span class="line"><span class="cl"><span class="cm">   *
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * &lt;p&gt;isAuthenticated()、permitAll() &lt;br&gt;
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * If the endpoint /oauth/check_token is Authenticated, header Authorization is required. &lt;br&gt;
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * e.g: {@code Authorization:Basic bHpocG86bHpocG8xMDI0}
+</span></span></span><span class="line"><span class="cl"><span class="cm">   *
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * &lt;pre&gt;
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * Reference：{@link AuthorizationServerProperties}
+</span></span></span><span class="line"><span class="cl"><span class="cm">   *
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * Also can configure in application.properties or application.yml:
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * {@code
+</span></span></span><span class="line"><span class="cl"><span class="cm">   *  security.oauth2.authorization.token-key-access: isAuthenticated()
+</span></span></span><span class="line"><span class="cl"><span class="cm">   *  security.oauth2.authorization.check-token-access: isAuthenticated()
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * }
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * &lt;/pre&gt;
+</span></span></span><span class="line"><span class="cl"><span class="cm">   *
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * @param security security
+</span></span></span><span class="line"><span class="cl"><span class="cm">   */</span>
+</span></span><span class="line"><span class="cl">  <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">configure</span><span class="o">(</span><span class="n">AuthorizationServerSecurityConfigurer</span> <span class="n">security</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">security</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Allow the client to send a form for permission authentication to obtain a token
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="o">.</span><span class="na">allowFormAuthenticationForClients</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Endpoint: /oauth/token_key
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// If you use jwt, the public key that can be obtained is used for token verification
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="o">.</span><span class="na">tokenKeyAccess</span><span class="o">(</span><span class="s">&#34;isAuthenticated()&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Endpoint: /oauth/check_token
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="o">.</span><span class="na">checkTokenAccess</span><span class="o">(</span><span class="s">&#34;isAuthenticated()&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Configuring <code>isAuthenticated()</code> means that authentication is required, set the value of <code>Authorization</code> in the request header to the Base64 value of <code>Basic</code> + <code>Client ID:Client Key</code>.</p>
 <p>For example.</p>
@@ -631,8 +631,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">Authorization:Basic bHpocG86bHpocG8xMDI0
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Authorization:Basic bHpocG86bHpocG8xMDI0
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>ResourceServerSecurityConfigurer</code> source code (<code>org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer</code>)</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/01/10/5ab76cc1de274bc59ec6e0041f3cc29b.png" alt="ResourceServerSecurityConfigurer"></p>
@@ -653,18 +653,18 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="kd">private</span> <span class="n">ResourceServerTokenServices</span> <span class="nf">tokenServices</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">resourceTokenServices</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">resourceTokenServices</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="n">DefaultTokenServices</span> <span class="n">tokenServices</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultTokenServices</span><span class="o">();</span>
-        <span class="n">tokenServices</span><span class="o">.</span><span class="na">setTokenStore</span><span class="o">(</span><span class="n">tokenStore</span><span class="o">());</span>
-        <span class="n">tokenServices</span><span class="o">.</span><span class="na">setSupportRefreshToken</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-        <span class="n">tokenServices</span><span class="o">.</span><span class="na">setClientDetailsService</span><span class="o">(</span><span class="n">clientDetails</span><span class="o">());</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">resourceTokenServices</span> <span class="o">=</span> <span class="n">tokenServices</span><span class="o">;</span>
-        <span class="k">return</span> <span class="n">tokenServices</span><span class="o">;</span>
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">ResourceServerTokenServices</span> <span class="nf">tokenServices</span><span class="o">(</span><span class="n">HttpSecurity</span> <span class="n">http</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">resourceTokenServices</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">resourceTokenServices</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">DefaultTokenServices</span> <span class="n">tokenServices</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultTokenServices</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tokenServices</span><span class="o">.</span><span class="na">setTokenStore</span><span class="o">(</span><span class="n">tokenStore</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tokenServices</span><span class="o">.</span><span class="na">setSupportRefreshToken</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tokenServices</span><span class="o">.</span><span class="na">setClientDetailsService</span><span class="o">(</span><span class="n">clientDetails</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">resourceTokenServices</span> <span class="o">=</span> <span class="n">tokenServices</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">tokenServices</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="2-remotetokenservices-requests-the-oauthcheck_token-interface">2. <code>RemoteTokenServices</code> requests the <code>/oauth/check_token</code> interface</h2>
 <p><code>RemoteTokenServices</code> source code (<code>org.springframework.security.oauth2.provider.token.RemoteTokenServices</code>)</p>
@@ -706,37 +706,37 @@
 </span><span class="lnt">30
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Authentication</span> <span class="nf">attemptAuthentication</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span>
-            <span class="kd">throws</span> <span class="n">AuthenticationException</span><span class="o">,</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
-
-        <span class="n">OAuth2AccessToken</span> <span class="n">accessToken</span><span class="o">;</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="n">accessToken</span> <span class="o">=</span> <span class="n">restTemplate</span><span class="o">.</span><span class="na">getAccessToken</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">OAuth2Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">BadCredentialsException</span> <span class="n">bad</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BadCredentialsException</span><span class="o">(</span><span class="s">&#34;Could not obtain access token&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
-            <span class="n">publish</span><span class="o">(</span><span class="k">new</span> <span class="n">OAuth2AuthenticationFailureEvent</span><span class="o">(</span><span class="n">bad</span><span class="o">));</span>
-            <span class="k">throw</span> <span class="n">bad</span><span class="o">;</span>            
-        <span class="o">}</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="c1">// 这里就是前面`RemoteTokenServices`请求`/oauth/check_token`接口，拿到校验结果的
-</span><span class="c1"></span>            <span class="n">OAuth2Authentication</span> <span class="n">result</span> <span class="o">=</span> <span class="n">tokenServices</span><span class="o">.</span><span class="na">loadAuthentication</span><span class="o">(</span><span class="n">accessToken</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">authenticationDetailsSource</span><span class="o">!=</span><span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">request</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">OAuth2AuthenticationDetails</span><span class="o">.</span><span class="na">ACCESS_TOKEN_VALUE</span><span class="o">,</span> <span class="n">accessToken</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
-                <span class="n">request</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">OAuth2AuthenticationDetails</span><span class="o">.</span><span class="na">ACCESS_TOKEN_TYPE</span><span class="o">,</span> <span class="n">accessToken</span><span class="o">.</span><span class="na">getTokenType</span><span class="o">());</span>
-                <span class="n">result</span><span class="o">.</span><span class="na">setDetails</span><span class="o">(</span><span class="n">authenticationDetailsSource</span><span class="o">.</span><span class="na">buildDetails</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
-            <span class="o">}</span>
-            <span class="n">publish</span><span class="o">(</span><span class="k">new</span> <span class="n">AuthenticationSuccessEvent</span><span class="o">(</span><span class="n">result</span><span class="o">));</span>
-            <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">catch</span> <span class="o">(</span><span class="n">InvalidTokenException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">BadCredentialsException</span> <span class="n">bad</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BadCredentialsException</span><span class="o">(</span><span class="s">&#34;Could not obtain user details from token&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
-            <span class="n">publish</span><span class="o">(</span><span class="k">new</span> <span class="n">OAuth2AuthenticationFailureEvent</span><span class="o">(</span><span class="n">bad</span><span class="o">));</span>
-            <span class="k">throw</span> <span class="n">bad</span><span class="o">;</span>            
-        <span class="o">}</span>
-
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Authentication</span> <span class="nf">attemptAuthentication</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">throws</span> <span class="n">AuthenticationException</span><span class="o">,</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">OAuth2AccessToken</span> <span class="n">accessToken</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">accessToken</span> <span class="o">=</span> <span class="n">restTemplate</span><span class="o">.</span><span class="na">getAccessToken</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">OAuth2Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">BadCredentialsException</span> <span class="n">bad</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BadCredentialsException</span><span class="o">(</span><span class="s">&#34;Could not obtain access token&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">publish</span><span class="o">(</span><span class="k">new</span> <span class="n">OAuth2AuthenticationFailureEvent</span><span class="o">(</span><span class="n">bad</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="n">bad</span><span class="o">;</span>            
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 这里就是前面`RemoteTokenServices`请求`/oauth/check_token`接口，拿到校验结果的
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">OAuth2Authentication</span> <span class="n">result</span> <span class="o">=</span> <span class="n">tokenServices</span><span class="o">.</span><span class="na">loadAuthentication</span><span class="o">(</span><span class="n">accessToken</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">authenticationDetailsSource</span><span class="o">!=</span><span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">request</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">OAuth2AuthenticationDetails</span><span class="o">.</span><span class="na">ACCESS_TOKEN_VALUE</span><span class="o">,</span> <span class="n">accessToken</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="n">request</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">OAuth2AuthenticationDetails</span><span class="o">.</span><span class="na">ACCESS_TOKEN_TYPE</span><span class="o">,</span> <span class="n">accessToken</span><span class="o">.</span><span class="na">getTokenType</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="n">result</span><span class="o">.</span><span class="na">setDetails</span><span class="o">(</span><span class="n">authenticationDetailsSource</span><span class="o">.</span><span class="na">buildDetails</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">publish</span><span class="o">(</span><span class="k">new</span> <span class="n">AuthenticationSuccessEvent</span><span class="o">(</span><span class="n">result</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">catch</span> <span class="o">(</span><span class="n">InvalidTokenException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">BadCredentialsException</span> <span class="n">bad</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BadCredentialsException</span><span class="o">(</span><span class="s">&#34;Could not obtain user details from token&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">publish</span><span class="o">(</span><span class="k">new</span> <span class="n">OAuth2AuthenticationFailureEvent</span><span class="o">(</span><span class="n">bad</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="n">bad</span><span class="o">;</span>            
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="4-load-authentication-information">4. Load authentication information</h2>
 <p>It has 3 subclasses, namely <code>org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter</code> , <code>org.springframework.security. ClientCredentialsTokenEndpointFilter</code> , <code>org.springframework.security.oauth2.client.filter. OAuth2ClientAuthenticationProcessingFilter</code></p>
@@ -793,43 +793,43 @@
 </span><span class="lnt">36
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">ServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">ServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">chain</span><span class="o">)</span>
-            <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
-        <span class="n">doFilter</span><span class="o">((</span><span class="n">HttpServletRequest</span><span class="o">)</span> <span class="n">request</span><span class="o">,</span> <span class="o">(</span><span class="n">HttpServletResponse</span><span class="o">)</span> <span class="n">response</span><span class="o">,</span> <span class="n">chain</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">chain</span><span class="o">)</span>
-            <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(!</span><span class="n">requiresAuthentication</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">chain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-            <span class="k">return</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="c1">// 交给子类实现的尝试进行认证的抽象方法，就上面我说的OAuth2ClientAuthenticationProcessingFilter过滤器的attemptAuthentication
-</span><span class="c1"></span>            <span class="n">Authentication</span> <span class="n">authenticationResult</span> <span class="o">=</span> <span class="n">attemptAuthentication</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">authenticationResult</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                <span class="c1">// return immediately as subclass has indicated that it hasn&#39;t completed
-</span><span class="c1"></span>                <span class="k">return</span><span class="o">;</span>
-            <span class="o">}</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">sessionStrategy</span><span class="o">.</span><span class="na">onAuthentication</span><span class="o">(</span><span class="n">authenticationResult</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-            <span class="c1">// Authentication success
-</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">continueChainBeforeSuccessfulAuthentication</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">chain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="c1">// 身份认证成功
-</span><span class="c1"></span>            <span class="n">successfulAuthentication</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">chain</span><span class="o">,</span> <span class="n">authenticationResult</span><span class="o">);</span>
-        <span class="o">}</span>
-        <span class="k">catch</span> <span class="o">(</span><span class="n">InternalAuthenticationServiceException</span> <span class="n">failed</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;An internal error occurred while trying to authenticate the user.&#34;</span><span class="o">,</span> <span class="n">failed</span><span class="o">);</span>
-            <span class="n">unsuccessfulAuthentication</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">failed</span><span class="o">);</span>
-        <span class="o">}</span>
-        <span class="k">catch</span> <span class="o">(</span><span class="n">AuthenticationException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-            <span class="c1">// Authentication failed
-</span><span class="c1"></span>            <span class="n">unsuccessfulAuthentication</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">ServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">ServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">chain</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">doFilter</span><span class="o">((</span><span class="n">HttpServletRequest</span><span class="o">)</span> <span class="n">request</span><span class="o">,</span> <span class="o">(</span><span class="n">HttpServletResponse</span><span class="o">)</span> <span class="n">response</span><span class="o">,</span> <span class="n">chain</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">chain</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(!</span><span class="n">requiresAuthentication</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">chain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 交给子类实现的尝试进行认证的抽象方法，就上面我说的OAuth2ClientAuthenticationProcessingFilter过滤器的attemptAuthentication
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">Authentication</span> <span class="n">authenticationResult</span> <span class="o">=</span> <span class="n">attemptAuthentication</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">authenticationResult</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// return immediately as subclass has indicated that it hasn&#39;t completed
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">return</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="o">.</span><span class="na">sessionStrategy</span><span class="o">.</span><span class="na">onAuthentication</span><span class="o">(</span><span class="n">authenticationResult</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// Authentication success
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">continueChainBeforeSuccessfulAuthentication</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">chain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 身份认证成功
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">successfulAuthentication</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">chain</span><span class="o">,</span> <span class="n">authenticationResult</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">catch</span> <span class="o">(</span><span class="n">InternalAuthenticationServiceException</span> <span class="n">failed</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;An internal error occurred while trying to authenticate the user.&#34;</span><span class="o">,</span> <span class="n">failed</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">unsuccessfulAuthentication</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">failed</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">catch</span> <span class="o">(</span><span class="n">AuthenticationException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// Authentication failed
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">unsuccessfulAuthentication</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>successfulAuthentication</code> Source code.</p>
 <p>This is the purpose of this article, to load authentication information: <code>SecurityContextHolder.getContext().setAuthentication(authResult);</code></p>
@@ -850,20 +850,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java">    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">successfulAuthentication</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">chain</span><span class="o">,</span>
-            <span class="n">Authentication</span> <span class="n">authResult</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
-        <span class="c1">// 装载身份验证信息
-</span><span class="c1"></span>        <span class="n">SecurityContextHolder</span><span class="o">.</span><span class="na">getContext</span><span class="o">().</span><span class="na">setAuthentication</span><span class="o">(</span><span class="n">authResult</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">LogMessage</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;Set SecurityContextHolder to %s&#34;</span><span class="o">,</span> <span class="n">authResult</span><span class="o">));</span>
-        <span class="o">}</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">rememberMeServices</span><span class="o">.</span><span class="na">loginSuccess</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">authResult</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">eventPublisher</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">eventPublisher</span><span class="o">.</span><span class="na">publishEvent</span><span class="o">(</span><span class="k">new</span> <span class="n">InteractiveAuthenticationSuccessEvent</span><span class="o">(</span><span class="n">authResult</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">()));</span>
-        <span class="o">}</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">successHandler</span><span class="o">.</span><span class="na">onAuthenticationSuccess</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">authResult</span><span class="o">);</span>
-    <span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">successfulAuthentication</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">chain</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Authentication</span> <span class="n">authResult</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ServletException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 装载身份验证信息
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">SecurityContextHolder</span><span class="o">.</span><span class="na">getContext</span><span class="o">().</span><span class="na">setAuthentication</span><span class="o">(</span><span class="n">authResult</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">LogMessage</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;Set SecurityContextHolder to %s&#34;</span><span class="o">,</span> <span class="n">authResult</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">rememberMeServices</span><span class="o">.</span><span class="na">loginSuccess</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">authResult</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">eventPublisher</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="o">.</span><span class="na">eventPublisher</span><span class="o">.</span><span class="na">publishEvent</span><span class="o">(</span><span class="k">new</span> <span class="n">InteractiveAuthenticationSuccessEvent</span><span class="o">(</span><span class="n">authResult</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">getClass</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">successHandler</span><span class="o">.</span><span class="na">onAuthenticationSuccess</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">authResult</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Reference</p>
 <ul>

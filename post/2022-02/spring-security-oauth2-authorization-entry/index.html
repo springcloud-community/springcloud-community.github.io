@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-security-oauth2-authorization-entry/" />
@@ -451,20 +451,20 @@
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">OAuth2AuthorizationRequestResolver</span> <span class="o">{</span>
-
-   <span class="cm">/**
-</span><span class="cm">    * 从HttpServletRequest对象中解析封装 OAuth2AuthorizationRequest
-</span><span class="cm">    */</span>
-   <span class="n">OAuth2AuthorizationRequest</span> <span class="nf">resolve</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">);</span>
-
-   <span class="cm">/**
-</span><span class="cm">    * 从HttpServletRequest对象以及clientRegistrationId中解析封装 OAuth2AuthorizationRequest
-</span><span class="cm">    */</span>
-   <span class="n">OAuth2AuthorizationRequest</span> <span class="nf">resolve</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">String</span> <span class="n">clientRegistrationId</span><span class="o">);</span>
-
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">OAuth2AuthorizationRequestResolver</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">    * 从HttpServletRequest对象中解析封装 OAuth2AuthorizationRequest
+</span></span></span><span class="line"><span class="cl"><span class="cm">    */</span>
+</span></span><span class="line"><span class="cl">   <span class="n">OAuth2AuthorizationRequest</span> <span class="nf">resolve</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">    * 从HttpServletRequest对象以及clientRegistrationId中解析封装 OAuth2AuthorizationRequest
+</span></span></span><span class="line"><span class="cl"><span class="cm">    */</span>
+</span></span><span class="line"><span class="cl">   <span class="n">OAuth2AuthorizationRequest</span> <span class="nf">resolve</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">String</span> <span class="n">clientRegistrationId</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This means that when we request <code>/oauth2/authorization</code>, <code>DefaultOAuth2AuthorizationRequestResolver</code> will extract the data from the <code>oauth2/authorization</code> corresponding <code>HttpServletRequest</code> and wrap it in the <code>OAuth2AuthorizationRequest</code> request object for further use.</p>
 <blockquote>
@@ -490,21 +490,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">OAuth2AuthorizationRequest</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="n">520L</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">authorizationUri</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">AuthorizationGrantType</span> <span class="n">authorizationGrantType</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">OAuth2AuthorizationResponseType</span> <span class="n">responseType</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">clientId</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">redirectUri</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">scopes</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">state</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">additionalParameters</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">authorizationRequestUri</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">attributes</span><span class="o">;</span>
-    <span class="c1">// 其它方法略
-</span><span class="c1"></span><span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">OAuth2AuthorizationRequest</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> <span class="n">520L</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">authorizationUri</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">AuthorizationGrantType</span> <span class="n">authorizationGrantType</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">OAuth2AuthorizationResponseType</span> <span class="n">responseType</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">clientId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">redirectUri</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">scopes</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">state</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">additionalParameters</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">authorizationRequestUri</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">attributes</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 其它方法略
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="oauth2authorizationrequestredirectfilter">OAuth2AuthorizationRequestRedirectFilter</h3>
 <p>This was the only clue left, as soon as I saw that it inherited from <code>OncePerRequestFilter</code> I knew it had to be him. Even its member variables contain the <code>OAuth2AuthorizationRequestResolver</code> that is used to parse OAuth2 requests. Here we are on the right track and start analyzing this filter. Here is its core filtering logic, which is the logic we want to know how OAuth2 authorization requests are intercepted and processed.</p>
@@ -558,53 +558,53 @@
 </span><span class="lnt">46
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doFilterInternal</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">filterChain</span><span class="o">)</span>
-      <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
-
-   <span class="k">try</span> <span class="o">{</span>
-      <span class="n">OAuth2AuthorizationRequest</span> <span class="n">authorizationRequest</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">authorizationRequestResolver</span><span class="o">.</span><span class="na">resolve</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
-      <span class="k">if</span> <span class="o">(</span><span class="n">authorizationRequest</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-         <span class="k">this</span><span class="o">.</span><span class="na">sendRedirectForAuthorization</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">authorizationRequest</span><span class="o">);</span>
-         <span class="k">return</span><span class="o">;</span>
-      <span class="o">}</span>
-   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">failed</span><span class="o">)</span> <span class="o">{</span>
-      <span class="k">this</span><span class="o">.</span><span class="na">unsuccessfulRedirectForAuthorization</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">failed</span><span class="o">);</span>
-      <span class="k">return</span><span class="o">;</span>
-   <span class="o">}</span>
-
-   <span class="k">try</span> <span class="o">{</span>
-      <span class="n">filterChain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-      <span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
-   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-      <span class="c1">// Check to see if we need to handle ClientAuthorizationRequiredException
-</span><span class="c1"></span>      <span class="n">Throwable</span><span class="o">[]</span> <span class="n">causeChain</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">throwableAnalyzer</span><span class="o">.</span><span class="na">determineCauseChain</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
-      <span class="n">ClientAuthorizationRequiredException</span> <span class="n">authzEx</span> <span class="o">=</span> <span class="o">(</span><span class="n">ClientAuthorizationRequiredException</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">throwableAnalyzer</span>
-         <span class="o">.</span><span class="na">getFirstThrowableOfType</span><span class="o">(</span><span class="n">ClientAuthorizationRequiredException</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">causeChain</span><span class="o">);</span>
-      <span class="k">if</span> <span class="o">(</span><span class="n">authzEx</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-         <span class="k">try</span> <span class="o">{</span>
-            <span class="n">OAuth2AuthorizationRequest</span> <span class="n">authorizationRequest</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">authorizationRequestResolver</span><span class="o">.</span><span class="na">resolve</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">authzEx</span><span class="o">.</span><span class="na">getClientRegistrationId</span><span class="o">());</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">authorizationRequest</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-               <span class="k">throw</span> <span class="n">authzEx</span><span class="o">;</span>
-            <span class="o">}</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">sendRedirectForAuthorization</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">authorizationRequest</span><span class="o">);</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">requestCache</span><span class="o">.</span><span class="na">saveRequest</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-         <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">failed</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">unsuccessfulRedirectForAuthorization</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">failed</span><span class="o">);</span>
-         <span class="o">}</span>
-         <span class="k">return</span><span class="o">;</span>
-      <span class="o">}</span>
-
-      <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">ServletException</span><span class="o">)</span> <span class="o">{</span>
-         <span class="k">throw</span> <span class="o">(</span><span class="n">ServletException</span><span class="o">)</span> <span class="n">ex</span><span class="o">;</span>
-      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">RuntimeException</span><span class="o">)</span> <span class="o">{</span>
-         <span class="k">throw</span> <span class="o">(</span><span class="n">RuntimeException</span><span class="o">)</span> <span class="n">ex</span><span class="o">;</span>
-      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-         <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
-      <span class="o">}</span>
-   <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doFilterInternal</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">,</span> <span class="n">FilterChain</span> <span class="n">filterChain</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">OAuth2AuthorizationRequest</span> <span class="n">authorizationRequest</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">authorizationRequestResolver</span><span class="o">.</span><span class="na">resolve</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="o">(</span><span class="n">authorizationRequest</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">         <span class="k">this</span><span class="o">.</span><span class="na">sendRedirectForAuthorization</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">authorizationRequest</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">         <span class="k">return</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">failed</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="o">.</span><span class="na">unsuccessfulRedirectForAuthorization</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">failed</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">filterChain</span><span class="o">.</span><span class="na">doFilter</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// Check to see if we need to handle ClientAuthorizationRequiredException
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="n">Throwable</span><span class="o">[]</span> <span class="n">causeChain</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">throwableAnalyzer</span><span class="o">.</span><span class="na">determineCauseChain</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">      <span class="n">ClientAuthorizationRequiredException</span> <span class="n">authzEx</span> <span class="o">=</span> <span class="o">(</span><span class="n">ClientAuthorizationRequiredException</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">throwableAnalyzer</span>
+</span></span><span class="line"><span class="cl">         <span class="o">.</span><span class="na">getFirstThrowableOfType</span><span class="o">(</span><span class="n">ClientAuthorizationRequiredException</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">causeChain</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="o">(</span><span class="n">authzEx</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">         <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">OAuth2AuthorizationRequest</span> <span class="n">authorizationRequest</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">authorizationRequestResolver</span><span class="o">.</span><span class="na">resolve</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">authzEx</span><span class="o">.</span><span class="na">getClientRegistrationId</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">authorizationRequest</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">               <span class="k">throw</span> <span class="n">authzEx</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="o">.</span><span class="na">sendRedirectForAuthorization</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">authorizationRequest</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="o">.</span><span class="na">requestCache</span><span class="o">.</span><span class="na">saveRequest</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">         <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">failed</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">this</span><span class="o">.</span><span class="na">unsuccessfulRedirectForAuthorization</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">failed</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">         <span class="o">}</span>
+</span></span><span class="line"><span class="cl">         <span class="k">return</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">ServletException</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">         <span class="k">throw</span> <span class="o">(</span><span class="n">ServletException</span><span class="o">)</span> <span class="n">ex</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="k">instanceof</span> <span class="n">RuntimeException</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">         <span class="k">throw</span> <span class="o">(</span><span class="n">RuntimeException</span><span class="o">)</span> <span class="n">ex</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">         <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>
+</span></span><span class="line"><span class="cl">   <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The corresponding flow of <code>doFilterInternal</code> is as follows.</p>
 <p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/02/14/bb6dbb51272d49569774b2d3a351eeca.png" alt="doFilterInternal"></p>

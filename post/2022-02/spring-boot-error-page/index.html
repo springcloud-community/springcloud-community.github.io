@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/spring-boot-error-page/" />
@@ -431,13 +431,13 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
-  <span class="nt">&#34;timestamp&#34;</span><span class="p">:</span> <span class="s2">&#34;2021-04-29T22:45:33.231+0000&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;status&#34;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
-  <span class="nt">&#34;message&#34;</span><span class="p">:</span> <span class="s2">&#34;Internal Server Error&#34;</span><span class="p">,</span>
-  <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;foo/bar&#34;</span>
-<span class="p">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;timestamp&#34;</span><span class="p">:</span> <span class="s2">&#34;2021-04-29T22:45:33.231+0000&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;status&#34;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;message&#34;</span><span class="p">:</span> <span class="s2">&#34;Internal Server Error&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;foo/bar&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Spring Boot will register an <code>ErrorPageFilter</code> at startup, and when an exception occurs in the Servlet, the filter will intercept the process and handle the exception according to different strategies: <strong>When the exception is already being handled, it is handled directly, otherwise it is forwarded to the corresponding error page</strong>. If you are interested in the source code, the logic is not complicated, so I will not post it here.</p>
 <p>In addition, when a Servlet throws an exception, the Servlet handling the exception can get several properties from <code>HttpServletRequest</code> inside, as follows.</p>
@@ -474,32 +474,32 @@
 </span><span class="lnt">25
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Controller</span>
-<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;${server.error.path:${error.path:/error}}&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BasicErrorController</span> <span class="kd">extends</span> <span class="n">AbstractErrorController</span> <span class="o">{</span>
-    <span class="c1">//返回错误页面
-</span><span class="c1"></span>  <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">produces</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_HTML_VALUE</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">ModelAndView</span> <span class="nf">errorHtml</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">HttpStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="n">getStatus</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
-        <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">Collections</span>
-                <span class="o">.</span><span class="na">unmodifiableMap</span><span class="o">(</span><span class="n">getErrorAttributes</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">getErrorAttributeOptions</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_HTML</span><span class="o">)));</span>
-        <span class="n">response</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="n">status</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
-        <span class="n">ModelAndView</span> <span class="n">modelAndView</span> <span class="o">=</span> <span class="n">resolveErrorView</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">status</span><span class="o">,</span> <span class="n">model</span><span class="o">);</span>
-        <span class="k">return</span> <span class="o">(</span><span class="n">modelAndView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">?</span> <span class="n">modelAndView</span> <span class="o">:</span> <span class="k">new</span> <span class="n">ModelAndView</span><span class="o">(</span><span class="s">&#34;error&#34;</span><span class="o">,</span> <span class="n">model</span><span class="o">);</span>
-    <span class="o">}</span>
-    <span class="c1">// 返回json
-</span><span class="c1"></span>    <span class="nd">@RequestMapping</span>
-    <span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;&gt;</span> <span class="nf">error</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">HttpStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="n">getStatus</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">status</span> <span class="o">==</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">NO_CONTENT</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="k">new</span> <span class="n">ResponseEntity</span><span class="o">&lt;&gt;(</span><span class="n">status</span><span class="o">);</span>
-        <span class="o">}</span>
-        <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">body</span> <span class="o">=</span> <span class="n">getErrorAttributes</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">getErrorAttributeOptions</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">ALL</span><span class="o">));</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">ResponseEntity</span><span class="o">&lt;&gt;(</span><span class="n">body</span><span class="o">,</span> <span class="n">status</span><span class="o">);</span>
-    <span class="o">}</span>  
-<span class="c1">// 其它省略
-</span><span class="c1"></span><span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Controller</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;${server.error.path:${error.path:/error}}&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BasicErrorController</span> <span class="kd">extends</span> <span class="n">AbstractErrorController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//返回错误页面
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">produces</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_HTML_VALUE</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">ModelAndView</span> <span class="nf">errorHtml</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">HttpStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="n">getStatus</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">model</span> <span class="o">=</span> <span class="n">Collections</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">unmodifiableMap</span><span class="o">(</span><span class="n">getErrorAttributes</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">getErrorAttributeOptions</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_HTML</span><span class="o">)));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">response</span><span class="o">.</span><span class="na">setStatus</span><span class="o">(</span><span class="n">status</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ModelAndView</span> <span class="n">modelAndView</span> <span class="o">=</span> <span class="n">resolveErrorView</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">,</span> <span class="n">status</span><span class="o">,</span> <span class="n">model</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">(</span><span class="n">modelAndView</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">?</span> <span class="n">modelAndView</span> <span class="o">:</span> <span class="k">new</span> <span class="n">ModelAndView</span><span class="o">(</span><span class="s">&#34;error&#34;</span><span class="o">,</span> <span class="n">model</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 返回json
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nd">@RequestMapping</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;&gt;</span> <span class="nf">error</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">HttpStatus</span> <span class="n">status</span> <span class="o">=</span> <span class="n">getStatus</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">status</span> <span class="o">==</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">NO_CONTENT</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="k">new</span> <span class="n">ResponseEntity</span><span class="o">&lt;&gt;(</span><span class="n">status</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">body</span> <span class="o">=</span> <span class="n">getErrorAttributes</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">getErrorAttributeOptions</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">ALL</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">ResponseEntity</span><span class="o">&lt;&gt;(</span><span class="n">body</span><span class="o">,</span> <span class="n">status</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>  
+</span></span><span class="line"><span class="cl"><span class="c1">// 其它省略
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>And the corresponding configuration.</p>
 <div class="highlight"><div class="chroma">
@@ -513,14 +513,14 @@
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Bean</span>
-<span class="nd">@ConditionalOnMissingBean</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="n">ErrorController</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">search</span> <span class="o">=</span> <span class="n">SearchStrategy</span><span class="o">.</span><span class="na">CURRENT</span><span class="o">)</span>
-<span class="kd">public</span> <span class="n">BasicErrorController</span> <span class="nf">basicErrorController</span><span class="o">(</span><span class="n">ErrorAttributes</span> <span class="n">errorAttributes</span><span class="o">,</span>
-      <span class="n">ObjectProvider</span><span class="o">&lt;</span><span class="n">ErrorViewResolver</span><span class="o">&gt;</span> <span class="n">errorViewResolvers</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">return</span> <span class="k">new</span> <span class="n">BasicErrorController</span><span class="o">(</span><span class="n">errorAttributes</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">serverProperties</span><span class="o">.</span><span class="na">getError</span><span class="o">(),</span>
-         <span class="n">errorViewResolvers</span><span class="o">.</span><span class="na">orderedStream</span><span class="o">().</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">()));</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ConditionalOnMissingBean</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="n">ErrorController</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">search</span> <span class="o">=</span> <span class="n">SearchStrategy</span><span class="o">.</span><span class="na">CURRENT</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">BasicErrorController</span> <span class="nf">basicErrorController</span><span class="o">(</span><span class="n">ErrorAttributes</span> <span class="n">errorAttributes</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">      <span class="n">ObjectProvider</span><span class="o">&lt;</span><span class="n">ErrorViewResolver</span><span class="o">&gt;</span> <span class="n">errorViewResolvers</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">   <span class="k">return</span> <span class="k">new</span> <span class="n">BasicErrorController</span><span class="o">(</span><span class="n">errorAttributes</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">serverProperties</span><span class="o">.</span><span class="na">getError</span><span class="o">(),</span>
+</span></span><span class="line"><span class="cl">         <span class="n">errorViewResolvers</span><span class="o">.</span><span class="na">orderedStream</span><span class="o">().</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>So we just need to reimplement an <code>ErrorController</code> and inject Spring IoC to replace the default handling mechanism. And we can clearly see that this <code>BasicErrorController</code> is not only an implementation of <code>ErrorController</code> but also a controller, so if we let the controller&rsquo;s methods throw exceptions, they can definitely be handled by a custom unified exception handling. So I have modified <code>BasicErrorController</code>.</p>
 <div class="highlight"><div class="chroma">
@@ -564,44 +564,44 @@
 </span><span class="lnt">37
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Controller</span>
-<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;${server.error.path:${error.path:/error}}&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExceptionController</span> <span class="kd">extends</span> <span class="n">AbstractErrorController</span> <span class="o">{</span>
-
-
-    <span class="kd">public</span> <span class="nf">ExceptionController</span><span class="o">(</span><span class="n">ErrorAttributes</span> <span class="n">errorAttributes</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kd">super</span><span class="o">(</span><span class="n">errorAttributes</span><span class="o">);</span>
-    <span class="o">}</span>
-
-
-    <span class="nd">@Override</span>
-    <span class="nd">@Deprecated</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getErrorPath</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">produces</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_HTML_VALUE</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">ModelAndView</span> <span class="nf">errorHtml</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">getErrorMessage</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
-    <span class="o">}</span>
-
-    <span class="nd">@RequestMapping</span>
-    <span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;&gt;</span> <span class="nf">error</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">getErrorMessage</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getErrorMessage</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">Object</span> <span class="n">code</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&#34;javax.servlet.error.status_code&#34;</span><span class="o">);</span>
-        <span class="n">Object</span> <span class="n">exceptionType</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&#34;javax.servlet.error.exception_type&#34;</span><span class="o">);</span>
-        <span class="n">Object</span> <span class="n">message</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&#34;javax.servlet.error.message&#34;</span><span class="o">);</span>
-        <span class="n">Object</span> <span class="n">path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&#34;javax.servlet.error.request_uri&#34;</span><span class="o">);</span>
-        <span class="n">Object</span> <span class="n">exception</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&#34;javax.servlet.error.exception&#34;</span><span class="o">);</span>
-
-        <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;code: %s,exceptionType: %s,message: %s,path: %s,exception: %s&#34;</span><span class="o">,</span>
-                <span class="n">code</span><span class="o">,</span> <span class="n">exceptionType</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">path</span><span class="o">,</span> <span class="n">exception</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Controller</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;${server.error.path:${error.path:/error}}&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExceptionController</span> <span class="kd">extends</span> <span class="n">AbstractErrorController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">ExceptionController</span><span class="o">(</span><span class="n">ErrorAttributes</span> <span class="n">errorAttributes</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">super</span><span class="o">(</span><span class="n">errorAttributes</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Deprecated</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getErrorPath</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">produces</span> <span class="o">=</span> <span class="n">MediaType</span><span class="o">.</span><span class="na">TEXT_HTML_VALUE</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">ModelAndView</span> <span class="nf">errorHtml</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">getErrorMessage</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@RequestMapping</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;&gt;</span> <span class="nf">error</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">getErrorMessage</span><span class="o">(</span><span class="n">request</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getErrorMessage</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Object</span> <span class="n">code</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&#34;javax.servlet.error.status_code&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Object</span> <span class="n">exceptionType</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&#34;javax.servlet.error.exception_type&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Object</span> <span class="n">message</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&#34;javax.servlet.error.message&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Object</span> <span class="n">path</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&#34;javax.servlet.error.request_uri&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Object</span> <span class="n">exception</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="s">&#34;javax.servlet.error.exception&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&#34;code: %s,exceptionType: %s,message: %s,path: %s,exception: %s&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">code</span><span class="o">,</span> <span class="n">exceptionType</span><span class="o">,</span> <span class="n">message</span><span class="o">,</span> <span class="n">path</span><span class="o">,</span> <span class="n">exception</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Throwing exceptions directly is simple and effortless! Where most of the exceptions caught here have not gone through the Controller, we let these exceptions be handled uniformly through the <code>ExceptionController</code> relay, ensuring that the exception handling of the entire application maintains a uniform facade to the outside world. I don&rsquo;t know if you have a better way, welcome to discuss in the comments.</p>
 <blockquote>

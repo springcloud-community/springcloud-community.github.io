@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-01/mongodb-mutil-source/" />
@@ -434,11 +434,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-data-mongodb<span class="nt">&lt;/artifactId&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-data-mongodb<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="multiple-data-source-configuration">Multiple Data Source Configuration</h2>
 <p>Configuration file.</p>
@@ -454,15 +454,15 @@
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spring</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">data</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">mongodb</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">mongodb://192.168.150.154:17017</span><span class="w">
-</span><span class="w">      </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l">ewell-label</span><span class="w">
-</span><span class="w">    </span><span class="nt">mongodb-target</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">mongodb://192.168.150.154:17017</span><span class="w">
-</span><span class="w">      </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l">ewell-label-target</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">mongodb</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">mongodb://192.168.150.154:17017</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l">ewell-label</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">mongodb-target</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">mongodb://192.168.150.154:17017</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l">ewell-label-target</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="java-configuration">java configuration</h3>
 <h4 id="master-data-source">Master data source</h4>
@@ -551,88 +551,88 @@
 </span><span class="lnt">81
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.winterchen.label.service.configuration</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">com.mongodb.MongoClient</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.mongodb.MongoClientURI</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Qualifier</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Primary</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.MongoDbFactory</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.MongoTransactionManager</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.config.AbstractMongoConfiguration</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.MongoTemplate</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.SimpleMongoDbFactory</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.DefaultDbRefResolver</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.MappingMongoConverter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.mapping.MongoMappingContext</span><span class="o">;</span>
-
-<span class="cm">/**
-</span><span class="cm"> * @author winterchen
-</span><span class="cm"> * @version 1.0
-</span><span class="cm"> * @date 2020/12/2 3:51 下午
-</span><span class="cm"> * @description 业务mongo数据源
-</span><span class="cm"> **/</span>
-<span class="nd">@Configuration</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BusinessMongoConfig</span> <span class="kd">extends</span> <span class="n">AbstractMongoConfiguration</span> <span class="o">{</span>
-
-    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${spring.data.mongodb.uri}&#34;</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">uri</span><span class="o">;</span>
-
-    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${spring.data.mongodb.database}&#34;</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">database</span><span class="o">;</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="n">String</span> <span class="nf">getDatabaseName</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">database</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">MongoClient</span> <span class="nf">mongoClient</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">MongoClientURI</span> <span class="n">mongoClientURI</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MongoClientURI</span><span class="o">(</span><span class="n">uri</span><span class="o">);</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoClient</span><span class="o">(</span><span class="n">mongoClientURI</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Primary</span>
-    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;mongoMappingContext&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">MongoMappingContext</span> <span class="nf">mongoMappingContext</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">MongoMappingContext</span> <span class="n">mappingContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MongoMappingContext</span><span class="o">();</span>
-        <span class="k">return</span> <span class="n">mappingContext</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Primary</span>
-    <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">MongoTransactionManager</span> <span class="nf">transactionManager</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoTransactionManager</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Primary</span>
-    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;mongoDbFactory&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">MongoDbFactory</span> <span class="nf">mongoDbFactory</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">SimpleMongoDbFactory</span><span class="o">(</span><span class="n">mongoClient</span><span class="o">(),</span> <span class="n">getDatabaseName</span><span class="o">());</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Primary</span>
-    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;mappingMongoConverter&#34;</span><span class="o">)</span> <span class="c1">//使用自定义的typeMapper去除写入mongodb时的“_class”字段
-</span><span class="c1"></span>    <span class="kd">public</span> <span class="n">MappingMongoConverter</span> <span class="nf">mappingMongoConverter</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">,</span>
-                                                       <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mongoMappingContext&#34;</span><span class="o">)</span> <span class="n">MongoMappingContext</span> <span class="n">mongoMappingContext</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="n">DefaultDbRefResolver</span> <span class="n">dbRefResolver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultDbRefResolver</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">);</span>
-        <span class="n">MappingMongoConverter</span> <span class="n">converter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MappingMongoConverter</span><span class="o">(</span><span class="n">dbRefResolver</span><span class="o">,</span> <span class="n">mongoMappingContext</span><span class="o">);</span>
-        <span class="n">converter</span><span class="o">.</span><span class="na">setTypeMapper</span><span class="o">(</span><span class="k">new</span> <span class="n">DefaultMongoTypeMapper</span><span class="o">(</span><span class="kc">null</span><span class="o">));</span>
-        <span class="k">return</span> <span class="n">converter</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Primary</span>
-    <span class="nd">@Bean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;mongoTemplate&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">MongoTemplate</span> <span class="nf">getMongoTemplate</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">,</span>
-                                          <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mappingMongoConverter&#34;</span><span class="o">)</span> <span class="n">MappingMongoConverter</span> <span class="n">mappingMongoConverter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoTemplate</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">,</span> <span class="n">mappingMongoConverter</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.winterchen.label.service.configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mongodb.MongoClient</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mongodb.MongoClientURI</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Qualifier</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Primary</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.MongoDbFactory</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.MongoTransactionManager</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.config.AbstractMongoConfiguration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.MongoTemplate</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.SimpleMongoDbFactory</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.DefaultDbRefResolver</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.MappingMongoConverter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.mapping.MongoMappingContext</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author winterchen
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @version 1.0
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @date 2020/12/2 3:51 下午
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @description 业务mongo数据源
+</span></span></span><span class="line"><span class="cl"><span class="cm"> **/</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BusinessMongoConfig</span> <span class="kd">extends</span> <span class="n">AbstractMongoConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${spring.data.mongodb.uri}&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">uri</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${spring.data.mongodb.database}&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">database</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="n">String</span> <span class="nf">getDatabaseName</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">database</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">MongoClient</span> <span class="nf">mongoClient</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">MongoClientURI</span> <span class="n">mongoClientURI</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MongoClientURI</span><span class="o">(</span><span class="n">uri</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoClient</span><span class="o">(</span><span class="n">mongoClientURI</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Primary</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;mongoMappingContext&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">MongoMappingContext</span> <span class="nf">mongoMappingContext</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">MongoMappingContext</span> <span class="n">mappingContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MongoMappingContext</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">mappingContext</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Primary</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">MongoTransactionManager</span> <span class="nf">transactionManager</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoTransactionManager</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Primary</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;mongoDbFactory&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">MongoDbFactory</span> <span class="nf">mongoDbFactory</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">SimpleMongoDbFactory</span><span class="o">(</span><span class="n">mongoClient</span><span class="o">(),</span> <span class="n">getDatabaseName</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Primary</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;mappingMongoConverter&#34;</span><span class="o">)</span> <span class="c1">//使用自定义的typeMapper去除写入mongodb时的“_class”字段
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">public</span> <span class="n">MappingMongoConverter</span> <span class="nf">mappingMongoConverter</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                       <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mongoMappingContext&#34;</span><span class="o">)</span> <span class="n">MongoMappingContext</span> <span class="n">mongoMappingContext</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">DefaultDbRefResolver</span> <span class="n">dbRefResolver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultDbRefResolver</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">MappingMongoConverter</span> <span class="n">converter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MappingMongoConverter</span><span class="o">(</span><span class="n">dbRefResolver</span><span class="o">,</span> <span class="n">mongoMappingContext</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">converter</span><span class="o">.</span><span class="na">setTypeMapper</span><span class="o">(</span><span class="k">new</span> <span class="n">DefaultMongoTypeMapper</span><span class="o">(</span><span class="kc">null</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">converter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Primary</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;mongoTemplate&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">MongoTemplate</span> <span class="nf">getMongoTemplate</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                          <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mappingMongoConverter&#34;</span><span class="o">)</span> <span class="n">MappingMongoConverter</span> <span class="n">mappingMongoConverter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoTemplate</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">,</span> <span class="n">mappingMongoConverter</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h4 id="secondary-data-source">Secondary Data Source</h4>
 <div class="highlight"><div class="chroma">
@@ -718,86 +718,86 @@
 </span><span class="lnt">79
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="nn">com.winterchen.label.service.configuration</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">com.mongodb.MongoClient</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.mongodb.MongoClientURI</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Qualifier</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.MongoDbFactory</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.MongoTransactionManager</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.config.AbstractMongoConfiguration</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.MongoTemplate</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.SimpleMongoDbFactory</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.DefaultDbRefResolver</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.MappingMongoConverter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.mapping.MongoMappingContext</span><span class="o">;</span>
-
-<span class="cm">/**
-</span><span class="cm"> * @author winterchen
-</span><span class="cm"> * @version 1.0
-</span><span class="cm"> * @date 2020/12/2 3:53 下午
-</span><span class="cm"> * @description TODO
-</span><span class="cm"> **/</span>
-<span class="nd">@Configuration</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TargetMongoConfig</span> <span class="kd">extends</span> <span class="n">AbstractMongoConfiguration</span> <span class="o">{</span>
-
-    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${spring.data.mongodb-target.uri}&#34;</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">uri</span><span class="o">;</span>
-
-    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${spring.data.mongodb-target.database}&#34;</span><span class="o">)</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="n">database</span><span class="o">;</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">protected</span> <span class="n">String</span> <span class="nf">getDatabaseName</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">database</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">MongoClient</span> <span class="nf">mongoClient</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">MongoClientURI</span> <span class="n">mongoClientURI</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MongoClientURI</span><span class="o">(</span><span class="n">uri</span><span class="o">);</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoClient</span><span class="o">(</span><span class="n">mongoClientURI</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;targetMongoMappingContext&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">MongoMappingContext</span> <span class="nf">mongoMappingContext</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">MongoMappingContext</span> <span class="n">mappingContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MongoMappingContext</span><span class="o">();</span>
-        <span class="k">return</span> <span class="n">mappingContext</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;TARGET_MONGO_TRANSACTION_MANAGER&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">MongoTransactionManager</span> <span class="nf">transactionManager</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;targetMongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoTransactionManager</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;targetMongoDbFactory&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">MongoDbFactory</span> <span class="nf">mongoDbFactory</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">SimpleMongoDbFactory</span><span class="o">(</span><span class="n">mongoClient</span><span class="o">(),</span> <span class="n">getDatabaseName</span><span class="o">());</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;targetMappingMongoConverter&#34;</span><span class="o">)</span> <span class="c1">//使用自定义的typeMapper去除写入mongodb时的“_class”字段
-</span><span class="c1"></span>    <span class="kd">public</span> <span class="n">MappingMongoConverter</span> <span class="nf">mappingMongoConverter</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;targetMongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">,</span>
-                                                       <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;targetMongoMappingContext&#34;</span><span class="o">)</span> <span class="n">MongoMappingContext</span> <span class="n">mongoMappingContext</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="n">DefaultDbRefResolver</span> <span class="n">dbRefResolver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultDbRefResolver</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">);</span>
-        <span class="n">MappingMongoConverter</span> <span class="n">converter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MappingMongoConverter</span><span class="o">(</span><span class="n">dbRefResolver</span><span class="o">,</span> <span class="n">mongoMappingContext</span><span class="o">);</span>
-        <span class="n">converter</span><span class="o">.</span><span class="na">setTypeMapper</span><span class="o">(</span><span class="k">new</span> <span class="n">DefaultMongoTypeMapper</span><span class="o">(</span><span class="kc">null</span><span class="o">));</span>
-        <span class="k">return</span> <span class="n">converter</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * MongoTemplate实现
-</span><span class="cm">     */</span>
-    <span class="nd">@Bean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;targetMongoTemplate&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">MongoTemplate</span> <span class="nf">getMongoTemplate</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;targetMongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">,</span>
-                                          <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mappingMongoConverter&#34;</span><span class="o">)</span> <span class="n">MappingMongoConverter</span> <span class="n">mappingMongoConverter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoTemplate</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">,</span> <span class="n">mappingMongoConverter</span><span class="o">);</span>
-    <span class="o">}</span>
-
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.winterchen.label.service.configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mongodb.MongoClient</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mongodb.MongoClientURI</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Qualifier</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Value</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.MongoDbFactory</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.MongoTransactionManager</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.config.AbstractMongoConfiguration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.MongoTemplate</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.SimpleMongoDbFactory</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.DefaultDbRefResolver</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.convert.MappingMongoConverter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.mongodb.core.mapping.MongoMappingContext</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author winterchen
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @version 1.0
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @date 2020/12/2 3:53 下午
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @description TODO
+</span></span></span><span class="line"><span class="cl"><span class="cm"> **/</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TargetMongoConfig</span> <span class="kd">extends</span> <span class="n">AbstractMongoConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${spring.data.mongodb-target.uri}&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">uri</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Value</span><span class="o">(</span><span class="s">&#34;${spring.data.mongodb-target.database}&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">database</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">protected</span> <span class="n">String</span> <span class="nf">getDatabaseName</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">database</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">MongoClient</span> <span class="nf">mongoClient</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">MongoClientURI</span> <span class="n">mongoClientURI</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MongoClientURI</span><span class="o">(</span><span class="n">uri</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoClient</span><span class="o">(</span><span class="n">mongoClientURI</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;targetMongoMappingContext&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">MongoMappingContext</span> <span class="nf">mongoMappingContext</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">MongoMappingContext</span> <span class="n">mappingContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MongoMappingContext</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">mappingContext</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;TARGET_MONGO_TRANSACTION_MANAGER&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">MongoTransactionManager</span> <span class="nf">transactionManager</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;targetMongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoTransactionManager</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;targetMongoDbFactory&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">MongoDbFactory</span> <span class="nf">mongoDbFactory</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">SimpleMongoDbFactory</span><span class="o">(</span><span class="n">mongoClient</span><span class="o">(),</span> <span class="n">getDatabaseName</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span><span class="o">(</span><span class="s">&#34;targetMappingMongoConverter&#34;</span><span class="o">)</span> <span class="c1">//使用自定义的typeMapper去除写入mongodb时的“_class”字段
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">public</span> <span class="n">MappingMongoConverter</span> <span class="nf">mappingMongoConverter</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;targetMongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                       <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;targetMongoMappingContext&#34;</span><span class="o">)</span> <span class="n">MongoMappingContext</span> <span class="n">mongoMappingContext</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">DefaultDbRefResolver</span> <span class="n">dbRefResolver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DefaultDbRefResolver</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">MappingMongoConverter</span> <span class="n">converter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MappingMongoConverter</span><span class="o">(</span><span class="n">dbRefResolver</span><span class="o">,</span> <span class="n">mongoMappingContext</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">converter</span><span class="o">.</span><span class="na">setTypeMapper</span><span class="o">(</span><span class="k">new</span> <span class="n">DefaultMongoTypeMapper</span><span class="o">(</span><span class="kc">null</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">converter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * MongoTemplate实现
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;targetMongoTemplate&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">MongoTemplate</span> <span class="nf">getMongoTemplate</span><span class="o">(</span><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;targetMongoDbFactory&#34;</span><span class="o">)</span> <span class="n">MongoDbFactory</span> <span class="n">mongoDbFactory</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                          <span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;mappingMongoConverter&#34;</span><span class="o">)</span> <span class="n">MappingMongoConverter</span> <span class="n">mappingMongoConverter</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">MongoTemplate</span><span class="o">(</span><span class="n">mongoDbFactory</span><span class="o">,</span> <span class="n">mappingMongoConverter</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="usage">Usage</h2>
 <p>Using the default data source.</p>
@@ -807,9 +807,9 @@
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Autowired</span>
-<span class="kd">private</span> <span class="n">MongoTemplate</span> <span class="n">mongoTemplate</span><span class="o">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">MongoTemplate</span> <span class="n">mongoTemplate</span><span class="o">;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>To use another data source, just set the name:</p>
 <div class="highlight"><div class="chroma">
@@ -819,10 +819,10 @@
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Autowired</span>
-<span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;targetMongoTemplate&#34;</span><span class="o">)</span>
-<span class="kd">private</span> <span class="n">MongoTemplate</span> <span class="n">targetMongoTemplate</span><span class="o">;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Qualifier</span><span class="o">(</span><span class="s">&#34;targetMongoTemplate&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">MongoTemplate</span> <span class="n">targetMongoTemplate</span><span class="o">;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="transaction">Transaction</h2>
 <p>General.</p>
@@ -831,8 +831,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Transactional</span><span class="o">(</span><span class="n">rollbackFor</span> <span class="o">=</span> <span class="n">Throwable</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Transactional</span><span class="o">(</span><span class="n">rollbackFor</span> <span class="o">=</span> <span class="n">Throwable</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>For other data sources, just specify the transaction manager.</p>
 <div class="highlight"><div class="chroma">
@@ -840,8 +840,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Transactional</span><span class="o">(</span><span class="n">rollbackFor</span> <span class="o">=</span> <span class="n">Throwable</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">transactionManager</span> <span class="o">=</span> <span class="s">&#34;TARGET_MONGO_TRANSACTION_MANAGER&#34;</span><span class="o">)</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Transactional</span><span class="o">(</span><span class="n">rollbackFor</span> <span class="o">=</span> <span class="n">Throwable</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">transactionManager</span> <span class="o">=</span> <span class="s">&#34;TARGET_MONGO_TRANSACTION_MANAGER&#34;</span><span class="o">)</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Note: The two transactions cannot be mixed</p>
 <blockquote>

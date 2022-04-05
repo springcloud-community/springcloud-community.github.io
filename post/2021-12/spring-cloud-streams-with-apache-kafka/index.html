@@ -31,7 +31,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2021-12/spring-cloud-streams-with-apache-kafka/" />
@@ -424,7 +424,7 @@
 
     
     <div class="post-content">
-      <p>Have you ever wondered how features like Google Maps' live traffic work? These systems have to gather and process data in real-time. The architecture of these systems generally involves a data pipeline that processes and transfers data to be processed further until it reaches the clients. In this article, we will see something similar with a simple example using Kafka Streams. The sample app can be found <a href="https://github.com/auth0-blog/spring-cloud-stream-sample">here</a>.</p>
+      <p>Have you ever wondered how features like Google Maps&rsquo; live traffic work? These systems have to gather and process data in real-time. The architecture of these systems generally involves a data pipeline that processes and transfers data to be processed further until it reaches the clients. In this article, we will see something similar with a simple example using Kafka Streams. The sample app can be found <a href="https://github.com/auth0-blog/spring-cloud-stream-sample">here</a>.</p>
 <h2 id="introduction-to-spring-cloud-stream">Introduction to Spring Cloud Stream</h2>
 <p>Spring Cloud Stream is a framework designed to support stream processing provided by various messaging systems like Apache Kafka, RabbitMQ, etc. The framework allows you to create processing logic without having to deal with any specific platform. It helps you build highly scalable event-driven microservices connected using these messaging systems.</p>
 <p>The framework provides a flexible programming model built on already established and familiar Spring idioms and best practices. The way it works is simple; you have to provide implementations (called Binder implementations)for the messaging system that you are using. Spring cloud stream supports:</p>
@@ -458,12 +458,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="n">dependencies</span> <span class="o">{</span>
-    <span class="n">implementation</span> <span class="s1">&#39;org.springframework.boot:spring-boot-starter&#39;</span>
-    <span class="n">implementation</span> <span class="s1">&#39;org.apache.kafka:kafka-streams&#39;</span>
-    <span class="n">implementation</span> <span class="s1">&#39;org.springframework.kafka:spring-kafka&#39;</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gradle" data-lang="gradle"><span class="line"><span class="cl"><span class="n">dependencies</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">implementation</span> <span class="s1">&#39;org.springframework.boot:spring-boot-starter&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">implementation</span> <span class="s1">&#39;org.apache.kafka:kafka-streams&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">implementation</span> <span class="s1">&#39;org.springframework.kafka:spring-kafka&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Let&rsquo;s setup the config for Kafka. We need to define a few parameters on how we want to serialize and deserialize the data. The config is easy to set up and understand. Since our application will be listening to a topic and producing the output to a different topic, our application is a producer and a consumer both. So, we need to define config for both producer and consumer.</p>
 <p>In the application.yml file, we need to add these entries.</p>
@@ -494,30 +494,30 @@
 </span><span class="lnt">23
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">kafka</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">bootstrap-servers</span><span class="p">:</span><span class="w"> </span><span class="l">localhost:9092</span><span class="w">
-</span><span class="w">  </span><span class="nt">properties</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">schema.registry.url</span><span class="p">:</span><span class="w"> </span><span class="l">http://localhost:8081</span><span class="w">
-</span><span class="w">
-</span><span class="w">  </span><span class="nt">producer</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">client-id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}</span><span class="w">
-</span><span class="w">    </span><span class="nt">key-serializer</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.StringSerializer</span><span class="w">
-</span><span class="w">    </span><span class="nt">value-serializer</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.StringSerializer</span><span class="w">
-</span><span class="w">
-</span><span class="w">  </span><span class="nt">consumer</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">client-id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}</span><span class="w">
-</span><span class="w">    </span><span class="nt">group-id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}-group</span><span class="w">
-</span><span class="w">    </span><span class="nt">key-deserializer</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.StringDeserializer</span><span class="w">
-</span><span class="w">    </span><span class="nt">value-deserializer</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.StringDeserializer</span><span class="w">
-</span><span class="w">    </span><span class="nt">auto-offset-reset</span><span class="p">:</span><span class="w"> </span><span class="l">earliest</span><span class="w">
-</span><span class="w">
-</span><span class="w">  </span><span class="nt">streams</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">client-id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}-stream</span><span class="w">
-</span><span class="w">    </span><span class="nt">application-id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}</span><span class="w">
-</span><span class="w">    </span><span class="nt">properties</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">default.key.serde</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.Serdes$StringSerde</span><span class="w">
-</span><span class="w">      </span><span class="nt">default.value.serde</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.Serdes$StringSerde</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">kafka</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">bootstrap-servers</span><span class="p">:</span><span class="w"> </span><span class="l">localhost:9092</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">properties</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">schema.registry.url</span><span class="p">:</span><span class="w"> </span><span class="l">http://localhost:8081</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">producer</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">client-id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">key-serializer</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.StringSerializer</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">value-serializer</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.StringSerializer</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">consumer</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">client-id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">group-id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}-group</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">key-deserializer</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.StringDeserializer</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">value-deserializer</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.StringDeserializer</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">auto-offset-reset</span><span class="p">:</span><span class="w"> </span><span class="l">earliest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">streams</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">client-id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}-stream</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">application-id</span><span class="p">:</span><span class="w"> </span><span class="l">${spring.application.name}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">properties</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">default.key.serde</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.Serdes$StringSerde</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">default.value.serde</span><span class="p">:</span><span class="w"> </span><span class="l">org.apache.kafka.common.serialization.Serdes$StringSerde</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>If you look at the config carefully, we are setting up serializers and de-serializers for the producer, the consumer, and the streams (serde is just short for serializer-deserializer). This is the only setup we need for the Spring boot project.</p>
 <p>Let&rsquo;s jump into creating the producer, the consumer, and the stream processor. I have taken a simple example here. We are producing random numbers every 2 seconds using a scheduler.</p>
@@ -537,19 +537,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="n">Component</span>
-<span class="nd">@AllArgsConstructor</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NumberProducer</span> <span class="o">{</span>
-
-    <span class="n">NumberPublisher</span> <span class="n">numberPublisher</span><span class="o">;</span>
-
-    <span class="nd">@Scheduled</span><span class="o">(</span><span class="n">fixedRate</span> <span class="o">=</span> <span class="n">2000</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">produceIntStream</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
-        <span class="n">numberPublisher</span><span class="o">.</span><span class="na">produce</span><span class="o">(</span><span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="n">1000</span><span class="o">));</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Component</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@AllArgsConstructor</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NumberProducer</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">NumberPublisher</span> <span class="n">numberPublisher</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Scheduled</span><span class="o">(</span><span class="n">fixedRate</span> <span class="o">=</span> <span class="n">2000</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">produceIntStream</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">numberPublisher</span><span class="o">.</span><span class="na">produce</span><span class="o">(</span><span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="n">1000</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The number publisher is the actual publisher that puts the data on a topic. We set a key for the message and the data (which is a random number in our case).</p>
 <div class="highlight"><div class="chroma">
@@ -570,21 +570,21 @@
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Slf4j</span>
-<span class="nd">@Component</span>
-<span class="nd">@AllArgsConstructor</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NumberPublisher</span> <span class="o">{</span>
-
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">KafkaTemplate</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">kafkaTemplate</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">produce</span><span class="o">(</span><span class="n">Integer</span> <span class="n">randomNumber</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">String</span> <span class="n">s</span> <span class="o">=</span> <span class="s">&#34;Odd&#34;</span><span class="o">;</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">randomNumber</span> <span class="o">%</span> <span class="n">2</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="n">s</span> <span class="o">=</span> <span class="s">&#34;Even&#34;</span><span class="o">;</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;Produced number: &#34;</span> <span class="o">+</span> <span class="n">randomNumber</span><span class="o">);</span>
-        <span class="n">kafkaTemplate</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">INPUT_TOPIC_NAME</span><span class="o">,</span> <span class="n">s</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">randomNumber</span><span class="o">));</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Slf4j</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@AllArgsConstructor</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NumberPublisher</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">KafkaTemplate</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">kafkaTemplate</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">produce</span><span class="o">(</span><span class="n">Integer</span> <span class="n">randomNumber</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">String</span> <span class="n">s</span> <span class="o">=</span> <span class="s">&#34;Odd&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">randomNumber</span> <span class="o">%</span> <span class="n">2</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="n">s</span> <span class="o">=</span> <span class="s">&#34;Even&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;Produced number: &#34;</span> <span class="o">+</span> <span class="n">randomNumber</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">kafkaTemplate</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">INPUT_TOPIC_NAME</span><span class="o">,</span> <span class="n">s</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">randomNumber</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The key is defined as a String, which is either even or odd based on the number. We use the Kafka template to send the message; this comes from the spring-kafka library. It abstracts out the logic for publishing and consuming the messages.</p>
 <p>Next up, we set up our stream processor that listens to the topic on which the publisher is putting the messages. This is where it gets interesting. We listen to the <code>INPUT_TOPIC</code> and then process the data. In this case, the job of the stream processor is to filter out the odd numbers and only send the even numbers on the <code>OUTPUT_TOPIC</code> .</p>
@@ -609,24 +609,24 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Configuration</span>
-<span class="nd">@EnableKafkaStreams</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">KafkaStream</span> <span class="o">{</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">OUTPUT_TOPIC_NAME</span> <span class="o">=</span> <span class="s">&#34;even-number-topic&#34;</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">INPUT_TOPIC_NAME</span> <span class="o">=</span> <span class="s">&#34;number-topic&#34;</span><span class="o">;</span>
-
-    <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="nf">evenNumbersStream</span><span class="o">(</span><span class="n">StreamsBuilder</span> <span class="n">kStreamBuilder</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">input</span> <span class="o">=</span> <span class="n">kStreamBuilder</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">INPUT_TOPIC_NAME</span><span class="o">);</span>
-
-        <span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">output</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">filter</span><span class="o">((</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">key</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;Even&#34;</span><span class="o">));</span>
-
-        <span class="n">output</span><span class="o">.</span><span class="na">to</span><span class="o">(</span><span class="n">OUTPUT_TOPIC_NAME</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">output</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@EnableKafkaStreams</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">KafkaStream</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">OUTPUT_TOPIC_NAME</span> <span class="o">=</span> <span class="s">&#34;even-number-topic&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">INPUT_TOPIC_NAME</span> <span class="o">=</span> <span class="s">&#34;number-topic&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="nf">evenNumbersStream</span><span class="o">(</span><span class="n">StreamsBuilder</span> <span class="n">kStreamBuilder</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">input</span> <span class="o">=</span> <span class="n">kStreamBuilder</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">INPUT_TOPIC_NAME</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">output</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">filter</span><span class="o">((</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">key</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="s">&#34;Even&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">output</span><span class="o">.</span><span class="na">to</span><span class="o">(</span><span class="n">OUTPUT_TOPIC_NAME</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">output</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>You might be wondering about that KStream in the return type of our method. I will give a brief overview here as it is outside the scope of this article.</p>
 <p>KStream -&gt; A Kafka stream that is append-only. When you provide data with the same key, it will not update the previous record. It provides several operations that are very useful for data processing, like a filter, map, partition, flatMap, etc. You can read more about KStreams <a href="https://www.confluent.co.uk/blog/introducing-kafka-streams-stream-processing-made-simple/">here</a>.</p>
@@ -644,16 +644,16 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Component</span>
-<span class="nd">@EnableKafka</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">EvenNumberConsumer</span> <span class="o">{</span>
-
-    <span class="nd">@KafkaListener</span><span class="o">(</span><span class="n">topics</span> <span class="o">=</span> <span class="n">OUTPUT_TOPIC_NAME</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">receive</span><span class="o">(</span><span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;Received number: &#34;</span> <span class="o">+</span> <span class="n">value</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@EnableKafka</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">EvenNumberConsumer</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@KafkaListener</span><span class="o">(</span><span class="n">topics</span> <span class="o">=</span> <span class="n">OUTPUT_TOPIC_NAME</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">receive</span><span class="o">(</span><span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;Received number: &#34;</span> <span class="o">+</span> <span class="n">value</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The application code is complete. Let&rsquo;s set up Kafka locally.</p>
 <h2 id="setting-up-kafka-locally">Setting up Kafka Locally</h2>
@@ -706,51 +706,51 @@
 </span><span class="lnt">44
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3.7&#39;</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">kafka</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">confluentinc/cp-kafka:5.5.0</span><span class="w">
-</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">kafka</span><span class="w">
-</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">kafka</span><span class="w">
-</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">always</span><span class="w">
-</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">KAFKA_LISTENERS</span><span class="p">:</span><span class="w"> </span><span class="l">LISTENER_DOCKER_INTERNAL://:29092,LISTENER_DOCKER_EXTERNAL://:9092</span><span class="w">
-</span><span class="w">      </span><span class="nt">KAFKA_ADVERTISED_LISTENERS</span><span class="p">:</span><span class="w"> </span><span class="l">LISTENER_DOCKER_INTERNAL://kafka:29092,LISTENER_DOCKER_EXTERNAL://localhost:9092</span><span class="w">
-</span><span class="w">      </span><span class="nt">KAFKA_LISTENER_SECURITY_PROTOCOL_MAP</span><span class="p">:</span><span class="w"> </span><span class="l">LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT</span><span class="w">
-</span><span class="w">      </span><span class="nt">KAFKA_ZOOKEEPER_CONNECT</span><span class="p">:</span><span class="w"> </span><span class="l">zookeeper:2181</span><span class="w">
-</span><span class="w">      </span><span class="nt">KAFKA_INTER_BROKER_LISTENER_NAME</span><span class="p">:</span><span class="w"> </span><span class="l">LISTENER_DOCKER_INTERNAL</span><span class="w">
-</span><span class="w">      </span><span class="nt">KAFKA_AUTO_CREATE_TOPICS_ENABLE</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
-</span><span class="w">      </span><span class="nt">KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
-</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="m">9092</span><span class="p">:</span><span class="m">9092</span><span class="w">
-</span><span class="w">      </span>- <span class="m">9999</span><span class="p">:</span><span class="m">9999</span><span class="w">
-</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="l">zookeeper</span><span class="w">
-</span><span class="w">
-</span><span class="w">  </span><span class="nt">zookeeper</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">zookeeper</span><span class="w">
-</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">zookeeper</span><span class="w">
-</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">confluentinc/cp-zookeeper:5.5.0</span><span class="w">
-</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">ZOOKEEPER_CLIENT_PORT</span><span class="p">:</span><span class="w"> </span><span class="m">2181</span><span class="w">
-</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="m">2181</span><span class="p">:</span><span class="m">2181</span><span class="w">
-</span><span class="w">
-</span><span class="w">  </span><span class="nt">schema-registry</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">confluentinc/cp-schema-registry:5.5.0</span><span class="w">
-</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">schema-registry</span><span class="w">
-</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">schema-registry</span><span class="w">
-</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">always</span><span class="w">
-</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;kafka:29092&#34;</span><span class="w">
-</span><span class="w">      </span><span class="nt">SCHEMA_REGISTRY_HOST_NAME</span><span class="p">:</span><span class="w"> </span><span class="l">schema-registry</span><span class="w">
-</span><span class="w">      </span><span class="nt">SCHEMA_REGISTRY_LISTENERS</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;http://0.0.0.0:8081&#34;</span><span class="w">
-</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="m">8081</span><span class="p">:</span><span class="m">8081</span><span class="w">
-</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="l">zookeeper</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3.7&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">kafka</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">confluentinc/cp-kafka:5.5.0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">kafka</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">kafka</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">always</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">KAFKA_LISTENERS</span><span class="p">:</span><span class="w"> </span><span class="l">LISTENER_DOCKER_INTERNAL://:29092,LISTENER_DOCKER_EXTERNAL://:9092</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">KAFKA_ADVERTISED_LISTENERS</span><span class="p">:</span><span class="w"> </span><span class="l">LISTENER_DOCKER_INTERNAL://kafka:29092,LISTENER_DOCKER_EXTERNAL://localhost:9092</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">KAFKA_LISTENER_SECURITY_PROTOCOL_MAP</span><span class="p">:</span><span class="w"> </span><span class="l">LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">KAFKA_ZOOKEEPER_CONNECT</span><span class="p">:</span><span class="w"> </span><span class="l">zookeeper:2181</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">KAFKA_INTER_BROKER_LISTENER_NAME</span><span class="p">:</span><span class="w"> </span><span class="l">LISTENER_DOCKER_INTERNAL</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">KAFKA_AUTO_CREATE_TOPICS_ENABLE</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;true&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="m">9092</span><span class="p">:</span><span class="m">9092</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="m">9999</span><span class="p">:</span><span class="m">9999</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">zookeeper</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">zookeeper</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">zookeeper</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">zookeeper</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">confluentinc/cp-zookeeper:5.5.0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">ZOOKEEPER_CLIENT_PORT</span><span class="p">:</span><span class="w"> </span><span class="m">2181</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="m">2181</span><span class="p">:</span><span class="m">2181</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">schema-registry</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">confluentinc/cp-schema-registry:5.5.0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l">schema-registry</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">schema-registry</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">always</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;kafka:29092&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">SCHEMA_REGISTRY_HOST_NAME</span><span class="p">:</span><span class="w"> </span><span class="l">schema-registry</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">SCHEMA_REGISTRY_LISTENERS</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;http://0.0.0.0:8081&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="m">8081</span><span class="p">:</span><span class="m">8081</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">zookeeper</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>That&rsquo;s it!</p>
 <h2 id="verify-sending-processing-and-receiving-of-events">Verify Sending, Processing, and Receiving of Events</h2>
@@ -764,8 +764,8 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">./gradlew bootRun
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">./gradlew bootRun
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Just run the application. You should see logs like this.</p>
 <div class="highlight"><div class="chroma">
@@ -784,19 +784,19 @@
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">Received number: 910
-Received number: 320
-Received number: 16
-Received number: 526
-Received number: 76
-Received number: 936
-Received number: 642
-Produced number: 510
-Received number: 510
-Produced number: 996
-Received number: 996
-Produced number: 897
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Received number: 910
+</span></span><span class="line"><span class="cl">Received number: 320
+</span></span><span class="line"><span class="cl">Received number: 16
+</span></span><span class="line"><span class="cl">Received number: 526
+</span></span><span class="line"><span class="cl">Received number: 76
+</span></span><span class="line"><span class="cl">Received number: 936
+</span></span><span class="line"><span class="cl">Received number: 642
+</span></span><span class="line"><span class="cl">Produced number: 510
+</span></span><span class="line"><span class="cl">Received number: 510
+</span></span><span class="line"><span class="cl">Produced number: 996
+</span></span><span class="line"><span class="cl">Received number: 996
+</span></span><span class="line"><span class="cl">Produced number: 897
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="conclusion">Conclusion</h2>
 <p>Spring Cloud Stream provides a simple and convenient way to create apps that can process streams and publish data to different topics. You can build micro-services that talk to each other using Kafka messages and process data like you would process in a single application.</p>

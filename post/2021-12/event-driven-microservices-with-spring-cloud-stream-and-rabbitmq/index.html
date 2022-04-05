@@ -33,7 +33,7 @@ The usage of events to communicate application states or data is not a new conce
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2021-12/event-driven-microservices-with-spring-cloud-stream-and-rabbitmq/" />
@@ -450,8 +450,8 @@ The usage of events to communicate application states or data is not a new conce
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">docker pull rabbitmq
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">docker pull rabbitmq
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><em>When running the container, do NOT run the rabbitmq container as it doesn’t provide any GUI to browse the exchanges and queues</em></p>
 <p>Run the management plugin using the below command. It’ll start a rabbitmq container with a management GUI.</p>
@@ -460,8 +460,8 @@ The usage of events to communicate application states or data is not a new conce
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">docker run -d --hostname my-rabbit --name some-rabbit rabbitmq:3-management
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">docker run -d --hostname my-rabbit --name some-rabbit rabbitmq:3-management
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The UI an be accessed using <code>http://localhost:15672/</code> with default credentials as <code>guest</code> .</p>
 <h2 id="microservices">Microservices</h2>
@@ -503,31 +503,31 @@ The usage of events to communicate application states or data is not a new conce
 </span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.cloud.stream.function.StreamBridge</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PathVariable</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
-
-<span class="nd">@Slf4j</span>
-<span class="nd">@RestController</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ValueController</span> <span class="o">{</span>
-
-    <span class="kd">private</span> <span class="n">StreamBridge</span> <span class="n">streamBridge</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="nf">ValueController</span><span class="o">(</span><span class="n">StreamBridge</span> <span class="n">streamBridge</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">streamBridge</span> <span class="o">=</span> <span class="n">streamBridge</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;values/{value}&#34;</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">values</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Sending value {} to topic&#34;</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
-        <span class="n">streamBridge</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="s">&#34;values-topic&#34;</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="s">&#34;ok&#34;</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.cloud.stream.function.StreamBridge</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.PathVariable</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Slf4j</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ValueController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">StreamBridge</span> <span class="n">streamBridge</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">ValueController</span><span class="o">(</span><span class="n">StreamBridge</span> <span class="n">streamBridge</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">streamBridge</span> <span class="o">=</span> <span class="n">streamBridge</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;values/{value}&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">ResponseEntity</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">values</span><span class="o">(</span><span class="nd">@PathVariable</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Sending value {} to topic&#34;</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">streamBridge</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="s">&#34;values-topic&#34;</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">ResponseEntity</span><span class="o">.</span><span class="na">ok</span><span class="o">(</span><span class="s">&#34;ok&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As you can see, there is no code or configuration in the Producer microservice that links it to RabbitMQ. The addition of the RabbitMQ binder in the dependency did all the bindings for us. This makes it very easy to switch the underlying messaging provider.</p>
 <h2 id="processor">Processor</h2>
@@ -557,27 +557,27 @@ The usage of events to communicate application states or data is not a new conce
 </span><span class="lnt">20
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.util.function.Function</span><span class="o">;</span>
-
-<span class="nd">@Slf4j</span>
-<span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ValueProcessor</span> <span class="o">{</span>
-
-    <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">Function</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="nf">convertToUppercase</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="o">(</span><span class="n">value</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
-            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Received {}&#34;</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
-            <span class="n">String</span> <span class="n">upperCaseValue</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">();</span>
-            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Sending {}&#34;</span><span class="o">,</span> <span class="n">upperCaseValue</span><span class="o">);</span>
-            <span class="k">return</span> <span class="n">upperCaseValue</span><span class="o">;</span>
-        <span class="o">};</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.function.Function</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Slf4j</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ValueProcessor</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Function</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="nf">convertToUppercase</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">(</span><span class="n">value</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Received {}&#34;</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">String</span> <span class="n">upperCaseValue</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="na">toUpperCase</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Sending {}&#34;</span><span class="o">,</span> <span class="n">upperCaseValue</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">upperCaseValue</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The processor is represented as a <code>java.util.Function</code> that accepts a String and responds with a String.<a href="https://medium.com/javarevisited/8-best-lambdas-stream-and-functional-programming-courses-for-java-developers-3d1836a97a1d"> Functional programming</a> avoids the need for any configurations.</p>
 <p>When the app starts, Spring will automatically create an input topic and register this method as a listener. On receiving a message, the code will convert the input to uppercase and send it to an output topic. <a href="https://medium.com/javarevisited/3-best-spring-professionals-certification-books-and-courses-for-java-developers-935296c3709">Spring </a>will automatically create an output topic as well.</p>
@@ -597,16 +597,16 @@ The usage of events to communicate application states or data is not a new conce
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spring</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">stream</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">bindings</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">convertToUppercase-in-0</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l">values-topic</span><span class="w">
-</span><span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l">processor</span><span class="w">
-</span><span class="w">        </span><span class="nt">convertToUppercase-out-0</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l">uppercase-values-topic</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">stream</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">bindings</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">convertToUppercase-in-0</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l">values-topic</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l">processor</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">convertToUppercase-out-0</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l">uppercase-values-topic</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>Adding <code>group</code> is optional but it’ll create a consumer group and a persistent queue. Leaving the <code>group</code> will result in the creation of an anonymous queue that’ll be destroyed when the application stops. Consumer Groups also helps with High Availability and Load Balance but since this is a sample app with just one instance, the primary reason for adding a <code>group</code> is to avoid the creation of an anonymous queue.</p>
 <p>The output exchange/topic name is also defined in the same yml. The next service (Consumer) has to listen to this exchange to read the message.</p>
@@ -633,24 +633,24 @@ The usage of events to communicate application states or data is not a new conce
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.util.function.Consumer</span><span class="o">;</span>
-
-<span class="nd">@Slf4j</span>
-<span class="nd">@Component</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ValuesConsumer</span> <span class="o">{</span>
-
-    <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">Consumer</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">onReceive</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="o">(</span><span class="n">message</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
-          <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Received the value {} in Consumer&#34;</span><span class="o">,</span> <span class="n">message</span><span class="o">);</span>
-        <span class="o">};</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.function.Consumer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Slf4j</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ValuesConsumer</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Consumer</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">onReceive</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">(</span><span class="n">message</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">          <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Received the value {} in Consumer&#34;</span><span class="o">,</span> <span class="n">message</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>As seen above, the <code>Sink</code> service is defined by creating a <code>java.util.Consumer</code> the bean that acts as the receiver. Since this uses <a href="https://javarevisited.blogspot.com/2020/04/top-5-courses-to-learn-functional-programming-in-java-with-lambda-and-stream.html">Functional programmin</a>g, the default binding is created with the method name, as mentioned in the Processor section. In order to consume the message that Processor sends to <code>uppercase-topic</code> , a configuration needs to be added.</p>
 <div class="highlight"><div class="chroma">
@@ -664,14 +664,14 @@ The usage of events to communicate application states or data is not a new conce
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nt">spring</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">stream</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">bindings</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">onReceive-in-0</span><span class="p">:</span><span class="w">
-</span><span class="w">          </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l">uppercase-values-topic</span><span class="w">
-</span><span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l">consumer</span><span class="w">
-</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">stream</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">bindings</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">onReceive-in-0</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">destination</span><span class="p">:</span><span class="w"> </span><span class="l">uppercase-values-topic</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l">consumer</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>With this, we have created a fully functional Spring Cloud Stream. The final code is available in <a href="https://github.com/smoothed9/spring-cloud-stream-rabbit">Git</a>. Let’s test this and see how it behaves.</p>
 <h1 id="testing">Testing</h1>
@@ -683,9 +683,9 @@ The usage of events to communicate application states or data is not a new conce
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">Received hello
-Sending HELLO
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Received hello
+</span></span><span class="line"><span class="cl">Sending HELLO
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The logs for Consumer should show the below message</p>
 <div class="highlight"><div class="chroma">
@@ -693,8 +693,8 @@ Sending HELLO
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text">Received the value HELLO in Consumer
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Received the value HELLO in Consumer
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>This shows that the input string given in the URL passed through all 3 services as expected.</p>
 <h1 id="conclusion">Conclusion</h1>

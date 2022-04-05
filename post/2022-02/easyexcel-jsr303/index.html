@@ -32,7 +32,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.96.0" />
 
 
 <link rel="canonical" href="https://www.springcloud.io/post/2022-02/easyexcel-jsr303/" />
@@ -440,12 +440,12 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>com.alibaba<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>easyexcel<span class="nt">&lt;/artifactId&gt;</span>
-    <span class="nt">&lt;version&gt;</span>${easyexcel.version}<span class="nt">&lt;/version&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>com.alibaba<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>easyexcel<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;version&gt;</span>${easyexcel.version}<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p><code>easyexcel</code> abstracts the lifecycle of reading Excel into several phases, making it easy to inject the logic you want to implement in each phase. These stages are contained in the <code>ReadListener</code> interface.</p>
 <div class="highlight"><div class="chroma">
@@ -506,61 +506,61 @@
 </span><span class="lnt">54
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ReadListener</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">Listener</span> <span class="o">{</span>
-    <span class="cm">/**
-</span><span class="cm">     * 当任何一个侦听器执行错误报告时，所有侦听器都将接收此方法。 如果在此处引发异常，则整个读取将终止。
-</span><span class="cm">     * 这里是处理读取excel异常的
-</span><span class="cm">     *
-</span><span class="cm">     * @param exception
-</span><span class="cm">     * @param context
-</span><span class="cm">     * @throws Exception
-</span><span class="cm">     */</span>
-    <span class="kt">void</span> <span class="nf">onException</span><span class="o">(</span><span class="n">Exception</span> <span class="n">exception</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">;</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 读取每行excel表头时会执行此方法
-</span><span class="cm">     *
-</span><span class="cm">     * @param headMap
-</span><span class="cm">     * @param context
-</span><span class="cm">     */</span>
-    <span class="kt">void</span> <span class="nf">invokeHead</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">CellData</span><span class="o">&gt;</span> <span class="n">headMap</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">);</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 读取每行数据的时候回执行此方法 
-</span><span class="cm">     *
-</span><span class="cm">     * @param data
-</span><span class="cm">     *            one row value. Is is same as {@link AnalysisContext#readRowHolder()}
-</span><span class="cm">     * @param context
-</span><span class="cm">     *            analysis context
-</span><span class="cm">     */</span>
-    <span class="kt">void</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">T</span> <span class="n">data</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">);</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 如果有额外的单元格信息返回就用此方法处理
-</span><span class="cm">     *
-</span><span class="cm">     * @param extra
-</span><span class="cm">     *            extra information
-</span><span class="cm">     * @param context
-</span><span class="cm">     *            analysis context
-</span><span class="cm">     */</span>
-    <span class="kt">void</span> <span class="nf">extra</span><span class="o">(</span><span class="n">CellExtra</span> <span class="n">extra</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">);</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 在整个excel sheet解析完毕后执行的逻辑。
-</span><span class="cm">     *
-</span><span class="cm">     * @param context
-</span><span class="cm">     */</span>
-    <span class="kt">void</span> <span class="nf">doAfterAllAnalysed</span><span class="o">(</span><span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">);</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 用来控制是否读取下一行的策略
-</span><span class="cm">     *
-</span><span class="cm">     * @param context
-</span><span class="cm">     * @return
-</span><span class="cm">     */</span>
-    <span class="kt">boolean</span> <span class="nf">hasNext</span><span class="o">(</span><span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">);</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ReadListener</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">Listener</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 当任何一个侦听器执行错误报告时，所有侦听器都将接收此方法。 如果在此处引发异常，则整个读取将终止。
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 这里是处理读取excel异常的
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param exception
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param context
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @throws Exception
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">onException</span><span class="o">(</span><span class="n">Exception</span> <span class="n">exception</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 读取每行excel表头时会执行此方法
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param headMap
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param context
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">invokeHead</span><span class="o">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">CellData</span><span class="o">&gt;</span> <span class="n">headMap</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 读取每行数据的时候回执行此方法 
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param data
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *            one row value. Is is same as {@link AnalysisContext#readRowHolder()}
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param context
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *            analysis context
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">T</span> <span class="n">data</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 如果有额外的单元格信息返回就用此方法处理
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param extra
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *            extra information
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param context
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *            analysis context
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">extra</span><span class="o">(</span><span class="n">CellExtra</span> <span class="n">extra</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 在整个excel sheet解析完毕后执行的逻辑。
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param context
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">doAfterAllAnalysed</span><span class="o">(</span><span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 用来控制是否读取下一行的策略
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param context
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @return
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">boolean</span> <span class="nf">hasNext</span><span class="o">(</span><span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>Its abstract implementation <code>AnalysisEventListener&lt;T&gt;</code> provides more abstraction to meet the needs, I will further implement this abstraction to implement the Excel import and verification.</p>
 <blockquote>
@@ -577,11 +577,11 @@
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
-    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
-    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-validation<span class="nt">&lt;/artifactId&gt;</span>
-<span class="nt">&lt;/dependency&gt;</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.boot<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-boot-starter-validation<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="ideas">Ideas</h2>
 <p>We can validate each field as it is parsed, which corresponds to the <code>invoke(T data, AnalysisContext context)</code> method of the <code>ReadListener</code>. This way we can implement the strategy of stopping excel parsing when the field validation triggers a constraint; the other way is to perform the validation after Excel is parsed, which corresponds to the <code>doAfterAllAnalysed(AnalysisContext context)</code>. The other way is to perform the validation after Excel is parsed, which corresponds to <code>doAfterAllAnalysed(AnalysisContext context)</code>. Let&rsquo;s take the second one as an example and implement it.</p>
@@ -652,65 +652,65 @@
 </span><span class="lnt">58
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">cn.felord.validate.Excel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">lombok.AllArgsConstructor</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.util.StringUtils</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">javax.validation.ConstraintViolation</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">javax.validation.Validator</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.stream.Collectors</span><span class="o">;</span>
-
-<span class="cm">/**
-</span><span class="cm"> *  excel 校验工具
-</span><span class="cm"> *
-</span><span class="cm"> * @param &lt;T&gt; the type parameter
-</span><span class="cm"> * @author felord.cn
-</span><span class="cm"> * @since 2021 /4/14 14:14
-</span><span class="cm"> */</span>
-<span class="nd">@AllArgsConstructor</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExcelValidator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Validator</span> <span class="n">validator</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">beginIndex</span><span class="o">;</span>
-
-
-    <span class="cm">/**
-</span><span class="cm">     *  集合校验
-</span><span class="cm">     *
-</span><span class="cm">     * @param data 待校验的集合
-</span><span class="cm">     * @return list
-</span><span class="cm">     */</span>
-    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">validate</span><span class="o">(</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">beginIndex</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
-        <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">messages</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-        <span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="n">datum</span> <span class="o">:</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">String</span> <span class="n">validated</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">doValidate</span><span class="o">(</span><span class="n">index</span><span class="o">,</span> <span class="n">datum</span><span class="o">);</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">validated</span><span class="o">))</span> <span class="o">{</span>
-                <span class="n">messages</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">validated</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="n">index</span><span class="o">++;</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="n">messages</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * 这里是校验的根本方法
-</span><span class="cm">     *
-</span><span class="cm">     * @param index 本条数据所在的行号
-</span><span class="cm">     * @param data 待校验的某条数据
-</span><span class="cm">     * @return 对数据的校验异常进行提示，如果有触发校验规则的会封装提示信息。
-</span><span class="cm">     */</span>
-    <span class="kd">private</span> <span class="n">String</span> <span class="nf">doValidate</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">T</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// 这里使用了JSR303的的校验器，同时使用了分组校验，Excel为分组标识
-</span><span class="c1"></span>        <span class="n">Set</span><span class="o">&lt;</span><span class="n">ConstraintViolation</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">validate</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="n">Excel</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">validate</span><span class="o">.</span><span class="na">size</span><span class="o">()&gt;</span><span class="n">0</span> <span class="o">?</span> <span class="s">&#34;第&#34;</span> <span class="o">+</span> <span class="n">index</span> <span class="o">+</span>
-                <span class="s">&#34;行，触发约束：&#34;</span> <span class="o">+</span> <span class="n">validate</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">ConstraintViolation</span><span class="o">::</span><span class="n">getMessage</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">joining</span><span class="o">(</span><span class="s">&#34;,&#34;</span><span class="o">)):</span> <span class="s">&#34;&#34;</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cn.felord.validate.Excel</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.AllArgsConstructor</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.util.StringUtils</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.validation.ConstraintViolation</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.validation.Validator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.stream.Collectors</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *  excel 校验工具
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @param &lt;T&gt; the type parameter
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author felord.cn
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @since 2021 /4/14 14:14
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@AllArgsConstructor</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExcelValidator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Validator</span> <span class="n">validator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">beginIndex</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *  集合校验
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param data 待校验的集合
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @return list
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">validate</span><span class="o">(</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">beginIndex</span> <span class="o">+</span> <span class="n">1</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">messages</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="n">datum</span> <span class="o">:</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">String</span> <span class="n">validated</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">doValidate</span><span class="o">(</span><span class="n">index</span><span class="o">,</span> <span class="n">datum</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">validated</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">messages</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">validated</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">index</span><span class="o">++;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">messages</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 这里是校验的根本方法
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param index 本条数据所在的行号
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param data 待校验的某条数据
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @return 对数据的校验异常进行提示，如果有触发校验规则的会封装提示信息。
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="nf">doValidate</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">T</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 这里使用了JSR303的的校验器，同时使用了分组校验，Excel为分组标识
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">Set</span><span class="o">&lt;</span><span class="n">ConstraintViolation</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">validate</span> <span class="o">=</span> <span class="n">validator</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="n">Excel</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">validate</span><span class="o">.</span><span class="na">size</span><span class="o">()&gt;</span><span class="n">0</span> <span class="o">?</span> <span class="s">&#34;第&#34;</span> <span class="o">+</span> <span class="n">index</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;行，触发约束：&#34;</span> <span class="o">+</span> <span class="n">validate</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">ConstraintViolation</span><span class="o">::</span><span class="n">getMessage</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">joining</span><span class="o">(</span><span class="s">&#34;,&#34;</span><span class="o">)):</span> <span class="s">&#34;&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>The above is the logic of the whole validation, if the validation passes no message is prompted, if the validation does not pass the constraint information of the validation is wrapped and returned. Where does the <code>Validator</code> come from here? When Spring Boot is integrated with <code>JSR303</code> there is a <code>Validator</code> implementation that is automatically injected into <strong>Spring IoC</strong> and we can use it.</p>
 <h3 id="implementing-analysiseventlistener">Implementing AnalysisEventListener</h3>
@@ -797,82 +797,82 @@
 </span><span class="lnt">75
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">cn.hutool.json.JSONUtil</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.alibaba.excel.context.AnalysisContext</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.alibaba.excel.event.AnalysisEventListener</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">cn.felord.exception.ServiceException</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.util.CollectionUtils</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Collection</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.function.Consumer</span><span class="o">;</span>
-
-<span class="cm">/**
-</span><span class="cm"> * 该类不可被Spring托管
-</span><span class="cm"> *
-</span><span class="cm"> * @param &lt;T&gt; the type parameter
-</span><span class="cm"> * @author felord.cn
-</span><span class="cm"> * @since 2021 /4/14 14:19
-</span><span class="cm"> */</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JdbcEventListener</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">AnalysisEventListener</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="cm">/**
-</span><span class="cm">     * Excel总条数阈值
-</span><span class="cm">     */</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">MAX_SIZE</span> <span class="o">=</span> <span class="n">10000</span><span class="o">;</span>
-    <span class="cm">/**
-</span><span class="cm">     * 校验工具
-</span><span class="cm">     */</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">ExcelValidator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">excelValidator</span><span class="o">;</span>
-    <span class="cm">/**
-</span><span class="cm">     * 如果校验通过消费解析得到的excel数据
-</span><span class="cm">     */</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Consumer</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">batchConsumer</span><span class="o">;</span>
-    <span class="cm">/**
-</span><span class="cm">     * 解析数据的临时存储容器
-</span><span class="cm">     */</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * Instantiates a new Jdbc event listener.
-</span><span class="cm">     *
-</span><span class="cm">     * @param excelValidator Excel校验工具
-</span><span class="cm">     * @param batchConsumer  Excel解析结果批量消费工具，可实现为写入数据库等消费操作
-</span><span class="cm">     */</span>
-    <span class="kd">public</span> <span class="nf">JdbcEventListener</span><span class="o">(</span><span class="n">ExcelValidator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">excelValidator</span><span class="o">,</span> <span class="n">Consumer</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">batchConsumer</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">excelValidator</span> <span class="o">=</span> <span class="n">excelValidator</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">batchConsumer</span> <span class="o">=</span> <span class="n">batchConsumer</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onException</span><span class="o">(</span><span class="n">Exception</span> <span class="n">exception</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
-        <span class="n">list</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
-        <span class="k">throw</span> <span class="n">exception</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">T</span> <span class="n">data</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// 如果没有超过阈值就把解析的excel字段加入集合
-</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="n">MAX_SIZE</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="n">ServiceException</span><span class="o">(</span><span class="s">&#34;单次上传条数不得超过：&#34;</span> <span class="o">+</span> <span class="n">MAX_SIZE</span><span class="o">);</span>
-        <span class="o">}</span>
-        <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doAfterAllAnalysed</span><span class="o">(</span><span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">//全部解析完毕后 对集合进行校验并消费
-</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(!</span><span class="n">CollectionUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">list</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">validated</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">excelValidator</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">list</span><span class="o">);</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">CollectionUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">validated</span><span class="o">))</span> <span class="o">{</span>
-                <span class="k">this</span><span class="o">.</span><span class="na">batchConsumer</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">list</span><span class="o">);</span>
-            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="n">ServiceException</span><span class="o">(</span><span class="n">JSONUtil</span><span class="o">.</span><span class="na">toJsonStr</span><span class="o">(</span><span class="n">validated</span><span class="o">));</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cn.hutool.json.JSONUtil</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.alibaba.excel.context.AnalysisContext</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.alibaba.excel.event.AnalysisEventListener</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">cn.felord.exception.ServiceException</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.util.CollectionUtils</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Collection</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.function.Consumer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 该类不可被Spring托管
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @param &lt;T&gt; the type parameter
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author felord.cn
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @since 2021 /4/14 14:19
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JdbcEventListener</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">AnalysisEventListener</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Excel总条数阈值
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">MAX_SIZE</span> <span class="o">=</span> <span class="n">10000</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 校验工具
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">ExcelValidator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">excelValidator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 如果校验通过消费解析得到的excel数据
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Consumer</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">batchConsumer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 解析数据的临时存储容器
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Instantiates a new Jdbc event listener.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param excelValidator Excel校验工具
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param batchConsumer  Excel解析结果批量消费工具，可实现为写入数据库等消费操作
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">JdbcEventListener</span><span class="o">(</span><span class="n">ExcelValidator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">excelValidator</span><span class="o">,</span> <span class="n">Consumer</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">batchConsumer</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">excelValidator</span> <span class="o">=</span> <span class="n">excelValidator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">batchConsumer</span> <span class="o">=</span> <span class="n">batchConsumer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onException</span><span class="o">(</span><span class="n">Exception</span> <span class="n">exception</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">list</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">throw</span> <span class="n">exception</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">T</span> <span class="n">data</span><span class="o">,</span> <span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 如果没有超过阈值就把解析的excel字段加入集合
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="n">MAX_SIZE</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">ServiceException</span><span class="o">(</span><span class="s">&#34;单次上传条数不得超过：&#34;</span> <span class="o">+</span> <span class="n">MAX_SIZE</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doAfterAllAnalysed</span><span class="o">(</span><span class="n">AnalysisContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">//全部解析完毕后 对集合进行校验并消费
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="o">(!</span><span class="n">CollectionUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">list</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">validated</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">excelValidator</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">list</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">CollectionUtils</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">(</span><span class="n">validated</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">this</span><span class="o">.</span><span class="na">batchConsumer</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">list</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">throw</span> <span class="k">new</span> <span class="n">ServiceException</span><span class="o">(</span><span class="n">JSONUtil</span><span class="o">.</span><span class="na">toJsonStr</span><span class="o">(</span><span class="n">validated</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="wrapping-the-final-tool">Wrapping the final tool</h3>
 <p>The documentation for <code>esayexcel</code> is referenced here to package it into a generic Excel reading tool.</p>
@@ -941,68 +941,68 @@
 </span><span class="lnt">61
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">com.alibaba.excel.EasyExcel</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">lombok.AllArgsConstructor</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">lombok.Data</span><span class="o">;</span>
-
-<span class="kn">import</span> <span class="nn">javax.validation.Validator</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.Collection</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.util.function.Consumer</span><span class="o">;</span>
-
-<span class="cm">/**
-</span><span class="cm"> * excel读取工具
-</span><span class="cm"> *
-</span><span class="cm"> * @author felord.cn
-</span><span class="cm"> * @since 2021 /4/14 15:10
-</span><span class="cm"> */</span>
-<span class="nd">@AllArgsConstructor</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExcelReader</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Validator</span> <span class="n">validator</span><span class="o">;</span>
-
-    <span class="cm">/**
-</span><span class="cm">     * Read Excel.
-</span><span class="cm">     *
-</span><span class="cm">     * @param &lt;T&gt;  the type parameter
-</span><span class="cm">     * @param meta the meta
-</span><span class="cm">     */</span>
-    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">read</span><span class="o">(</span><span class="n">Meta</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">meta</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">ExcelValidator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">excelValidator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExcelValidator</span><span class="o">&lt;&gt;(</span><span class="n">validator</span><span class="o">,</span> <span class="n">meta</span><span class="o">.</span><span class="na">headRowNumber</span><span class="o">);</span>
-        <span class="n">JdbcEventListener</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">readListener</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JdbcEventListener</span><span class="o">&lt;&gt;(</span><span class="n">excelValidator</span><span class="o">,</span> <span class="n">meta</span><span class="o">.</span><span class="na">consumer</span><span class="o">);</span>
-        <span class="n">EasyExcel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">meta</span><span class="o">.</span><span class="na">excelStream</span><span class="o">,</span> <span class="n">meta</span><span class="o">.</span><span class="na">domain</span><span class="o">,</span> <span class="n">readListener</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">headRowNumber</span><span class="o">(</span><span class="n">meta</span><span class="o">.</span><span class="na">headRowNumber</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">sheet</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">doRead</span><span class="o">();</span>
-    <span class="o">}</span>
-
-
-    <span class="cm">/**
-</span><span class="cm">     * 解析需要的元数据
-</span><span class="cm">     *
-</span><span class="cm">     * @param &lt;T&gt; the type parameter
-</span><span class="cm">     */</span>
-    <span class="nd">@Data</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Meta</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-        <span class="cm">/**
-</span><span class="cm">         * excel 文件流
-</span><span class="cm">         */</span>
-        <span class="kd">private</span> <span class="n">InputStream</span> <span class="n">excelStream</span><span class="o">;</span>
-        <span class="cm">/**
-</span><span class="cm">         * excel头的行号，参考easyexcel的api和你的实际情况
-</span><span class="cm">         */</span>
-        <span class="kd">private</span> <span class="n">Integer</span> <span class="n">headRowNumber</span><span class="o">;</span>
-        <span class="cm">/**
-</span><span class="cm">         * 对应excel封装的数据类，需要参考easyexcel教程
-</span><span class="cm">         */</span>
-        <span class="kd">private</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">domain</span><span class="o">;</span>
-        <span class="cm">/**
-</span><span class="cm">         * 解析结果的消费函数
-</span><span class="cm">         */</span>
-        <span class="kd">private</span> <span class="n">Consumer</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">consumer</span><span class="o">;</span>
-    <span class="o">}</span>
-
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.alibaba.excel.EasyExcel</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.AllArgsConstructor</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.Data</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.validation.Validator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Collection</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.function.Consumer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * excel读取工具
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @author felord.cn
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @since 2021 /4/14 15:10
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@AllArgsConstructor</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExcelReader</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Validator</span> <span class="n">validator</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Read Excel.
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param &lt;T&gt;  the type parameter
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param meta the meta
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">read</span><span class="o">(</span><span class="n">Meta</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">meta</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ExcelValidator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">excelValidator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExcelValidator</span><span class="o">&lt;&gt;(</span><span class="n">validator</span><span class="o">,</span> <span class="n">meta</span><span class="o">.</span><span class="na">headRowNumber</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">JdbcEventListener</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">readListener</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JdbcEventListener</span><span class="o">&lt;&gt;(</span><span class="n">excelValidator</span><span class="o">,</span> <span class="n">meta</span><span class="o">.</span><span class="na">consumer</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">EasyExcel</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">meta</span><span class="o">.</span><span class="na">excelStream</span><span class="o">,</span> <span class="n">meta</span><span class="o">.</span><span class="na">domain</span><span class="o">,</span> <span class="n">readListener</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">headRowNumber</span><span class="o">(</span><span class="n">meta</span><span class="o">.</span><span class="na">headRowNumber</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">sheet</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">doRead</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 解析需要的元数据
+</span></span></span><span class="line"><span class="cl"><span class="cm">     *
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @param &lt;T&gt; the type parameter
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Data</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Meta</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">         * excel 文件流
+</span></span></span><span class="line"><span class="cl"><span class="cm">         */</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">private</span> <span class="n">InputStream</span> <span class="n">excelStream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">         * excel头的行号，参考easyexcel的api和你的实际情况
+</span></span></span><span class="line"><span class="cl"><span class="cm">         */</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">private</span> <span class="n">Integer</span> <span class="n">headRowNumber</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">         * 对应excel封装的数据类，需要参考easyexcel教程
+</span></span></span><span class="line"><span class="cl"><span class="cm">         */</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">private</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">domain</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">         * 解析结果的消费函数
+</span></span></span><span class="line"><span class="cl"><span class="cm">         */</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">private</span> <span class="n">Consumer</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&gt;</span> <span class="n">consumer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><p>We inject this tool into <strong>Spring IoC</strong> to facilitate our use.</p>
 <div class="highlight"><div class="chroma">
@@ -1019,17 +1019,17 @@
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
-</span><span class="cm"> * Excel 读取工具
-</span><span class="cm"> *
-</span><span class="cm"> * @param validator the validator
-</span><span class="cm"> * @return the excel reader
-</span><span class="cm"> */</span>
-<span class="nd">@Bean</span>
-<span class="kd">public</span> <span class="n">ExcelReader</span> <span class="nf">excelReader</span><span class="o">(</span><span class="n">Validator</span> <span class="n">validator</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="k">new</span> <span class="n">ExcelReader</span><span class="o">(</span><span class="n">validator</span><span class="o">);</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Excel 读取工具
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @param validator the validator
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @return the excel reader
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">ExcelReader</span> <span class="nf">excelReader</span><span class="o">(</span><span class="n">Validator</span> <span class="n">validator</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="n">ExcelReader</span><span class="o">(</span><span class="n">validator</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="writing-interfaces">Writing interfaces</h3>
 <p>Here the Excel data class <code>ExcelData</code> will not be repeated, too simple! Just go to the <code>esayexcel</code> documentation. Write a sample Spring MVC interface, yes it is that simple.</p>
@@ -1054,24 +1054,24 @@
 </span><span class="lnt">17
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Autowired</span>
-<span class="kd">private</span>  <span class="n">ExcelReader</span> <span class="n">excelReader</span><span class="o">;</span>
-<span class="nd">@Autowired</span>
-<span class="kd">private</span>  <span class="n">DataService</span> <span class="n">dataService</span><span class="o">;</span>
-
-<span class="nd">@PostMapping</span><span class="o">(</span><span class="s">&#34;/excel/import&#34;</span><span class="o">)</span>
-<span class="kd">public</span> <span class="n">Rest</span><span class="o">&lt;?&gt;</span> <span class="n">importManufacturerInfo</span><span class="o">(</span><span class="nd">@RequestPart</span> <span class="n">MultipartFile</span> <span class="n">file</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-    <span class="n">InputStream</span> <span class="n">inputStream</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">();</span>
-    <span class="n">ExcelReader</span><span class="o">.</span><span class="na">Meta</span><span class="o">&lt;</span><span class="n">ExcelData</span><span class="o">&gt;</span> <span class="n">excelDataMeta</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExcelReader</span><span class="o">.</span><span class="na">Meta</span><span class="o">&lt;&gt;();</span>
-    <span class="n">excelDataMeta</span><span class="o">.</span><span class="na">setExcelStream</span><span class="o">(</span><span class="n">inputStream</span><span class="o">);</span>
-    <span class="n">excelDataMeta</span><span class="o">.</span><span class="na">setDomain</span><span class="o">(</span><span class="n">ExcelData</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-    <span class="n">excelDataMeta</span><span class="o">.</span><span class="na">setHeadRowNumber</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
-    <span class="c1">// 批量写入数据库的逻辑
-</span><span class="c1"></span>    <span class="n">excelDataMeta</span><span class="o">.</span><span class="na">setConsumer</span><span class="o">(</span><span class="n">dataService</span><span class="o">::</span><span class="n">saveBatch</span><span class="o">);</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">excelReader</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">excelDataMeta</span><span class="o">);</span>
-    <span class="k">return</span> <span class="n">RestBody</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
-<span class="o">}</span>
-</code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl"><span class="kd">private</span>  <span class="n">ExcelReader</span> <span class="n">excelReader</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl"><span class="kd">private</span>  <span class="n">DataService</span> <span class="n">dataService</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@PostMapping</span><span class="o">(</span><span class="s">&#34;/excel/import&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Rest</span><span class="o">&lt;?&gt;</span> <span class="n">importManufacturerInfo</span><span class="o">(</span><span class="nd">@RequestPart</span> <span class="n">MultipartFile</span> <span class="n">file</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">InputStream</span> <span class="n">inputStream</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ExcelReader</span><span class="o">.</span><span class="na">Meta</span><span class="o">&lt;</span><span class="n">ExcelData</span><span class="o">&gt;</span> <span class="n">excelDataMeta</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExcelReader</span><span class="o">.</span><span class="na">Meta</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">excelDataMeta</span><span class="o">.</span><span class="na">setExcelStream</span><span class="o">(</span><span class="n">inputStream</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">excelDataMeta</span><span class="o">.</span><span class="na">setDomain</span><span class="o">(</span><span class="n">ExcelData</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">excelDataMeta</span><span class="o">.</span><span class="na">setHeadRowNumber</span><span class="o">(</span><span class="n">2</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 批量写入数据库的逻辑
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">excelDataMeta</span><span class="o">.</span><span class="na">setConsumer</span><span class="o">(</span><span class="n">dataService</span><span class="o">::</span><span class="n">saveBatch</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="o">.</span><span class="na">excelReader</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">excelDataMeta</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">RestBody</span><span class="o">.</span><span class="na">ok</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="summary">Summary</h2>
 <p>Today we demonstrated how to combine <code>easyexcel</code> and <code>JSR303</code>, in fact the principle is very simple, you just need to find the combination of the two technologies and combine them, have you learned?</p>
