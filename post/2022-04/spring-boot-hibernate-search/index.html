@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Build a Spring Boot REST API with Full-Text Search using Hibernate Search - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="In this blog post, we will learn how to build a simple REST API endpoint in Spring boot and use Hibernate Search for full-text search." />
+<meta name="keywords" content="spring boot, hibernate, Full-Text, Search" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.96.0" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-04/spring-boot-hibernate-search/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Build a Spring Boot REST API with Full-Text Search using Hibernate Search" />
+<meta property="og:description" content="In this blog post, we will learn how to build a simple REST API endpoint in Spring boot and use Hibernate Search for full-text search." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-04/spring-boot-hibernate-search/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-04-09T22:09:48+08:00" />
+<meta property="article:modified_time" content="2022-04-09T22:09:48+08:00" />
+
+<meta itemprop="name" content="Build a Spring Boot REST API with Full-Text Search using Hibernate Search">
+<meta itemprop="description" content="In this blog post, we will learn how to build a simple REST API endpoint in Spring boot and use Hibernate Search for full-text search."><meta itemprop="datePublished" content="2022-04-09T22:09:48+08:00" />
+<meta itemprop="dateModified" content="2022-04-09T22:09:48+08:00" />
+<meta itemprop="wordCount" content="2699">
+<meta itemprop="keywords" content="spring-boot,hibernate," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Build a Spring Boot REST API with Full-Text Search using Hibernate Search"/>
+<meta name="twitter:description" content="In this blog post, we will learn how to build a simple REST API endpoint in Spring boot and use Hibernate Search for full-text search."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Build a Spring Boot REST API with Full-Text Search using Hibernate Search</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-04-09" class="post-time">
+          2022-04-09
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 2699 words </span>
+          <span class="more-meta"> 13 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#project-bootstrap">Project Bootstrap</a></li>
+    <li><a href="#hibernate-search-setup">Hibernate Search Setup</a></li>
+    <li><a href="#defining-the-data-model">Defining the data model</a></li>
+    <li><a href="#defining-the-data-layer">Defining the data layer</a></li>
+    <li><a href="#defining-the-business-layer">Defining the business layer</a></li>
+    <li><a href="#defining-the-web-layer">Defining the web layer</a></li>
+    <li><a href="#indexing-the-data">Indexing the data</a></li>
+    <li><a href="#putting-it-all-together">Putting it all together</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>Search is one of the pillars of the web, and full-text search is one of the mandatory features that every website needs. But implementing such a feature is complex, and lots of skilled engineers have already thought hard about this topic. So let&rsquo;s not reinvent the wheel, and use the battle-tested Hibernate Search library.</p>
+<p>In this blog post, we are going to learn how to build a simple REST API endpoint in Spring boot with full-text search using Hibernate Search. We will only go through the basics, but Hibernate Search is a feature-rich library with many features going way beyond what we will see in this post. You can check everything that it provides in the official documentation <a href="https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/#gettingstarted-framework">https://docs.jboss.org/hibernate/stable/search/reference/en-US/html_single/#gettingstarted-framework</a>.</p>
+<h2 id="project-bootstrap">Project Bootstrap</h2>
+<p>The first step is to generate the spring boot project using spring initializr. In this tutorial, We are using the spring CLI via SDKman, but it can easily be done using the web UI <a href="https://start.spring.io/">https://start.spring.io/</a> or directly through your IDEA <a href="https://www.jetbrains.com/help/idea/spring-boot.html">https://www.jetbrains.com/help/idea/spring-boot.html</a>.</p>
+<p>To have a walkthrough of how to set up the CLI on your own machine, follow this guide <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started.installing.cli.sdkman">https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started.installing.cli.sdkman</a>. Once you have installed the CLI , execute this command to generate the project with the necessary dependencies.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring init --dependencies=web,data-jpa,h2,lombok,validation spring-boot-hibernate-search
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We package the following dependencies :</p>
+<ul>
+<li>the web dependency for the REST API.</li>
+<li>the spring data JPA for the data access layer, which uses hibernate as the default Object Relational Mapping tool.</li>
+<li>the h2 library to provide an easy-to-use in-memory embedded database. This type of database is suited for small toy projects such as this one, but it should not be used for any serious project that will be shipped to production at some point.</li>
+<li>Lombok to generate snippets of code through annotation and avoid any boilerplate code</li>
+<li>validation is the Hibernate implementation of the validation API that follows the JSR 380 specification. It allows, among other things, to validate beans using annotation.</li>
+</ul>
+<h2 id="hibernate-search-setup">Hibernate Search Setup</h2>
+<p>As with many libraries, Spring Boot provides an easy way to integrate Hibernate Search. We just need to add the required dependencies into the pom.xml file.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;properties&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;hibernate.search.version&gt;</span>6.1.1.Final<span class="nt">&lt;/hibernate.search.version&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/properties&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependencies&gt;</span>
+</span></span><span class="line"><span class="cl">    ...
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;groupId&gt;</span>org.hibernate.search<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;artifactId&gt;</span>hibernate-search-mapper-orm<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;version&gt;</span>${hibernate.search.version}<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;groupId&gt;</span>org.hibernate.search<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;artifactId&gt;</span>hibernate-search-backend-lucene<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;version&gt;</span>${hibernate.search.version}<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependencies&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We are using hibernate search 6 which is the most recent version to date, with Lucene as the backend. Lucene is an open-source indexing and search engine library, and the default implementation used by Hibernate Search. We could also use different implementations such as ElasticSearch or OpenSearch.</p>
+<h2 id="defining-the-data-model">Defining the data model</h2>
+<p>The first step is to define the model of the entity on which the search will be done.</p>
+<p>As an example, we will use a Plant entity, containing the plant&rsquo;s common name, scientific name, family, and date of creation.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.EqualsAndHashCode</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.Getter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.Setter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.ToString</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.hibernate.annotations.NaturalId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.persistence.*</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.time.Instant</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Indexed</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Entity</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#34;plant&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Getter</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Setter</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@ToString</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@EqualsAndHashCode</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Plant</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">Plant</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">createdAt</span> <span class="o">=</span> <span class="n">Instant</span><span class="o">.</span><span class="na">now</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">Plant</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">scientificName</span><span class="o">,</span> <span class="n">String</span> <span class="n">family</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">scientificName</span> <span class="o">=</span> <span class="n">scientificName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">family</span> <span class="o">=</span> <span class="n">family</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">createdAt</span> <span class="o">=</span> <span class="n">Instant</span><span class="o">.</span><span class="na">now</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Id</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@GeneratedValue</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="n">GenerationType</span><span class="o">.</span><span class="na">IDENTITY</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@FullTextField</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@NaturalId</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@FullTextField</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@NaturalId</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">scientificName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@FullTextField</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">family</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Instant</span> <span class="n">createdAt</span> <span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Let&rsquo;s ignore the JPA and Lombok annotations, and focus on the Hibernate Search-related ones.</p>
+<p>First, the @index annotation indicates to Hibernate Search that we want to index this entity in order to apply search operation on it.</p>
+<p>Second, we annotate the fields we want to search on with the @FullTextField annotation. This annotation works only for string fields, but others exist for fields of different types.</p>
+<p>And &hellip; that&rsquo;s it! It is as simple as that for a simple case such as ours!</p>
+<p>But you can do much more with what the library provides, such as using conditional indexing or tweaking indexing coordination. Once again, check out the official documentation if you want to know more.</p>
+<h2 id="defining-the-data-layer">Defining the data layer</h2>
+<p>We now need to define our data layer handling the interactions with the database.</p>
+<p>We use Spring Data repositories which build an abstraction around the Hibernate implementation of JPA. It is provided in the <code>spring-boot-starter-data-jpa</code> dependency added previously.</p>
+<p>For a basic use case requiring only CRUD operations, we can define a simple repository for the Plant entity and extends the JpaRepository interface directly.</p>
+<p>But this is not enough for full-text search. In our case, we would like to add the search features to all repositories we define. For that, we need to add custom methods to the JpaRepository interface, or any interface extending the base <code>Repository</code> interface.</p>
+<p>This way, we declare those methods only once and make them available for every repository of every entity of our project.</p>
+<p>Let&rsquo;s see how we can do such a thing.</p>
+<p>First, we need to create a new generic interface that extends the JpaRepository interface.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@NoRepositoryBean</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">SearchRepository</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span> <span class="n">ID</span> <span class="kd">extends</span> <span class="n">Serializable</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span> <span class="n">ID</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">searchBy</span><span class="o">(</span><span class="n">String</span> <span class="n">text</span><span class="o">,</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">,</span> <span class="n">String</span><span class="o">...</span> <span class="n">fields</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We declare the searchBy function that will be used for full-text search operations.</p>
+<p>The @NoRepositoryBean annotation tells spring that this repository interface should not be instantiated like any other bean with the @Repository annotation.</p>
+<p>We use this annotation because the purpose of this interface is not to be used directly, but to be implemented by other repositories.</p>
+<p>We also need to create the implementation for this interface.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Transactional</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SearchRepositoryImpl</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span> <span class="n">ID</span> <span class="kd">extends</span> <span class="n">Serializable</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">SimpleJpaRepository</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span> <span class="n">ID</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">implements</span> <span class="n">SearchRepository</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span> <span class="n">ID</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">EntityManager</span> <span class="n">entityManager</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">SearchRepositoryImpl</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">domainClass</span><span class="o">,</span> <span class="n">EntityManager</span> <span class="n">entityManager</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">super</span><span class="o">(</span><span class="n">domainClass</span><span class="o">,</span> <span class="n">entityManager</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">entityManager</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">SearchRepositoryImpl</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">JpaEntityInformation</span><span class="o">&lt;</span><span class="n">T</span><span class="o">,</span> <span class="n">ID</span><span class="o">&gt;</span> <span class="n">entityInformation</span><span class="o">,</span> <span class="n">EntityManager</span> <span class="n">entityManager</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">super</span><span class="o">(</span><span class="n">entityInformation</span><span class="o">,</span> <span class="n">entityManager</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">entityManager</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">searchBy</span><span class="o">(</span><span class="n">String</span> <span class="n">text</span><span class="o">,</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">,</span> <span class="n">String</span><span class="o">...</span> <span class="n">fields</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">SearchResult</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">getSearchResult</span><span class="o">(</span><span class="n">text</span><span class="o">,</span> <span class="n">limit</span><span class="o">,</span> <span class="n">fields</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="na">hits</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">SearchResult</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">getSearchResult</span><span class="o">(</span><span class="n">String</span> <span class="n">text</span><span class="o">,</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">,</span> <span class="n">String</span><span class="o">[]</span> <span class="n">fields</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">SearchSession</span> <span class="n">searchSession</span> <span class="o">=</span> <span class="n">Search</span><span class="o">.</span><span class="na">session</span><span class="o">(</span><span class="n">entityManager</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">SearchResult</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">                <span class="n">searchSession</span>
+</span></span><span class="line"><span class="cl">                        <span class="o">.</span><span class="na">search</span><span class="o">(</span><span class="n">getDomainClass</span><span class="o">())</span>
+</span></span><span class="line"><span class="cl">                        <span class="o">.</span><span class="na">where</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="n">f</span><span class="o">.</span><span class="na">match</span><span class="o">().</span><span class="na">fields</span><span class="o">(</span><span class="n">fields</span><span class="o">).</span><span class="na">matching</span><span class="o">(</span><span class="n">text</span><span class="o">).</span><span class="na">fuzzy</span><span class="o">(</span><span class="n">2</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl">                        <span class="o">.</span><span class="na">fetch</span><span class="o">(</span><span class="n">limit</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The searchBy method implementation is where Hibernate Search is used.</p>
+<p>The following arguments are passed:</p>
+<ul>
+<li>text: text to search for</li>
+<li>limit: maximum number of elements to search for</li>
+<li>fields: name of all the fields to search on</li>
+</ul>
+<p>We make use of java varargs to pass all the fields we want to search on.</p>
+<p>Here, we use a simple fuzzy algorithm as the full-text matching algorithm, but we can easily make more complex searches using custom analyzers.</p>
+<p>From now on, repositories requiring full-text-search just have to implement the SearchRepository interface instead of the standard JpaRepository interface provided by Spring.</p>
+<p>And this is exactly what we are doing for the Plant entity.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.mozen.springboothibernatesearch.repository</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mozen.springboothibernatesearch.model.Plant</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.stereotype.Repository</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Repository</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">PlantRepository</span> <span class="kd">extends</span> <span class="n">SearchRepository</span><span class="o">&lt;</span><span class="n">Plant</span><span class="o">,</span> <span class="n">Long</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>As you can see, all implementation is already done, and we just need to implement the previously created SearchRepository interface to get access to the implementation defined in the SearchRepositoryImpl class.</p>
+<p>The final step is to indicate to Spring to detect Jpa Repositories using the SearchRepositoryImpl as the base class.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.mozen.springboothibernatesearch</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mozen.springboothibernatesearch.repository.SearchRepositoryImpl</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.data.jpa.repository.config.EnableJpaRepositories</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@EnableJpaRepositories</span><span class="o">(</span><span class="n">repositoryBaseClass</span> <span class="o">=</span> <span class="n">SearchRepositoryImpl</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ApplicationConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Note that because we do not specify any base package to search into, Spring will use the package where this Configuration is defined as the base package.</p>
+<h2 id="defining-the-business-layer">Defining the business layer</h2>
+<p>Let&rsquo;s now create the business code using the data layer we&rsquo;ve just defined, by declaring a service.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.mozen.springboothibernatesearch.service</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mozen.springboothibernatesearch.model.Plant</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mozen.springboothibernatesearch.repository.PlantRepository</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.stereotype.Service</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Service</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PlantService</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">PlantRepository</span> <span class="n">plantRepository</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">SEARCHABLE_FIELDS</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">&#34;name&#34;</span><span class="o">,</span><span class="s">&#34;scientificName&#34;</span><span class="o">,</span><span class="s">&#34;family&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">PlantService</span><span class="o">(</span><span class="n">PlantRepository</span> <span class="n">plantRepository</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">plantRepository</span> <span class="o">=</span> <span class="n">plantRepository</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Plant</span><span class="o">&gt;</span> <span class="nf">searchPlants</span><span class="o">(</span><span class="n">String</span> <span class="n">text</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">fields</span><span class="o">,</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">fieldsToSearchBy</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">()</span> <span class="o">?</span> <span class="n">SEARCHABLE_FIELDS</span> <span class="o">:</span> <span class="n">fields</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kt">boolean</span> <span class="n">containsInvalidField</span> <span class="o">=</span> <span class="n">fieldsToSearchBy</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span> <span class="n">anyMatch</span><span class="o">(</span><span class="n">f</span> <span class="o">-&gt;</span> <span class="o">!</span><span class="n">SEARCHABLE_FIELDS</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">f</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="o">(</span><span class="n">containsInvalidField</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">plantRepository</span><span class="o">.</span><span class="na">searchBy</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                <span class="n">text</span><span class="o">,</span> <span class="n">limit</span><span class="o">,</span> <span class="n">fieldsToSearchBy</span><span class="o">.</span><span class="na">toArray</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="n">0</span><span class="o">]));</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We tell Spring that this bean is part of the business layer of the application.</p>
+<p>It contains a searchPlant function that forwards the call to the searchBy function of the SearchRepository.</p>
+<p>Before forwarding the call, it validates the provided fields.</p>
+<p>Those fields are whitelisted to check that the search will be made only against the desired fields, which are the ones we have annotated with @FullTextField annotation earlier.</p>
+<p>We throw an IllegalArgumentException if one of the provided fields is not part of the whitelisted ones. The exception is not handled for the sake of simplicity, but it should be handled properly using one of the many ways provided by spring to handle exceptions.</p>
+<h2 id="defining-the-web-layer">Defining the web layer</h2>
+<p>The next step is to define the REST API to receive the HTTP request coming from client applications.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.mozen.springboothibernatesearch.controller</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mozen.springboothibernatesearch.model.Plant</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mozen.springboothibernatesearch.model.SearchRequestDTO</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mozen.springboothibernatesearch.service.PlantService</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Slf4j</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/plant&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">PlantController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">PlantService</span> <span class="n">plantService</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">PlantController</span><span class="o">(</span><span class="n">PlantService</span> <span class="n">plantService</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">plantService</span> <span class="o">=</span> <span class="n">plantService</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/search&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Plant</span><span class="o">&gt;</span> <span class="nf">searchPlants</span><span class="o">(</span><span class="n">SearchRequestDTO</span> <span class="n">searchRequestDTO</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Request for plant search received with data : &#34;</span> <span class="o">+</span> <span class="n">searchRequestDTO</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">plantService</span><span class="o">.</span><span class="na">searchPlants</span><span class="o">(</span><span class="n">searchRequestDTO</span><span class="o">.</span><span class="na">getText</span><span class="o">(),</span> <span class="n">searchRequestDTO</span><span class="o">.</span><span class="na">getFields</span><span class="o">(),</span> <span class="n">searchRequestDTO</span><span class="o">.</span><span class="na">getLimit</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We use a basic Rest controller with a single GET mapping. Before forwarding the call to the business layer, we log the event to trace the reception of the request to ease the monitoring of the application. It receives the search request using a SearchRequestDTO</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.mozen.springboothibernatesearch.model</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.Data</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.validation.constraints.Min</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.validation.constraints.NotBlank</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Data</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SearchRequestDTO</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@NotBlank</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">text</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">fields</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Min</span><span class="o">(</span><span class="n">1</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">int</span> <span class="n">limit</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>It is a simple POJO containing the parameters used for the search. Once again, we use Javax Bean Validation annotations to ensure the request is valid, as well as Lombok @data annotation to generate boilerplate code (Getters, Setters, toString(), &hellip;).</p>
+<p>Note that by using a POJO as a single argument for the REST API endpoint, we expect the client to send those parameters as Request Parameter inside the HTTP request.</p>
+<h2 id="indexing-the-data">Indexing the data</h2>
+<p>Finally, for Lucene to be able to search through the data, it needs to be indexed.</p>
+<p>At runtime, the index is automatically managed by Hibernate, by applying the change each time an operation is executed through Hibernate ORM such as creating or deleting an Entity. However, We still need to initialize the index for data already stored in the database if any.</p>
+<p>For that purpose, we need to add some configurations inside the application.yml file:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yml" data-lang="yml"><span class="line"><span class="cl"><span class="nt">server</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">9000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">datasource</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l">jdbc:h2:mem:mydb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l">mozen</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l">password</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">jpa</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">open-in-view</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">properties</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">hibernate</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="nt">search</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="nt">backend</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">lucene</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="nt">directory.root</span><span class="p">:</span><span class="w"> </span><span class="l">./data/index</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>We indicate the root directory of where the Lucene index is stored. Here, we choose to place it directly in the project folder, but this directory should be carefully chosen when running in production, depending on where your application is deployed.</p>
+<p>We also create a component to wrap all operations related to the Lucene index.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.mozen.springboothibernatesearch.index</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.hibernate.search.mapper.orm.Search</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.hibernate.search.mapper.orm.massindexing.MassIndexer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.hibernate.search.mapper.orm.session.SearchSession</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.transaction.annotation.Transactional</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.persistence.EntityManager</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Transactional</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Indexer</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">EntityManager</span> <span class="n">entityManager</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">THREAD_NUMBER</span> <span class="o">=</span> <span class="n">4</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">Indexer</span><span class="o">(</span><span class="n">EntityManager</span> <span class="n">entityManager</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">entityManager</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">indexPersistedData</span><span class="o">(</span><span class="n">String</span> <span class="n">indexClassName</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IndexException</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">try</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">SearchSession</span> <span class="n">searchSession</span> <span class="o">=</span> <span class="n">Search</span><span class="o">.</span><span class="na">session</span><span class="o">(</span><span class="n">entityManager</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">classToIndex</span> <span class="o">=</span> <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">indexClassName</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">MassIndexer</span> <span class="n">indexer</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">searchSession</span>
+</span></span><span class="line"><span class="cl">                            <span class="o">.</span><span class="na">massIndexer</span><span class="o">(</span><span class="n">classToIndex</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                            <span class="o">.</span><span class="na">threadsToLoadObjects</span><span class="o">(</span><span class="n">THREAD_NUMBER</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">indexer</span><span class="o">.</span><span class="na">startAndWait</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">IndexException</span><span class="o">(</span><span class="s">&#34;Invalid class &#34;</span> <span class="o">+</span> <span class="n">indexClassName</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">throw</span> <span class="k">new</span> <span class="n">IndexException</span><span class="o">(</span><span class="s">&#34;Index Interrupted&#34;</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>For our simple demo application, we only declare a function that builds the index for a given Class using the specified amount of threads in the process.</p>
+<p>We now need to call that function passing the previously defined Plant class as an argument.</p>
+<p>For that purpose, we could also create a new REST Controller containing an endpoint to trigger the indexing via an HTTP request, to be able to rebuild the index at will.</p>
+<p>But for the sake of this article, we are just going to use an ApplicationRunner that will be called at each startup.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@SpringBootApplication</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Application</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">Application</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">ApplicationRunner</span> <span class="nf">buildIndex</span><span class="o">(</span><span class="n">Indexer</span> <span class="n">indexer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">(</span><span class="n">ApplicationArguments</span> <span class="n">args</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">indexer</span><span class="o">.</span><span class="na">indexPersistedData</span><span class="o">(</span><span class="s">&#34;com.mozen.springboothibernatesearch.model.Plant&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We define the Bean directly in the main Application class.</p>
+<p>The buildIndex method takes the Indexer as an argument through dependency injection. The method is executed during the application startup, right after the context initialization, and before the startup of the spring boot application.</p>
+<h2 id="putting-it-all-together">Putting it all together</h2>
+<p>Let&rsquo;s first initialize the sample data.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">com.mozen.springboothibernatesearch</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mozen.springboothibernatesearch.index.Indexer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mozen.springboothibernatesearch.model.Plant</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.mozen.springboothibernatesearch.repository.PlantRepository</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.ApplicationArguments</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.ApplicationRunner</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.SpringApplication</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@SpringBootApplication</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Application</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">Application</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">ApplicationRunner</span> <span class="nf">initializeData</span><span class="o">(</span><span class="n">PlantRepository</span> <span class="n">plantRepository</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">(</span><span class="n">ApplicationArguments</span> <span class="n">args</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">List</span><span class="o">&lt;</span><span class="n">Plant</span><span class="o">&gt;</span> <span class="n">plants</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">new</span> <span class="n">Plant</span><span class="o">(</span><span class="s">&#34;subalpine fir&#34;</span><span class="o">,</span> <span class="s">&#34;abies lasiocarpa&#34;</span><span class="o">,</span> <span class="s">&#34;pinaceae&#34;</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">new</span> <span class="n">Plant</span><span class="o">(</span><span class="s">&#34;sour cherry&#34;</span><span class="o">,</span> <span class="s">&#34;prunus cerasus&#34;</span><span class="o">,</span> <span class="s">&#34;rosaceae&#34;</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">new</span> <span class="n">Plant</span><span class="o">(</span><span class="s">&#34;asian pear&#34;</span><span class="o">,</span> <span class="s">&#34;pyrus pyrifolia&#34;</span><span class="o">,</span> <span class="s">&#34;rosaceae&#34;</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">new</span> <span class="n">Plant</span><span class="o">(</span><span class="s">&#34;chinese witch hazel&#34;</span><span class="o">,</span> <span class="s">&#34;hamamelis mollis&#34;</span><span class="o">,</span> <span class="s">&#34;hamamelidaceae&#34;</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">new</span> <span class="n">Plant</span><span class="o">(</span><span class="s">&#34;silver maple&#34;</span><span class="o">,</span> <span class="s">&#34;acer saccharinum&#34;</span><span class="o">,</span> <span class="s">&#34;sapindaceae&#34;</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">new</span> <span class="n">Plant</span><span class="o">(</span><span class="s">&#34;cucumber tree&#34;</span><span class="o">,</span> <span class="s">&#34;magnolia acuminata&#34;</span><span class="o">,</span> <span class="s">&#34;magnoliaceae&#34;</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">new</span> <span class="n">Plant</span><span class="o">(</span><span class="s">&#34;korean rhododendron&#34;</span><span class="o">,</span> <span class="s">&#34;rhododendron mucronulatum&#34;</span><span class="o">,</span> <span class="s">&#34;ericaceae&#34;</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">new</span> <span class="n">Plant</span><span class="o">(</span><span class="s">&#34;water lettuce&#34;</span><span class="o">,</span> <span class="s">&#34;pistia&#34;</span><span class="o">,</span> <span class="s">&#34;araceae&#34;</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">new</span> <span class="n">Plant</span><span class="o">(</span><span class="s">&#34;sessile oak&#34;</span><span class="o">,</span> <span class="s">&#34;quercus petraea&#34;</span><span class="o">,</span> <span class="s">&#34;fagaceae&#34;</span><span class="o">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">new</span> <span class="n">Plant</span><span class="o">(</span><span class="s">&#34;common fig&#34;</span><span class="o">,</span> <span class="s">&#34;ficus carica&#34;</span><span class="o">,</span> <span class="s">&#34;moraceae&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="n">plantRepository</span><span class="o">.</span><span class="na">saveAll</span><span class="o">(</span><span class="n">plants</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">ApplicationRunner</span> <span class="nf">buildIndex</span><span class="o">(</span><span class="n">Indexer</span> <span class="n">indexer</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="o">(</span><span class="n">ApplicationArguments</span> <span class="n">args</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">indexer</span><span class="o">.</span><span class="na">indexPersistedData</span><span class="o">(</span><span class="s">&#34;com.mozen.springboothibernatesearch.model.Plant&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">};</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We extend the main Application class with a second Bean declaration. It will be run in the same way as the first one, during the application startup.</p>
+<p>Note that we did not declare the data SQL schema anywhere. Because our database is an embedded database, the property spring.jpa.hibernate.ddl-auto is set to create-drop by default, and our database schema is automatically generated, which is neat for simple applications such as this one.</p>
+<p>Now, let&rsquo;s test, by first starting our application.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">mvn spring-boot:run
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>There are multiples ways to test the search endpoint.</p>
+<p>We can use the API Platform Postman:</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/09/1d5994ff5cc7496a93443815dff692c0.png" alt="postman"></p>
+<p>Or we can use a simple cUrl command with the required parameters :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">// Search in all fields
+</span></span><span class="line"><span class="cl">curl -X GET <span class="s1">&#39;http://localhost:9000/plant/search?text=cherry&amp;limit=5&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// Search only in specified fields 
+</span></span><span class="line"><span class="cl">curl -X GET <span class="s1">&#39;http://localhost:9000/plant/search?text=sian p&amp;limit=5&amp;fields=name&amp;fields=scientificName&#39;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>And that&rsquo;s it! We now have full-text-search implemented through an HTTP endpoint.</p>
+<p>As I&rsquo;ve said many times during this blog, Hibernate Search provides much more features, and we&rsquo;ve just scratched the surface here.</p>
+<p>I will publish more blog posts to address more advanced topics soon.</p>
+<p>You can access the demo project for this blog post here <a href="https://github.com/Mozenn/spring-boot-hibernate-search">https://github.com/Mozenn/spring-boot-hibernate-search</a>.</p>
+<blockquote>
+<p>Reference <a href="https://dev.to/mozenn/build-a-spring-boot-rest-api-with-full-text-search-using-hibernate-search-4a67">https://dev.to/mozenn/build-a-spring-boot-rest-api-with-full-text-search-using-hibernate-search-4a67</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          <a href="https://www.springcloud.io/tags/hibernate/">hibernate</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/2022-04/spring-boot-rest/">
+            <span class="next-text nav-default">Build a Spring Boot REST API with Pagination and Sorting</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>
