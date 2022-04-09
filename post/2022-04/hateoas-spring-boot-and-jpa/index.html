@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Pagination(with Hateoas), Filtering &amp; Sorting with Spring Boot and JPA - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="In this blog post, we will explore how to implement paging with hateoas, while supporting filtering and sorting in spring boot applications." />
+<meta name="keywords" content="Spring Boot, jpa, Spring Data Jpa, spring-hateoas" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.96.0" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-04/hateoas-spring-boot-and-jpa/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Pagination(with Hateoas), Filtering &amp; Sorting with Spring Boot and JPA" />
+<meta property="og:description" content="In this blog post, we will explore how to implement paging with hateoas, while supporting filtering and sorting in spring boot applications." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-04/hateoas-spring-boot-and-jpa/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-04-09T14:17:48+08:00" />
+<meta property="article:modified_time" content="2022-04-09T14:17:48+08:00" />
+
+<meta itemprop="name" content="Pagination(with Hateoas), Filtering &amp; Sorting with Spring Boot and JPA">
+<meta itemprop="description" content="In this blog post, we will explore how to implement paging with hateoas, while supporting filtering and sorting in spring boot applications."><meta itemprop="datePublished" content="2022-04-09T14:17:48+08:00" />
+<meta itemprop="dateModified" content="2022-04-09T14:17:48+08:00" />
+<meta itemprop="wordCount" content="2961">
+<meta itemprop="keywords" content="spring-data-jpa,spring-boot,spring-hateoas," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Pagination(with Hateoas), Filtering &amp; Sorting with Spring Boot and JPA"/>
+<meta name="twitter:description" content="In this blog post, we will explore how to implement paging with hateoas, while supporting filtering and sorting in spring boot applications."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Pagination(with Hateoas), Filtering &amp; Sorting with Spring Boot and JPA</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-04-09" class="post-time">
+          2022-04-09
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 2961 words </span>
+          <span class="more-meta"> 14 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a>
+      <ul>
+        <li><a href="#tech-stack">Tech Stack</a></li>
+        <li><a href="#usecase-for-hateoas-with-pagination-and-filterinsorting">Usecase for Hateoas with pagination and filterin/sorting</a></li>
+        <li><a href="#what-will-our-end-result-look-like">What will our end result look like</a></li>
+      </ul>
+    </li>
+    <li><a href="#create-a-base-spring-boot-app">Create a Base spring boot app</a>
+      <ul>
+        <li><a href="#create-base-app">Create base app</a></li>
+        <li><a href="#create-entity-and-repository">Create Entity and Repository</a></li>
+      </ul>
+    </li>
+    <li><a href="#create-service">Create Service</a>
+      <ul>
+        <li><a href="#create-controller">Create Controller</a></li>
+        <li><a href="#setup-our-database">Setup our Database</a></li>
+        <li><a href="#test-our-base-app">Test our base app</a></li>
+      </ul>
+    </li>
+    <li><a href="#implementing-filtering">Implementing Filtering</a>
+      <ul>
+        <li><a href="#update-repository">Update Repository</a></li>
+        <li><a href="#update-service">Update Service</a></li>
+        <li><a href="#update-controller">Update Controller</a></li>
+        <li><a href="#test-it-out">Test it out</a></li>
+      </ul>
+    </li>
+    <li><a href="#implementing-page-with-filtering">Implementing Page with Filtering</a>
+      <ul>
+        <li><a href="#update-repository-1">Update Repository</a></li>
+        <li><a href="#update-service-1">Update Service</a></li>
+        <li><a href="#update-controller-1">Update Controller</a></li>
+        <li><a href="#test-it-out-1">Test it out</a></li>
+      </ul>
+    </li>
+    <li><a href="#implementing-page-with-filtering-and-sorting">Implementing Page with Filtering and Sorting</a>
+      <ul>
+        <li><a href="#update-repository-2">Update Repository</a></li>
+        <li><a href="#update-service-2">Update Service</a></li>
+        <li><a href="#update-controller-2">Update Controller</a></li>
+        <li><a href="#test-it-out-2">Test it out</a></li>
+      </ul>
+    </li>
+    <li><a href="#implementing-pagination-with-hateoas">Implementing Pagination with HATEOAS</a>
+      <ul>
+        <li><a href="#update-repository-3">Update Repository</a></li>
+        <li><a href="#update-service-3">Update Service</a></li>
+        <li><a href="#create-files-to-support-hateoas">Create files to support Hateoas</a></li>
+        <li><a href="#update-controller-3">Update Controller</a></li>
+        <li><a href="#test-it-out-3">Test it out</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="introduction">Introduction</h2>
+<p>In this blog post we are going to look at how we can implement pagination with hateoas while supporting filtering and sorting in a spring boot application. We will first start off implementing filtering, and then iteratively page, sorting and finally pagination wtih Hateoas.</p>
+<h3 id="tech-stack">Tech Stack</h3>
+<p>Below are the list of languages, frameworks and libraries used in this tutorial</p>
+<ol>
+<li>Java 11</li>
+<li>Maven</li>
+<li>h2 in memory database</li>
+<li>REST apis</li>
+<li>SpringBoot 2.6.6</li>
+<li>Spring Data jpa</li>
+<li>Hateoas</li>
+</ol>
+<h3 id="usecase-for-hateoas-with-pagination-and-filterinsorting">Usecase for Hateoas with pagination and filterin/sorting</h3>
+<p>When fetching data from a table you probably implement your response object as a <code>List&lt;Object&gt;</code> . This works perfectly fine if it is a small data set.
+When you have a data set that is &rsquo;large&rsquo;, you do not want to send the data to the client all at once. Imagine you have 100k rows in your table and each row has 10 columns. If the user is only vieweing maybe 50 rows in the UI(our client) at a specific time, why send 100k rows?
+Unless it a specific export functionality, you shouldn&rsquo;t send back all the data to the user. Instead you should send a subset of the data only.
+At the same time, we do not want to restrict the user from seeing all the data. If the user wants to add a filter or sort some data out of these 100k rows, he should be able to do it.
+From a front end perspective, if the user clicks on the next page, they will do another call to the backend to get the next set of data.
+This is where Pagination + Filtering + Sorting becomes very very helpful.
+Hateoas also provides links to other pages which is extremely helpful as we will see.</p>
+<h3 id="what-will-our-end-result-look-like">What will our end result look like</h3>
+<p>Before we get into the details, take a look at our request URL and the Response format we finally end up with. We will create a long url because we are allowing a high level of customization.</p>
+<p>Request URL: <code>http://localhost:8080/api/v4/customers?firstNameFilter=R&amp;lastNameFilter=S&amp;page=0&amp;size=10&amp;sortList=firstName&amp;sortOrder=ASC</code>
+Response:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;_embedded&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;customerModelList&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">         <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="mi">971</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;customerId&#34;</span><span class="p">:</span> <span class="s2">&#34;de6b8664-ba90-41fc-a9f4-da7d0b89c106&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;firstName&#34;</span><span class="p">:</span> <span class="s2">&#34;Rabi&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;lastName&#34;</span><span class="p">:</span> <span class="s2">&#34;Dufour&#34;</span>
+</span></span><span class="line"><span class="cl">         <span class="p">},</span>
+</span></span><span class="line"><span class="cl">         <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="mi">339</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;customerId&#34;</span><span class="p">:</span> <span class="s2">&#34;44b5c01d-c379-4f66-b8ed-0fda4837db4e&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;firstName&#34;</span><span class="p">:</span> <span class="s2">&#34;Rachelle&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;lastName&#34;</span><span class="p">:</span> <span class="s2">&#34;Fleischer&#34;</span>
+</span></span><span class="line"><span class="cl">         <span class="p">},</span>
+</span></span><span class="line"><span class="cl">         <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="mi">838</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;customerId&#34;</span><span class="p">:</span> <span class="s2">&#34;443b06fd-7160-4234-9102-93afb0f6d9ad&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;firstName&#34;</span><span class="p">:</span> <span class="s2">&#34;Rafaelia&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;lastName&#34;</span><span class="p">:</span> <span class="s2">&#34;Bladen&#34;</span>
+</span></span><span class="line"><span class="cl">         <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">]</span>
+</span></span><span class="line"><span class="cl">   <span class="p">},</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;_links&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;first&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;href&#34;</span><span class="p">:</span> <span class="s2">&#34;http://localhost:8080/api/v4/customers?firstNameFilter=R&amp;sortList=firstName&amp;sortOrder=ASC&amp;page=0&amp;size=3&amp;sort=firstName,asc&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;self&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">         <span class="nt">&#34;href&#34;</span><span class="p">:</span> <span class="s2">&#34;http://localhost:8080/api/v4/customers?firstNameFilter=R&amp;sortList=firstName&amp;sortOrder=ASC&amp;page=0&amp;size=3&amp;sort=firstName,asc&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;next&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;href&#34;</span><span class="p">:</span> <span class="s2">&#34;http://localhost:8080/api/v4/customers?firstNameFilter=R&amp;sortList=firstName&amp;sortOrder=ASC&amp;page=1&amp;size=3&amp;sort=firstName,asc&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;last&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;href&#34;</span><span class="p">:</span> <span class="s2">&#34;http://localhost:8080/api/v4/customers?firstNameFilter=R&amp;sortList=firstName&amp;sortOrder=ASC&amp;page=19&amp;size=3&amp;sort=firstName,asc&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">   <span class="p">},</span>
+</span></span><span class="line"><span class="cl">   <span class="nt">&#34;page&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;size&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;totalElements&#34;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;totalPages&#34;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;number&#34;</span><span class="p">:</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">   <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>As you can see in this case, the endpoint provides you links on how you can access the other data. It also tells you how much data is there, how many pages and the elements per page and more. This is extremely helpful for any client accessing our API to traverse through the data.</p>
+<h2 id="create-a-base-spring-boot-app">Create a Base spring boot app</h2>
+<p>First before we get to the actual code, let&rsquo;s walk through our base code and set up a simple controller, service, entity and repository. Something you&rsquo;d do for any spring boot application. Then let&rsquo;s also set up the Database and insert some data.
+<strong>NOTE:</strong> Skip this section if you just need to see how the implementation is done. This is only for anyone following along.</p>
+<h3 id="create-base-app">Create base app</h3>
+<p>You can create the base application by using the <a href="https://start.spring.io">start.spring.io</a> website.
+Enter your app details and add the below dependencies</p>
+<ol>
+<li>Spring Web</li>
+<li>Spring Data JPA</li>
+<li>H2 Database</li>
+<li>Spring HATEOAS</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/09/7e975ff5becf4d138288f9d29b119624.png" alt="start.spring.io"></p>
+<ol>
+<li>This will auto create your pom.xml and project folders</li>
+</ol>
+<h3 id="create-entity-and-repository">Create Entity and Repository</h3>
+<p>We will be creating 1 Entity-customer with 4 fields - id(sequence generated), customerId(unique string), first name and last name. We will also keep getters and setters for encapsulation</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Entity</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Table</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#34;customer&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Customer</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Id</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@GeneratedValue</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Column</span><span class="o">(</span><span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">,</span> <span class="n">unique</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">customerId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Column</span><span class="o">(</span><span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">50</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">firstName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Column</span><span class="o">(</span><span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">50</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">lastName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getCustomerId</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">customerId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCustomerId</span><span class="o">(</span><span class="n">String</span> <span class="n">customerId</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">customerId</span> <span class="o">=</span> <span class="n">customerId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirstName</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">firstName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFirstName</span><span class="o">(</span><span class="n">String</span> <span class="n">firstName</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">firstName</span> <span class="o">=</span> <span class="n">firstName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getLastName</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">lastName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLastName</span><span class="o">(</span><span class="n">String</span> <span class="n">lastName</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">lastName</span> <span class="o">=</span> <span class="n">lastName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Create a repoistory interface for the entity. We will update this later.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Repository</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CustomerRepository</span> <span class="kd">extends</span> <span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">,</span> <span class="n">Long</span><span class="o">&gt;</span> <span class="o">{}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="create-service">Create Service</h2>
+<p>Now create a simple service file to fetch the data</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerService</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">CustomerRepository</span> <span class="n">customerRepository</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="nf">fetchCustomerDataAsList</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Fetch all customers using findAll
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="n">customerRepository</span><span class="o">.</span><span class="na">findAll</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="create-controller">Create Controller</h3>
+<p>Now lets create a basic controller with a GET request that calls the service method</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">CustomerService</span> <span class="n">customerService</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * @return List of all customers
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/api/v0/customers&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="nf">fetchCustomersAsList</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">customerService</span><span class="o">.</span><span class="na">fetchCustomerDataAsList</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now we have all our base code setup. Let&rsquo;s move on to configuring our Database and getting some data inserted.</p>
+<h3 id="setup-our-database">Setup our Database</h3>
+<p>Update the application.properties to map our H2 DB</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">spring.h2.console.enabled=true
+</span></span><span class="line"><span class="cl">spring.h2.console.settings.web-allow-others=true
+</span></span><span class="line"><span class="cl">spring.datasource.username=sa
+</span></span><span class="line"><span class="cl">spring.datasource.password=
+</span></span><span class="line"><span class="cl">spring.datasource.url=jdbc:h2:mem:testdb
+</span></span><span class="line"><span class="cl">spring.datasource.driverClassName=org.h2.Driver
+</span></span><span class="line"><span class="cl">spring.datasource.initialization-mode=always
+</span></span><span class="line"><span class="cl">spring.datasource.initialize=true
+</span></span><span class="line"><span class="cl">spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+</span></span><span class="line"><span class="cl">spring.jpa.hibernate.ddl-auto=update
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now with our DB setup, we can use the springboot auto configuration to run scripts on our DB when the application is started.
+Create a <code>schema.sql</code> file</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="n">id</span><span class="w"> </span><span class="nb">INT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="n">first_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="n">last_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">   </span><span class="n">customer_id</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>And create a <code>data.sql</code> file</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">values</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;Dorine&#39;</span><span class="p">,</span><span class="s1">&#39;McGrouther&#39;</span><span class="p">,</span><span class="s1">&#39;6252fcab-a17e-4af4-aa70-0fda826e67cf&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">values</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s1">&#39;Gerianna&#39;</span><span class="p">,</span><span class="s1">&#39;Capstack&#39;</span><span class="p">,</span><span class="s1">&#39;f787ce02-06b7-4fc6-be83-408c652e924b&#39;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">values</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="s1">&#39;Rosemarie&#39;</span><span class="p">,</span><span class="s1">&#39;Salerno&#39;</span><span class="p">,</span><span class="s1">&#39;4ac787e6-2534-43ea-a86e-16957b7410a2&#39;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The script in the Github repository has around 1000 customers in the file.
+Each time the application runs, since we are using a h2 database, it will run the <code>schema.sql</code> script and then the <code>data.sql</code> script which will set up our database environment.</p>
+<h3 id="test-our-base-app">Test our base app</h3>
+<p>To test it out launch the spring boot application with your IDE and use your browser and enter the URL
+<code>http://localhost:8080/api/v0/customers</code>.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/09/a2b50469221e4889abb8a8dbb07b6425.png" alt="json response"></p>
+<p>If you&rsquo;ve used the insert script in the repository, you will get 1000 records in this JSON output.</p>
+<h2 id="implementing-filtering">Implementing Filtering</h2>
+<p>Now let us first implement basic filtering in our code. We will allow the user to filter on 2 fields - firstName and/or lastName. For this we will create a new endpoint and pass in these 2 variables as Request parameters with a default value of &quot;&quot;</p>
+<h3 id="update-repository">Update Repository</h3>
+<p>Add the below query to our CustomerRepository Interface</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">String</span> <span class="n">FILTER_CUSTOMERS_ON_FIRST_NAME_AND_LAST_NAME_QUERY</span> <span class="o">=</span> <span class="s">&#34;select b from Customer b where UPPER(b.firstName) like CONCAT(&#39;%&#39;,UPPER(?1),&#39;%&#39;) and UPPER(b.lastName) like CONCAT(&#39;%&#39;,UPPER(?2),&#39;%&#39;)&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Query</span><span class="o">(</span><span class="n">FILTER_CUSTOMERS_ON_FIRST_NAME_AND_LAST_NAME_QUERY</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="nf">findByFirstNameLikeAndLastNameLike</span><span class="o">(</span><span class="n">String</span> <span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">String</span> <span class="n">lastNameFilter</span><span class="o">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We have written a custom query that will filter based on first name and last name.
+Now all we need to do is call it from our service.</p>
+<h3 id="update-service">Update Service</h3>
+<p>Add a new method to our service</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="nf">fetchFilteredCustomerDataAsList</span><span class="o">(</span><span class="n">String</span> <span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">String</span> <span class="n">lastNameFilter</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Apply the filter for firstName and lastName
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="n">customerRepository</span><span class="o">.</span><span class="na">findByFirstNameLikeAndLastNameLike</span><span class="o">(</span><span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">lastNameFilter</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Notice that we are still returning a <code>List&lt;Customer&gt;</code> . It is a filtered list though.</p>
+<h3 id="update-controller">Update Controller</h3>
+<p>Add a new endpoint that accepts 2 fields as filter conditions</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param firstNameFilter Filter for the first Name if required
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param lastNameFilter  Filter for the last Name if required
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @return List of filtered customers
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/api/v1/customers&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="nf">fetchCustomersAsFilteredList</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">firstNameFilter</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                    <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">lastNameFilter</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">customerService</span><span class="o">.</span><span class="na">fetchFilteredCustomerDataAsList</span><span class="o">(</span><span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">lastNameFilter</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="test-it-out">Test it out</h3>
+<p>Run the application and this hit the v1 URL which we created
+<code>http://localhost:8080/api/v1/customers?firstNameFilter=ur&amp;lastNameFilter=as</code>
+Try this out with different filters. Instead of all 1000 customers we will get only the filtered list of customers.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/09/1f5a6d5e7ef04d3aad6c2aeed636320e.png" alt="json response"></p>
+<p>In this case there are only 2 customers with first name containing &lsquo;ur&rsquo; and last name containing &lsquo;as&rsquo;.</p>
+<h2 id="implementing-page-with-filtering">Implementing Page with Filtering</h2>
+<p>Page is a common interface used to fetch data in a page format from our database. Though the format doesnt necessarily contain pertinent information, it still is limited data set and we can apply our filtering logic to it.</p>
+<h3 id="update-repository-1">Update Repository</h3>
+<p>Add the below query to our CustomerRepository Interface</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">@Query(FILTER_CUSTOMERS_ON_FIRST_NAME_AND_LAST_NAME_QUERY)
+</span></span><span class="line"><span class="cl">Page&lt;Customer&gt; findByFirstNameLikeAndLastNameLike(String firstNameFilter, String lastNameFilter, Pageable pageable);
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The only difference is that we are also passing a pageable object with the filters and returning a <code>Page&lt;Customer&gt;</code> instead of <code>List&lt;Customer&gt;</code></p>
+<h3 id="update-service-1">Update Service</h3>
+<p>Add a new method to our service</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Page</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="nf">fetchCustomerDataAsPageWithFiltering</span><span class="o">(</span><span class="n">String</span> <span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">String</span> <span class="n">lastNameFilter</span><span class="o">,</span> <span class="kt">int</span> <span class="n">page</span><span class="o">,</span> <span class="kt">int</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// create Pageable object using the page and size
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Pageable</span> <span class="n">pageable</span> <span class="o">=</span> <span class="n">PageRequest</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">page</span><span class="o">,</span> <span class="n">size</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// fetch the page object by additionally passing pageable with the filters
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="n">customerRepository</span><span class="o">.</span><span class="na">findByFirstNameLikeAndLastNameLike</span><span class="o">(</span><span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">lastNameFilter</span><span class="o">,</span> <span class="n">pageable</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Here we need 2 additional inputs- page and size. Page indicates which page we want to fetch from the DB. And size referes to the number of objects we want on each page.
+<strong>Note:</strong> Page starts at 0 so be careful.
+So if there are 1000 objects and we give a page of 2 and size of 50. We will get the third set of 101-150 objects.</p>
+<h3 id="update-controller-1">Update Controller</h3>
+<p>Add a new endpoint that accepts 2 fields as filter conditions and 2 fields for page functionality</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param firstNameFilter Filter for the first Name if required
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param lastNameFilter  Filter for the last Name if required
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param page            number of the page returned
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param size            number of entries in each page
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @return Page object with customers after filtering
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/api/v2/customers&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Page</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="nf">fetchCustomersWithPageInterface</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">firstNameFilter</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                        <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">lastNameFilter</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                        <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;0&#34;</span><span class="o">)</span> <span class="kt">int</span> <span class="n">page</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                        <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;30&#34;</span><span class="o">)</span> <span class="kt">int</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">customerService</span><span class="o">.</span><span class="na">fetchCustomerDataAsPageWithFiltering</span><span class="o">(</span><span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">lastNameFilter</span><span class="o">,</span> <span class="n">page</span><span class="o">,</span> <span class="n">size</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Notice that we have kept the default page as 0 and size as 30.</p>
+<h3 id="test-it-out-1">Test it out</h3>
+<p>Run the application and this hit the v2 URL which we created with additional parameters
+<code>http://localhost:8080/api/v2/customers?firstNameFilter=Ar&amp;lastNameFilter=sp&amp;page=0&amp;size=30</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/09/cccbff6ce9d24fd991f2613bb21cd6b2.png" alt="json response"></p>
+<p>We can see more information being displayed but it doesn&rsquo;t seem to be too relevant. If required, you could do some custom coding to convert the format.</p>
+<h2 id="implementing-page-with-filtering-and-sorting">Implementing Page with Filtering and Sorting</h2>
+<p>Now we will implement sorting to the above logic.</p>
+<h3 id="update-repository-2">Update Repository</h3>
+<p>No update in repository is required. We will reuse the previous method that returns a <code>Page&lt;Customer&gt;</code></p>
+<h3 id="update-service-2">Update Service</h3>
+<p>Add a new method to our service</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Page</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="nf">fetchCustomerDataAsPageWithFilteringAndSorting</span><span class="o">(</span><span class="n">String</span> <span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">String</span> <span class="n">lastNameFilter</span><span class="o">,</span> <span class="kt">int</span> <span class="n">page</span><span class="o">,</span> <span class="kt">int</span> <span class="n">size</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">sortList</span><span class="o">,</span> <span class="n">String</span> <span class="n">sortOrder</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// create Pageable object using the page, size and sort details
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Pageable</span> <span class="n">pageable</span> <span class="o">=</span> <span class="n">PageRequest</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">page</span><span class="o">,</span> <span class="n">size</span><span class="o">,</span> <span class="n">Sort</span><span class="o">.</span><span class="na">by</span><span class="o">(</span><span class="n">createSortOrder</span><span class="o">(</span><span class="n">sortList</span><span class="o">,</span> <span class="n">sortOrder</span><span class="o">)));</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// fetch the page object by additionally passing pageable with the filters
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="n">customerRepository</span><span class="o">.</span><span class="na">findByFirstNameLikeAndLastNameLike</span><span class="o">(</span><span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">lastNameFilter</span><span class="o">,</span> <span class="n">pageable</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Sort</span><span class="o">.</span><span class="na">Order</span><span class="o">&gt;</span> <span class="nf">createSortOrder</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">sortList</span><span class="o">,</span> <span class="n">String</span> <span class="n">sortDirection</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">List</span><span class="o">&lt;</span><span class="n">Sort</span><span class="o">.</span><span class="na">Order</span><span class="o">&gt;</span> <span class="n">sorts</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Sort</span><span class="o">.</span><span class="na">Direction</span> <span class="n">direction</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">sort</span> <span class="o">:</span> <span class="n">sortList</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">sortDirection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">direction</span> <span class="o">=</span> <span class="n">Sort</span><span class="o">.</span><span class="na">Direction</span><span class="o">.</span><span class="na">fromString</span><span class="o">(</span><span class="n">sortDirection</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">direction</span> <span class="o">=</span> <span class="n">Sort</span><span class="o">.</span><span class="na">Direction</span><span class="o">.</span><span class="na">DESC</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sorts</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Sort</span><span class="o">.</span><span class="na">Order</span><span class="o">(</span><span class="n">direction</span><span class="o">,</span> <span class="n">sort</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">sorts</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We have 2 methods. 1 public method that we will call from our controller which has 2 additional inputs - sortList and sortOrder.
+SortList takes in the list of string on which we need to sort it and sortOrder takes either ASC or DESC.
+The second private method creates the Sort.Order list object which is used in creating the Page object.</p>
+<h3 id="update-controller-2">Update Controller</h3>
+<p>Add a new endpoint that accepts 2 fields as filter conditions, 2 fields for page functionality and 2 for sort functionality</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param firstNameFilter Filter for the first Name if required
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param lastNameFilter  Filter for the last Name if required
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param page            number of the page returned
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param size            number of entries in each page
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param sortList        list of columns to sort on
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param sortOrder       sort order. Can be ASC or DESC
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @return Page object with customers after filtering and sorting
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/api/v3/customers&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">Page</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="nf">fetchCustomersWithPageInterfaceAndSorted</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">firstNameFilter</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                                <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">lastNameFilter</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                                <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;0&#34;</span><span class="o">)</span> <span class="kt">int</span> <span class="n">page</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                                <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;30&#34;</span><span class="o">)</span> <span class="kt">int</span> <span class="n">size</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                                <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">)</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">sortList</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                                                                <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;DESC&#34;</span><span class="o">)</span> <span class="n">Sort</span><span class="o">.</span><span class="na">Direction</span> <span class="n">sortOrder</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">customerService</span><span class="o">.</span><span class="na">fetchCustomerDataAsPageWithFilteringAndSorting</span><span class="o">(</span><span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">lastNameFilter</span><span class="o">,</span> <span class="n">page</span><span class="o">,</span> <span class="n">size</span><span class="o">,</span> <span class="n">sortList</span><span class="o">,</span> <span class="n">sortOrder</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="test-it-out-2">Test it out</h3>
+<p>Run the application and this hit the v3 URL which we created with additional parameters
+<code>http://localhost:8080/api/v3/customers?firstNameFilter=Ria&amp;lastNameFilter=ss&amp;page=0&amp;size=5&amp;sortList=firstName&amp;sortOrder=ASC</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/09/6d8e0e2abb7f40ce9dbf9461d387b6d2.png" alt="test result"></p>
+<p>The only advantage here compared to our last version is that we can sort the data now.</p>
+<h2 id="implementing-pagination-with-hateoas">Implementing Pagination with HATEOAS</h2>
+<p>Coming to our final step - implementing hateoas with filtering and sorting.</p>
+<h3 id="update-repository-3">Update Repository</h3>
+<p>No update in repository is required. We will reuse the already created method returning <code>Page&lt;Customer&gt;</code></p>
+<h3 id="update-service-3">Update Service</h3>
+<p>No update is required. We will reuse the method returning <code>Page&lt;Customer&gt;</code></p>
+<h3 id="create-files-to-support-hateoas">Create files to support Hateoas</h3>
+<p>Now to use hateoas we convert the page format to a hateoas PagedModel format. To do so we need 2 additional files</p>
+<ol>
+<li>Customer Model (extends RepresentationModel&lt;&gt;)</li>
+<li>Customer Model Assembler(extends RepresentationModelAssemblerSupport&lt;,&gt;)</li>
+</ol>
+<h4 id="create-customermodel">Create CustomerModel</h4>
+<p>First off we need to create Customer Model that extends the hateoas RepresentationModel which is part of the body of the response we send. We also create getters and setters for the object variables.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * The CustomerModel class extends the Hateoas Representation Model and is required if we want to convert the Customer
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Entity to a pagination format
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerModel</span> <span class="kd">extends</span> <span class="n">RepresentationModel</span><span class="o">&lt;</span><span class="n">CustomerModel</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">customerId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">firstName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">lastName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setId</span><span class="o">(</span><span class="n">Long</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getCustomerId</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">customerId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCustomerId</span><span class="o">(</span><span class="n">String</span> <span class="n">customerId</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">customerId</span> <span class="o">=</span> <span class="n">customerId</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getFirstName</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">firstName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setFirstName</span><span class="o">(</span><span class="n">String</span> <span class="n">firstName</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">firstName</span> <span class="o">=</span> <span class="n">firstName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getLastName</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">lastName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setLastName</span><span class="o">(</span><span class="n">String</span> <span class="n">lastName</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">lastName</span> <span class="o">=</span> <span class="n">lastName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If we dont want the sequence generated id to be returned we can remove it from this object itself.</p>
+<h4 id="create-customermodelassembler">Create CustomerModelAssembler</h4>
+<p>Now we need the assembler which extends RepresentationModelAssemblerSupport and we pass in the from object which is our entity and to object which is our newly created Model. We are forced to override the <code>toModel()</code> method in which we copy the values of the entity to the model.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * This class extends RepresentationModelAssemblerSupport which is required for Pagination.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * It converts the Customer Entity to the Customer Model and has the code for it
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Component</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerModelAssembler</span> <span class="kd">extends</span> <span class="n">RepresentationModelAssemblerSupport</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">,</span> <span class="n">CustomerModel</span><span class="o">&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">CustomerModelAssembler</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">super</span><span class="o">(</span><span class="n">CustomerController</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">CustomerModel</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">CustomerModel</span> <span class="nf">toModel</span><span class="o">(</span><span class="n">Customer</span> <span class="n">entity</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">CustomerModel</span> <span class="n">model</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CustomerModel</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Both CustomerModel and Customer have the same property names. So copy the values from the Entity to the Model
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">BeanUtils</span><span class="o">.</span><span class="na">copyProperties</span><span class="o">(</span><span class="n">entity</span><span class="o">,</span> <span class="n">model</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">model</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="update-controller-3">Update Controller</h3>
+<p>Autowire 2 components required</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">CustomerModelAssembler</span> <span class="n">customerModelAssembler</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">PagedResourcesAssembler</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="n">pagedResourcesAssembler</span><span class="o">;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>and add a new endpoint that will call the Page</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param firstNameFilter Filter for the first Name if required
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param lastNameFilter  Filter for the last Name if required
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param page            number of the page returned
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param size            number of entries in each page
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param sortList        list of columns to sort on
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @param sortOrder       sort order. Can be ASC or DESC
+</span></span></span><span class="line"><span class="cl"><span class="cm">* @return PagedModel object in Hateoas with customers after filtering and sorting
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@GetMapping</span><span class="o">(</span><span class="s">&#34;/api/v4/customers&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="n">PagedModel</span><span class="o">&lt;</span><span class="n">CustomerModel</span><span class="o">&gt;</span> <span class="nf">fetchCustomersWithPagination</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">firstNameFilter</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">)</span> <span class="n">String</span> <span class="n">lastNameFilter</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;0&#34;</span><span class="o">)</span> <span class="kt">int</span> <span class="n">page</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;30&#34;</span><span class="o">)</span> <span class="kt">int</span> <span class="n">size</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;&#34;</span><span class="o">)</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">sortList</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&#34;DESC&#34;</span><span class="o">)</span> <span class="n">Sort</span><span class="o">.</span><span class="na">Direction</span> <span class="n">sortOrder</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Page</span><span class="o">&lt;</span><span class="n">Customer</span><span class="o">&gt;</span> <span class="n">customerPage</span> <span class="o">=</span> <span class="n">customerService</span><span class="o">.</span><span class="na">fetchCustomerDataAsPageWithFilteringAndSorting</span><span class="o">(</span><span class="n">firstNameFilter</span><span class="o">,</span> <span class="n">lastNameFilter</span><span class="o">,</span> <span class="n">page</span><span class="o">,</span> <span class="n">size</span><span class="o">,</span> <span class="n">sortList</span><span class="o">,</span> <span class="n">sortOrder</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Use the pagedResourcesAssembler and customerModelAssembler to convert data to PagedModel format
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="n">pagedResourcesAssembler</span><span class="o">.</span><span class="na">toModel</span><span class="o">(</span><span class="n">customerPage</span><span class="o">,</span> <span class="n">customerModelAssembler</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Notice how we are using the autowired components. Using the assembler we are converting the <code>Page&lt;Customer&gt;</code> to <code>PagedModel&lt;Customer&gt;</code> by calling the <code>toModel()</code> method</p>
+<h3 id="test-it-out-3">Test it out</h3>
+<p>Run the application and this hit the v4 URL which we created with additional parameters
+<code>http://localhost:8080/api/v4/customers?firstNameFilter=R&amp;lastNameFilter=S&amp;page=0&amp;size=4&amp;sortList=firstName&amp;sortOrder=ASC</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/04/09/b616b9e913c34d468a34261cb32746f6.png" alt="test result"></p>
+<p>Taking a closer look at our output we notice some really beneficial information.</p>
+<ol>
+<li>&ldquo;_links&rdquo; - this key contains an object with links to the first,self,next and last page. These links can be used from the frontend team to use pagination in the UI.</li>
+<li>&ldquo;page&rdquo; - this tells us how many elements, totaly elements after filtering and sorting, total pages and current page number.</li>
+<li>&ldquo;_embedded&rdquo; - contains the list of CustomerModels. The actual data that is converted from the entity to the model.</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>I spent a lot of time figuring this out when i needed to implement it at a work project and I hope this helps someone out there needing to do the same.
+Check out the Github link and play around with it and see if it works in your project as well.</p>
+<p><a href="https://github.com/markbdsouza/hateoas-with-pagination">https://github.com/markbdsouza/hateoas-with-pagination</a></p>
+<p>Feel free to leave a comment, if you have any questions or need any help.</p>
+<blockquote>
+<p>Reference <a href="https://dev.to/markbdsouza/paginationwith-hateoas-filtering-sorting-with-spring-boot-and-jpa-1mpp">https://dev.to/markbdsouza/paginationwith-hateoas-filtering-sorting-with-spring-boot-and-jpa-1mpp</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-data-jpa/">spring-data-jpa</a>
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          <a href="https://www.springcloud.io/tags/spring-hateoas/">spring-hateoas</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2022-04/spring-boot-rest/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Build a Spring Boot REST API with Pagination and Sorting</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2022-04/spring-cloud-config-usage/">
+            <span class="next-text nav-default">Unified configuration management using Spring Cloud Config</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>
