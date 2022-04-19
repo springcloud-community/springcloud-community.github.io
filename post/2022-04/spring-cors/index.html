@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>CORS detailed explanation and how to configure in spring application - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="Learn the details of CORS and how to configure it in a spring application." />
+<meta name="keywords" content="spring boot, Cors, CorsFilter, @CrossOrigin, CorsConfiguration" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.96.0" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-04/spring-cors/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="CORS detailed explanation and how to configure in spring application" />
+<meta property="og:description" content="Learn the details of CORS and how to configure it in a spring application." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-04/spring-cors/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-04-18T16:42:22+08:00" />
+<meta property="article:modified_time" content="2022-04-18T16:42:22+08:00" />
+
+<meta itemprop="name" content="CORS detailed explanation and how to configure in spring application">
+<meta itemprop="description" content="Learn the details of CORS and how to configure it in a spring application."><meta itemprop="datePublished" content="2022-04-18T16:42:22+08:00" />
+<meta itemprop="dateModified" content="2022-04-18T16:42:22+08:00" />
+<meta itemprop="wordCount" content="2438">
+<meta itemprop="keywords" content="spring-boot," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="CORS detailed explanation and how to configure in spring application"/>
+<meta name="twitter:description" content="Learn the details of CORS and how to configure it in a spring application."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/forum">Forum</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">CORS detailed explanation and how to configure in spring application</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-04-18" class="post-time">
+          2022-04-18
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 2438 words </span>
+          <span class="more-meta"> 12 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#cors-explained-in-detail">CORS explained in detail</a>
+      <ul>
+        <li><a href="#1-introduction">1. Introduction</a></li>
+        <li><a href="#2-two-types-of-requests">2. Two types of requests</a></li>
+        <li><a href="#3-simple-request">3. Simple request</a></li>
+        <li><a href="#4-non-simple-requests">4. Non-simple requests</a></li>
+      </ul>
+    </li>
+    <li><a href="#spring-with-cors">Spring With CORS</a>
+      <ul>
+        <li><a href="#crossorigin">@CrossOrigin</a></li>
+        <li><a href="#webmvcconfiguration">WebMvcConfiguration</a></li>
+        <li><a href="#corsfilter">CorsFilter</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="cors-explained-in-detail">CORS explained in detail</h2>
+<p>CORS is a W3C standard, the full name is Cross-origin resource sharing.</p>
+<p>It allows the browser to cross-origin server, issued <code>XMLHttpRequest/fetch</code> request, thus overcoming the AJAX can only be used in the same source of the limitations.</p>
+<h3 id="1-introduction">1. Introduction</h3>
+<p>CORS requires both browser and server support. Currently, all browsers support this feature, and Internet Explorer cannot be lower than IE10.</p>
+<p>The entire CORS communication process is done automatically by the browser, without user involvement. For developers, CORS communication with the same source of AJAX communication no difference, the code is exactly the same. Once the browser finds the AJAX request cross-source, it will automatically add some additional headers, and sometimes one more additional request, but the user will not feel it.</p>
+<p>Therefore, the key to achieve CORS communication is the server. As long as the server implements the CORS specification, it can communicate across sources.</p>
+<h3 id="2-two-types-of-requests">2. Two types of requests</h3>
+<p>Browsers divide CORS requests into two categories: simple requests and not-so-simple requests.</p>
+<p>As long as the following two conditions are met, it is a simple request.</p>
+<ol>
+<li>
+<p>The request method is one of the following three methods.</p>
+<ul>
+<li>HEAD</li>
+<li>GET</li>
+<li>POST</li>
+</ul>
+</li>
+<li>
+<p>The HTTP headers do not exceed the following fields.</p>
+<ul>
+<li>Accept</li>
+<li>Accept-Language</li>
+<li>Content-Language</li>
+<li>Last-Event-ID</li>
+<li>Content-Type: limited to three values <code>application/x-www-form-urlencoded</code>, <code>multipart/form-data</code>, <code>text/plain</code></li>
+</ul>
+</li>
+</ol>
+<p>This is to be compatible with forms, because historically forms have been able to send cross-domain requests. AJAX&rsquo;s cross-domain design is that, as long as the form can send, AJAX can send directly.</p>
+<p>Where the above two conditions are not met at the same time, it is not a simple request.</p>
+<p>The browser processing of these two requests, is not the same.</p>
+<h3 id="3-simple-request">3. Simple request</h3>
+<h4 id="31-basic-flow">3.1 Basic flow</h4>
+<p>For a simple request, the browser makes a CORS request directly. Specifically, it adds an <code>Origin</code> field to the header.</p>
+<p>Here is an example, the browser finds that the cross-origin AJAX request is a simple request, it automatically adds an <code>Origin</code> field to the header information.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">GET /cors HTTP/1.1
+</span></span><span class="line"><span class="cl">Origin: http://api.bob.com
+</span></span><span class="line"><span class="cl">Host: api.alice.com
+</span></span><span class="line"><span class="cl">Accept-Language: en-US
+</span></span><span class="line"><span class="cl">Connection: keep-alive
+</span></span><span class="line"><span class="cl">User-Agent: Mozilla/5.0...
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In the above header, the <code>Origin</code> field is used to indicate the source (protocol + domain + port) from which this request is coming. Based on this value, the server decides whether to grant the request or not.</p>
+<p>If the source specified by <code>Origin</code> is not within the scope of the permission, the server returns a normal HTTP response. The browser finds that this response does not contain the <code>Access-Control-Allow-Origin</code> field in its headers (see below for details) and knows that there is an error, thus throwing an error that is caught by the <code>onerror</code> callback function of <code>XMLHttpRequest</code>. Note that such errors cannot be identified by status codes, as the status code of an HTTP response can be 200.</p>
+<p>If the domain name specified by <code>Origin</code> is within the permitted range, the server returns a response with a few extra header fields.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Access-Control-Allow-Origin: http://api.bob.com
+</span></span><span class="line"><span class="cl">Access-Control-Allow-Credentials: true
+</span></span><span class="line"><span class="cl">Access-Control-Expose-Headers: FooBar
+</span></span><span class="line"><span class="cl">Content-Type: text/html; charset=utf-8
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The above header contains three fields related to CORS requests, all starting with <code>Access-Control-</code>.</p>
+<ul>
+<li>
+<p><strong>Access-Control-Allow-Origin</strong></p>
+<p>This field is required. Its value is either the value of the <code>Origin</code> field at the time of the request, or a <code>*</code> that indicates that a request for an arbitrary domain name is accepted.</p>
+</li>
+<li>
+<p><strong>Access-Control-Allow-Credentials</strong></p>
+<p>This field is optional. Its value is a boolean indicating whether cookies are allowed to be sent, and by default, cookies are not included in CORS requests. A value of <code>true</code> means that the server has explicitly given permission for the cookie to be included in the request and sent to the server together. This value can also only be set to <code>true</code>, so if the server does not want the browser to send cookies, just delete the field.</p>
+</li>
+<li>
+<p><strong>Access-Control-Expose-Headers</strong></p>
+<p>This field is optional. CORS request, the <code>XMLHttpRequest</code> object <code>getResponseHeader()</code> method can only get six basic fields: <code>Cache-Control</code>, <code>Content-Language</code>, <code>Content-Type</code>, <code>Expires</code>, <code>Last-Modified</code>, <code>Pragma</code>. If you want to get other fields, you must specify them in the <code>Access-Control-Expose-Headers</code>. In the above example, <code>getResponseHeader('FooBar')</code> will successfully get the value of the <code>FooBar</code> field.</p>
+<blockquote>
+<p>The wildcard character: <code>*</code>, proposed in the latest specification, indicates that the client is allowed to access all header. is not yet implemented in some browsers.</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="32-withcredentials-property">3.2 withCredentials property</h4>
+<p>As mentioned above, CORS requests do not send cookies and HTTP authentication information by default. If a cookie is to be sent to the server, on the one hand, the server has to agree to respond to the <code>Access-Control-Allow-Credentials</code> field.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Access-Control-Allow-Credentials: true
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>On the other hand, the developer must turn on the <code>withCredentials</code> property in the AJAX request</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// XMLHttpRequest
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nx">xhr</span><span class="p">.</span><span class="nx">withCredentials</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// fetch
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">credentials</span><span class="o">:</span> <span class="s1">&#39;include&#39;</span><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Otherwise, even if the server agrees to send a cookie, the browser will not send it. Or, if the server asks to set a cookie, the browser will not handle it.</p>
+<p>However, some browsers will still send cookies together if the <code>withCredentials</code> setting is omitted, in which case <code>withCredentials</code> can be turned off explicitly.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="c1">// XMLHttpRequest
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">xhr</span><span class="p">.</span><span class="nx">withCredentials</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// fetch
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">credentials</span><span class="o">:</span> <span class="s1">&#39;omit&#39;</span><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Note that to send a cookie, <code>Access-Control-Allow-Origin</code> cannot be set to an asterisk, but must specify a domain name that is explicit and consistent with the requested page. At the same time, cookies still follow the same origin policy, only cookies set with the server domain will be uploaded, cookies from other domains will not be uploaded, and the <code>document.cookie</code> in the (cross-origin) original web code will not be able to read cookies from the server domain.</p>
+<h3 id="4-non-simple-requests">4. Non-simple requests</h3>
+<h4 id="41-preflight-requests">4.1 Preflight Requests</h4>
+<p>A non-simple request is one that has special requirements for the server, such as a request method of <code>PUT</code> or <code>DELETE</code>, or a <code>Content-Type</code> field of type <code>application/json</code>.</p>
+<p>A CORS request that is not a simple request adds an HTTP query request, called a preflight, before the formal communication.</p>
+<p>The browser first asks the server if the domain name of the current web page is in the server&rsquo;s permission list, and which HTTP verbs and header fields can be used. Only when it gets a positive answer does the browser issue a formal <code>XMLHttpRequest</code> request, otherwise it throws an exception.</p>
+<p>Here is a JavaScript script for the browser.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="s1">&#39;http://api.alice.com/cors&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">xhr</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nx">xhr</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="nx">url</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">xhr</span><span class="p">.</span><span class="nx">setRequestHeader</span><span class="p">(</span><span class="s1">&#39;X-Custom-Header&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">xhr</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In the above code, the HTTP request method is <code>PUT</code> and sends a custom header <code>X-Custom-Header</code>.</p>
+<p>The browser finds that this is a non-simple request and automatically issues a &ldquo;preflight&rdquo; request to ask the server to confirm that it can do so. Here is the HTTP header for this &ldquo;preflight&rdquo; request.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">OPTIONS /cors HTTP/1.1
+</span></span><span class="line"><span class="cl">Origin: http://api.bob.com
+</span></span><span class="line"><span class="cl">Access-Control-Request-Method: PUT
+</span></span><span class="line"><span class="cl">Access-Control-Request-Headers: X-Custom-Header
+</span></span><span class="line"><span class="cl">Host: api.alice.com
+</span></span><span class="line"><span class="cl">Accept-Language: en-US
+</span></span><span class="line"><span class="cl">Connection: keep-alive
+</span></span><span class="line"><span class="cl">User-Agent: Mozilla/5.0...
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The request method used for the &ldquo;preflight&rdquo; request is <code>OPTIONS</code>, which indicates that the request is for interrogation. Inside the header, the key field is <code>Origin</code>, which indicates the source of the request.</p>
+<p>In addition to the <code>Origin</code> field, the header of a &ldquo;preflight&rdquo; request includes two special fields.</p>
+<ul>
+<li>
+<p><strong>Access-Control-Request-Method</strong></p>
+<p>This field is required to list which HTTP methods will be used by the browser&rsquo;s CORS request, in the above example <code>PUT</code>.</p>
+</li>
+<li>
+<p><strong>Access-Control-Request-Headers</strong></p>
+<p>This field is a comma-separated string that specifies the additional header field that will be sent by the browser CORS request, in the above example <code>X-Custom-Header</code>.</p>
+</li>
+</ul>
+<h4 id="42-response-to-preflight-requests">4.2 Response to Preflight Requests</h4>
+<p>After the server receives the Preflight request, it checks the <code>Origin</code>, <code>Access-Control-Request-Method</code> and <code>Access-Control-Request-Headers</code> fields and confirms that cross-origin requests are allowed, then it can respond.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">HTTP/1.1 200 OK
+</span></span><span class="line"><span class="cl">Date: Mon, 01 Dec 2008 01:15:39 GMT
+</span></span><span class="line"><span class="cl">Server: Apache/2.0.61 (Unix)
+</span></span><span class="line"><span class="cl">Access-Control-Allow-Origin: http://api.bob.com
+</span></span><span class="line"><span class="cl">Access-Control-Allow-Methods: GET, POST, PUT
+</span></span><span class="line"><span class="cl">Access-Control-Allow-Headers: X-Custom-Header
+</span></span><span class="line"><span class="cl">Content-Type: text/html; charset=utf-8
+</span></span><span class="line"><span class="cl">Content-Encoding: gzip
+</span></span><span class="line"><span class="cl">Content-Length: 0
+</span></span><span class="line"><span class="cl">Keep-Alive: timeout=2, max=100
+</span></span><span class="line"><span class="cl">Connection: Keep-Alive
+</span></span><span class="line"><span class="cl">Content-Type: text/plain
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The key thing in the HTTP response above is the <code>Access-Control-Allow-Origin</code> field, which indicates that <code>http://api.bob.com</code> is allowed to initiate the request. This field can also be set to an asterisk to indicate consent to any cross-origin request.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Access-Control-Allow-Origin: *
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>If the server denies the preflight request, a normal HTTP response is returned, but without any CORS-related header fields. At this point, the browser determines that the server did not agree to the preflight request and therefore triggers an error that is caught by the <code>onerror</code> callback function of the <code>XMLHttpRequest</code> object. The console will print the following error message.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">XMLHttpRequest cannot load http://api.alice.com.
+</span></span><span class="line"><span class="cl">Origin http://api.bob.com is not allowed by Access-Control-Allow-Origin.
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The other CORS-related fields that the server responds to are listed below.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Access-Control-Allow-Methods: GET, POST, PUT
+</span></span><span class="line"><span class="cl">Access-Control-Allow-Headers: X-Custom-Header
+</span></span><span class="line"><span class="cl">Access-Control-Allow-Credentials: true
+</span></span><span class="line"><span class="cl">Access-Control-Max-Age: 1728000
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><strong>Access-Control-Allow-Methods</strong></p>
+<p>This field is required and its value is a comma-separated string indicating all methods supported by the server for cross-domain requests. Note that all supported methods are returned, not just the one requested by the browser. This is to avoid multiple &ldquo;preflight&rdquo; requests.</p>
+</li>
+<li>
+<p><strong>Access-Control-Allow-Headers</strong></p>
+<p>The <code>Access-Control-Allow-Headers</code> field is required if the browser request includes the <code>Access-Control-Request-Headers</code> field. It is also a comma-separated string indicating all header fields supported by the server, not limited to the fields requested by the browser in the Preflight.</p>
+</li>
+<li>
+<p><strong>Access-Control-Allow-Credentials</strong></p>
+<p>This field has the same meaning as in the case of a simple request.</p>
+</li>
+<li>
+<p><strong>Access-Control-Max-Age</strong></p>
+<p>This field is optional and is used to specify the validity of this preflight request in seconds. In the above result, the validity period is 20 days (1728000 seconds), which means that the response is allowed to be cached for 1728000 seconds (i.e. 20 days), during which time another preflight request does not have to be issued.</p>
+</li>
+</ul>
+<h4 id="43-normal-browser-request-and-response">4.3 Normal browser request and response</h4>
+<p>Once the server has passed the &ldquo;preflight&rdquo; request, each subsequent normal browser CORS request will have an <code>Origin</code> header field, just like a simple request. The server&rsquo;s response will also have an <code>Access-Control-Allow-Origin</code> header field.</p>
+<p>Here is the normal CORS request from the browser after the &ldquo;preflight&rdquo; request.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">PUT /cors HTTP/1.1
+</span></span><span class="line"><span class="cl">Origin: http://api.bob.com
+</span></span><span class="line"><span class="cl">Host: api.alice.com
+</span></span><span class="line"><span class="cl">X-Custom-Header: value
+</span></span><span class="line"><span class="cl">Accept-Language: en-US
+</span></span><span class="line"><span class="cl">Connection: keep-alive
+</span></span><span class="line"><span class="cl">User-Agent: Mozilla/5.0...
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>Origin</code> field in the above header is automatically added by the browser.</p>
+<p>Here is the normal response from the server.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Access-Control-Allow-Origin: http://api.bob.com
+</span></span><span class="line"><span class="cl">Content-Type: text/html; charset=utf-8
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In the above header, the <code>Access-Control-Allow-Origin</code> field is always included in every response.</p>
+<blockquote>
+<p>CORS is used for the same purpose as JSONP, but is more powerful than JSONP. JSONP only supports <code>GET</code> requests, while CORS supports all types of HTTP requests. the advantages of JSONP are support for older browsers and the ability to request data from sites that do not support CORS.</p>
+</blockquote>
+<h2 id="spring-with-cors">Spring With CORS</h2>
+<p><code>spring</code> provides a number of ways to implement <code>CORS</code>.</p>
+<h3 id="crossorigin">@CrossOrigin</h3>
+<p>CORS can be easily implemented using the <code>@CrossOrigin</code> annotation. The code is as follows.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.CrossOrigin</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMethod</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@RestController</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">&#34;/hello&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//@CrossOrigin  // It can also be annotated on the class.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloController</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@GetMapping</span><span class="o">(</span><span class="n">produces</span> <span class="o">=</span> <span class="s">&#34;text/plain; charset=utf-8&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@CrossOrigin</span><span class="o">(</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Access-Control-Allow-Origin
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">origins</span> <span class="o">=</span> <span class="o">{</span> <span class="s">&#34;*&#34;</span> <span class="o">},</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// Alternative to origins that supports more flexible originpatterns. 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// Please, see CorsConfiguration.setAllowedOriginPatterns(List)for details.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="c1">// originPatterns = { &#34;&#34; },   
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        
+</span></span><span class="line"><span class="cl">        <span class="c1">// Access-Control-Allow-Credentials
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">allowCredentials</span> <span class="o">=</span> <span class="s">&#34;false&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// Access-Control-Allow-Headers
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">allowedHeaders</span> <span class="o">=</span> <span class="o">{</span> <span class="s">&#34;*&#34;</span> <span class="o">},</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// Access-Control-Expose-Headers
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">exposedHeaders</span> <span class="o">=</span> <span class="o">{</span> <span class="s">&#34;*&#34;</span> <span class="o">},</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// Access-Control-Max-Age
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">maxAge</span> <span class="o">=</span> <span class="n">60</span> <span class="o">*</span> <span class="n">30</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1">// Access-Control-Allow-Methods
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="n">methods</span> <span class="o">=</span> <span class="o">{</span><span class="n">RequestMethod</span><span class="o">.</span><span class="na">GET</span><span class="o">,</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">DELETE</span><span class="o">,</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">,</span> <span class="n">RequestMethod</span><span class="o">.</span><span class="na">PUT</span><span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">hello</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s">&#34;hello&#34;</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Note that When <code>allowedCredentials</code> is <code>true</code>, <code>allowedOrigins</code> cannot contain the special value <code>*</code> because it cannot be set in the <code>Access-Control-Allow-Origin</code> response header. To allow credentials from a set of sources, list them explicitly or consider using <code>allowedOriginPatterns</code> instead.</p>
+<p>Otherwise, an exception will be thrown when the application starts.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">Caused by: java.lang.IllegalArgumentException: When allowCredentials is true, allowedOrigins cannot contain the special value &#34;*&#34; since that cannot be set on the &#34;Access-Control-Allow-Origin&#34; response header. To allow credentials to a set of origins, list them explicitly or consider using &#34;allowedOriginPatterns&#34; instead.
+</span></span><span class="line"><span class="cl">    at org.springframework.web.cors.CorsConfiguration.validateAllowCredentials(CorsConfiguration.java:473) ~[spring-web-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping$MappingRegistry.register(AbstractHandlerMethodMapping.java:650) ~[spring-webmvc-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.registerHandlerMethod(AbstractHandlerMethodMapping.java:332) ~[spring-webmvc-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:420) ~[spring-webmvc-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.registerHandlerMethod(RequestMappingHandlerMapping.java:76) ~[spring-webmvc-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.lambda$detectHandlerMethods$2(AbstractHandlerMethodMapping.java:299) ~[spring-webmvc-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:721) ~[na:na]
+</span></span><span class="line"><span class="cl">    at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.detectHandlerMethods(AbstractHandlerMethodMapping.java:297) ~[spring-webmvc-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.processCandidateBean(AbstractHandlerMethodMapping.java:266) ~[spring-webmvc-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.initHandlerMethods(AbstractHandlerMethodMapping.java:225) ~[spring-webmvc-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.web.servlet.handler.AbstractHandlerMethodMapping.afterPropertiesSet(AbstractHandlerMethodMapping.java:213) ~[spring-webmvc-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping.afterPropertiesSet(RequestMappingHandlerMapping.java:205) ~[spring-webmvc-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863) ~[spring-beans-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800) ~[spring-beans-5.3.18.jar:5.3.18]
+</span></span><span class="line"><span class="cl">    ... 16 common frames omitted
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="webmvcconfiguration">WebMvcConfiguration</h3>
+<p>Global CORS configuration can be done through the <code>addCorsMappings</code> method of the <code>WebMvcConfiguration</code> configuration interface.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springboot.demo.configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.servlet.config.annotation.CorsRegistry</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.servlet.config.annotation.WebMvcConfigurer</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">WebMvcConfiguration</span> <span class="kd">implements</span> <span class="n">WebMvcConfigurer</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addCorsMappings</span><span class="o">(</span><span class="n">CorsRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">registry</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// Enable cross-origin request handling for the specified path pattern. 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="c1">// Exact path mapping URIs (such as &#34;/admin&#34;) are supported as well as Ant-style path patterns (such as &#34;/admin/**&#34;). 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="o">.</span><span class="na">addMapping</span><span class="o">(</span><span class="s">&#34;/*&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">allowedOrigins</span><span class="o">(</span><span class="s">&#34;*&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// .allowedOriginPatterns(&#34;&#34;)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="o">.</span><span class="na">allowCredentials</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">allowedHeaders</span><span class="o">(</span><span class="s">&#34;*&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">exposedHeaders</span><span class="o">(</span><span class="s">&#34;*&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">maxAge</span><span class="o">(</span><span class="n">60</span> <span class="o">*</span><span class="n">30</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">allowedMethods</span><span class="o">(</span><span class="s">&#34;*&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Similarly, if <code>allowCredentials</code> is <code>true</code>, <code>allowedOrigins</code> cannot be <code>*</code>.</p>
+<h3 id="corsfilter">CorsFilter</h3>
+<p><code>CorsFilter</code> is specifically designed to handle CORS requests. This approach is the most flexible and allows you to write code to handle CORS requests.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.stream.Stream</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">javax.servlet.Filter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.boot.web.servlet.FilterRegistrationBean</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Bean</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.context.annotation.Configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.http.HttpHeaders</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.util.StringUtils</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.cors.CorsConfiguration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.springframework.web.filter.CorsFilter</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.extern.slf4j.Slf4j</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Slf4j</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CorsFilterConfiguration</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">FilterRegistrationBean</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;</span> <span class="nf">corsFilter</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">FilterRegistrationBean</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;</span> <span class="n">filterRegistrationBean</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FilterRegistrationBean</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">filterRegistrationBean</span><span class="o">.</span><span class="na">setFilter</span><span class="o">(</span><span class="k">new</span> <span class="n">CorsFilter</span><span class="o">(</span><span class="n">request</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">String</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getHeader</span><span class="o">(</span><span class="n">HttpHeaders</span><span class="o">.</span><span class="na">ORIGIN</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">origin</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Not a CORS request.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">            * TODO You can write your own logic code to determine whether to allow the
+</span></span></span><span class="line"><span class="cl"><span class="cm">            * current request or not.
+</span></span></span><span class="line"><span class="cl"><span class="cm">            */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;origin = {}&#34;</span><span class="o">,</span> <span class="n">origin</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">CorsConfiguration</span> <span class="n">configuration</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CorsConfiguration</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">configuration</span><span class="o">.</span><span class="na">addAllowedOrigin</span><span class="o">(</span><span class="n">origin</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">String</span> <span class="n">accessControlRequestHeaders</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getHeader</span><span class="o">(</span><span class="n">HttpHeaders</span><span class="o">.</span><span class="na">ACCESS_CONTROL_REQUEST_HEADERS</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">accessControlRequestHeaders</span><span class="o">))</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">accessControlRequestHeaders</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">&#34;,&#34;</span><span class="o">)).</span><span class="na">map</span><span class="o">(</span><span class="n">String</span><span class="o">::</span><span class="n">trim</span><span class="o">).</span><span class="na">distinct</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">                        <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">configuration</span><span class="o">::</span><span class="n">addAllowedHeader</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">            <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">configuration</span><span class="o">.</span><span class="na">addExposedHeader</span><span class="o">(</span><span class="s">&#34;*&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">configuration</span><span class="o">.</span><span class="na">setAllowCredentials</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">configuration</span>
+</span></span><span class="line"><span class="cl">                    <span class="o">.</span><span class="na">setAllowedMethods</span><span class="o">(</span><span class="n">List</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&#34;GET&#34;</span><span class="o">,</span> <span class="s">&#34;HEAD&#34;</span><span class="o">,</span> <span class="s">&#34;POST&#34;</span><span class="o">,</span> <span class="s">&#34;PUT&#34;</span><span class="o">,</span> <span class="s">&#34;PATCH&#34;</span><span class="o">,</span> <span class="s">&#34;DELETE&#34;</span><span class="o">,</span> <span class="s">&#34;OPTIONS&#34;</span><span class="o">,</span> <span class="s">&#34;TRACE&#34;</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">configuration</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">filterRegistrationBean</span><span class="o">.</span><span class="na">addUrlPatterns</span><span class="o">(</span><span class="s">&#34;/*&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">filterRegistrationBean</span><span class="o">.</span><span class="na">setOrder</span><span class="o">(</span><span class="n">Integer</span><span class="o">.</span><span class="na">MIN_VALUE</span><span class="o">);</span> <span class="c1">// Ensure first execution
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="n">filterRegistrationBean</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p>Reference</p>
+<ul>
+<li><a href="https://www.ruanyifeng.com/blog/2016/04/cors.html">https://www.ruanyifeng.com/blog/2016/04/cors.html</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS</a></li>
+<li><a href="https://spring.io/guides/gs/rest-service-cors/">https://spring.io/guides/gs/rest-service-cors/</a></li>
+<li><a href="https://spring.io/blog/2015/06/08/cors-support-in-spring-framework">https://spring.io/blog/2015/06/08/cors-support-in-spring-framework</a></li>
+</ul>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-boot/">spring-boot</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/2022-04/spring-security-annotation/">
+            <span class="next-text nav-default">Spring Security annotated access rights control combing</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>
