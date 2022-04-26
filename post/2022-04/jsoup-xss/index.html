@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Defending against XSS attacks with Jsoup - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="Learn how to use Jsoup&#39;s Safelist to defend against xss attacks." />
+<meta name="keywords" content="jsoup, xss, Safelist" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.96.0" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-04/jsoup-xss/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Defending against XSS attacks with Jsoup" />
+<meta property="og:description" content="Learn how to use Jsoup&#39;s Safelist to defend against xss attacks." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-04/jsoup-xss/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-04-24T13:46:24+08:00" />
+<meta property="article:modified_time" content="2022-04-24T13:46:24+08:00" />
+
+<meta itemprop="name" content="Defending against XSS attacks with Jsoup">
+<meta itemprop="description" content="Learn how to use Jsoup&#39;s Safelist to defend against xss attacks."><meta itemprop="datePublished" content="2022-04-24T13:46:24+08:00" />
+<meta itemprop="dateModified" content="2022-04-24T13:46:24+08:00" />
+<meta itemprop="wordCount" content="1468">
+<meta itemprop="keywords" content="jsoup,xss," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Defending against XSS attacks with Jsoup"/>
+<meta name="twitter:description" content="Learn how to use Jsoup&#39;s Safelist to defend against xss attacks."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://forum.springcloud.io" rel="noopener" target="_blank">
+              Forum
+              
+              <i class="iconfont">
+                <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M623.36 272.96 473.216 423.04C467.2 429.056 467.072 438.656 472.896 444.416c0 0-6.72-6.656 1.6 1.6C496.064 467.648 528.64 500.224 528.64 500.224 534.464 506.048 544 505.856 550.016 499.904l150.08-150.144 67.328 66.432c9.024 8.96 27.456 4.544 30.4-8.96 19.968-92.608 46.656-227.52 46.656-227.52 6.848-34.496-16.192-56.704-49.92-49.92 0 0-134.656 26.816-227.328 46.784C560.32 178.048 556.352 182.272 554.752 187.136c-3.2 6.208-3.008 14.208 3.776 20.992L623.36 272.96z"></path>
+  <path d="M841.152 457.152c-30.528 0-54.784 24.512-54.784 54.656l0 274.752L237.696 786.56 237.696 237.696l206.016 0c6.656 0 10.752 0 13.248 0C487.68 237.696 512 213.184 512 182.848 512 152.32 487.36 128 456.96 128L183.04 128C153.216 128 128 152.576 128 182.848c0 3.136 0.256 6.272 0.768 9.28C128.256 195.136 128 198.272 128 201.408l0 639.488c0 0.064 0 0.192 0 0.256 0 0.128 0 0.192 0 0.32 0 30.528 24.512 54.784 54.784 54.784l646.976 0c6.592 0 9.728 0 11.712 0 28.736 0 52.928-22.976 54.464-51.968C896 843.264 896 842.304 896 841.344l0-20.352L896 561.408 896 512.128C896 481.792 871.424 457.152 841.152 457.152z"></path>
+</svg>
+
+              </i>
+            </a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://forum.springcloud.io" rel="noopener" target="_blank">
+              Forum
+              
+              <i class="iconfont">
+                <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M623.36 272.96 473.216 423.04C467.2 429.056 467.072 438.656 472.896 444.416c0 0-6.72-6.656 1.6 1.6C496.064 467.648 528.64 500.224 528.64 500.224 534.464 506.048 544 505.856 550.016 499.904l150.08-150.144 67.328 66.432c9.024 8.96 27.456 4.544 30.4-8.96 19.968-92.608 46.656-227.52 46.656-227.52 6.848-34.496-16.192-56.704-49.92-49.92 0 0-134.656 26.816-227.328 46.784C560.32 178.048 556.352 182.272 554.752 187.136c-3.2 6.208-3.008 14.208 3.776 20.992L623.36 272.96z"></path>
+  <path d="M841.152 457.152c-30.528 0-54.784 24.512-54.784 54.656l0 274.752L237.696 786.56 237.696 237.696l206.016 0c6.656 0 10.752 0 13.248 0C487.68 237.696 512 213.184 512 182.848 512 152.32 487.36 128 456.96 128L183.04 128C153.216 128 128 152.576 128 182.848c0 3.136 0.256 6.272 0.768 9.28C128.256 195.136 128 198.272 128 201.408l0 639.488c0 0.064 0 0.192 0 0.256 0 0.128 0 0.192 0 0.32 0 30.528 24.512 54.784 54.784 54.784l646.976 0c6.592 0 9.728 0 11.712 0 28.736 0 52.928-22.976 54.464-51.968C896 843.264 896 842.304 896 841.344l0-20.352L896 561.408 896 512.128C896 481.792 871.424 457.152 841.152 457.152z"></path>
+</svg>
+
+              </i>
+            </a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Defending against XSS attacks with Jsoup</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-04-24" class="post-time">
+          2022-04-24
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 1468 words </span>
+          <span class="more-meta"> 7 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#xss">XSS</a></li>
+    <li><a href="#jsoup-java-html-parser">Jsoup: Java HTML Parser</a>
+      <ul>
+        <li><a href="#maven">Maven</a></li>
+        <li><a href="#safelist">Safelist</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="xss">XSS</h2>
+<p>An XSS attack is usually a clever way of injecting malicious command code into a web page by exploiting a vulnerability left in the web page&rsquo;s development, causing the user to load and execute a malicious web program created by the attacker. These malicious web programs are usually JavaScript, but can actually include Java, VBScript, ActiveX, Flash, or even plain HTML, and when the attack is successful, the attacker may gain access to a variety of things including, but not limited to, higher privileges (such as performing certain actions), private web content, sessions, and cookies.</p>
+<p>Most of the solutions searched on the web are to replace or encode some sensitive characters using regular or other tool classes. If the client uses a rich text editor to submit content, then this approach is not suitable. Rich text editor submissions contain a lot of html tags and style attributes, which are key to WYSIWYG and cannot be encoded.</p>
+<p>So we need another, more &ldquo;intelligent&rdquo; way of filtering. This approach allows us to keep the HTML tags and attributes that we consider safe, and even force some attributes to be added to the HTML node.</p>
+<h2 id="jsoup-java-html-parser">Jsoup: Java HTML Parser</h2>
+<p>The following is the introduction from the official website.</p>
+<blockquote>
+<p><strong><a href="https://github.com/jhy/jsoup">jsoup</a></strong> is a Java library for working with real-world HTML. It provides a very convenient API for fetching URLs and extracting and manipulating data, using the best of HTML5 DOM methods and CSS selectors.</p>
+<p><strong>jsoup</strong> implements the <a href="https://whatwg.org/html">WHATWG HTML5</a> specification, and parses HTML to the same DOM as modern browsers do.</p>
+<ol>
+<li>scrape and <a href="https://jsoup.org/cookbook/input/parse-document-from-string">parse</a> HTML from a URL, file, or string</li>
+<li><a href="https://jsoup.org/cookbook/extracting-data/selector-syntax">find</a> and extract data, using DOM traversal or CSS selectors</li>
+<li><a href="https://jsoup.org/cookbook/modifying-data/set-html">manipulate</a> the HTML elements, attributes, and text</li>
+<li><strong><a href="https://jsoup.org/cookbook/cleaning-html/safelist-sanitizer">clean</a> user-submitted content against a safelist, to prevent XSS attacks</strong></li>
+<li><a href="https://jsoup.org/apidocs/org/jsoup/select/Elements.html#html--">output</a> tidy HTML</li>
+</ol>
+<p>jsoup is designed to deal with all varieties of HTML found in the wild; from pristine and validating, to invalid tag-soup; jsoup will create a sensible parse tree.</p>
+</blockquote>
+<p>We can use its fourth feature to clean up illegal tags and attributes in client-side submission content.</p>
+<h3 id="maven">Maven</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="c">&lt;!-- https://mvnrepository.com/artifact/org.jsoup/jsoup --&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.jsoup<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>jsoup<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;version&gt;</span>1.14.3<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="safelist">Safelist</h3>
+<p><code>org.jsoup.safety.Safelist</code></p>
+<p>Safe-lists define what HTML (elements and attributes) to allow through the cleaner. Everything else is removed.</p>
+<h4 id="creating-safelist-instances">Creating Safelist Instances</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">//This safelist allows only text nodes: all HTML will be stripped.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="n">Safelist</span> <span class="nf">none</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This safelist allows only simple text formatting: b, em, i, strong, u. All other HTML (tags andattributes) will be removed.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="n">Safelist</span> <span class="nf">simpleText</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This safelist allows a fuller range of text nodes: a, b, blockquote, br, cite, code, dd, dl, dt, em, i, li,ol, p, pre, q, small, span, strike, strong, sub, sup, u, ul, and appropriate attributes. 
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Links (a elements) can point to http, https, ftp, mailto, and have an enforced rel=nofollow attribute. 
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Does not allow images. 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="n">Safelist</span> <span class="nf">basic</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This safelist allows the same text tags as basic, and also allows img tags, with appropriateattributes, with src pointing to http or https.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="n">Safelist</span> <span class="nf">basicWithImages</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// This safelist allows a full range of text and structural body HTML: a, b, blockquote, br, caption, cite,code, col, colgroup, dd, div, dl, dt, em, h1, h2, h3, h4, h5, h6, i, img, li, ol, p, pre, q, small, span, strike, strong, sub,sup, table, tbody, td, tfoot, th, thead, tr, u, ul 
+</span></span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1">//Links do not have an enforced rel=nofollow attribute, but you can add that if desired. 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">static</span> <span class="n">Safelist</span> <span class="nf">relaxed</span><span class="o">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="commonly-used-methods">Commonly used methods</h4>
+<ul>
+<li>
+<p><code>public Safelist addTags(String... tags)</code></p>
+<p>Add a list of allowed elements to a safelist. (If a tag is not allowed, it will be removed from the HTML.)</p>
+</li>
+<li>
+<p><code>public Safelist addAttributes(String tag, String... attributes)</code></p>
+<p>Add a list of allowed attributes to a tag. (If an attribute is not allowed on an element, it will be removed.)
+E.g.: <code>addAttributes(&quot;a&quot;, &quot;href&quot;, &quot;class&quot;)</code> allows href and class attributeson a tags.
+To make an attribute valid for all tags, use the pseudo tag :all, e.g. <code>addAttributes(&quot;:all&quot;, &quot;class&quot;)</code>.</p>
+</li>
+<li>
+<p><code>public Safelist addEnforcedAttribute(String tag, String attribute, String value)</code></p>
+<p>Add an enforced attribute to a tag. An enforced attribute will always be added to the element. If the elementalready has the attribute set, it will be overridden with this value.
+E.g.: <code>addEnforcedAttribute(&quot;a&quot;, &quot;rel&quot;, &quot;nofollow&quot;)</code> will make all a tags output as <code>&lt;a href=&quot;...&quot; rel=&quot;nofollow&quot;&gt;</code></p>
+</li>
+<li>
+<p><code>public Safelist addProtocols(String tag, String attribute, String... protocols)</code></p>
+<p>Add allowed URL protocols for an element&rsquo;s URL attribute. This restricts the possible values of the attribute toURLs with the defined protocol.
+E.g.: <code>addProtocols(&quot;a&quot;, &quot;href&quot;, &quot;ftp&quot;, &quot;http&quot;, &quot;https&quot;)</code>
+To allow a link to an in-page URL anchor (i.e. <code>&lt;a href=&quot;#anchor&quot;&gt;</code>, add a #:
+E.g.: <code>addProtocols(&quot;a&quot;, &quot;href&quot;, &quot;#&quot;)</code></p>
+</li>
+</ul>
+<h4 id="xsscleaner">XssCleaner</h4>
+<p>With some knowledge of <code>Safelist</code>, you can customize an Xss cleaner of your own. The following code demonstrates how it works.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.nio.charset.StandardCharsets</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.jsoup.Jsoup</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.jsoup.nodes.Document</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">org.jsoup.safety.Safelist</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.google.gson.Gson</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">com.google.gson.GsonBuilder</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.AllArgsConstructor</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.Builder</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.Data</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">lombok.NoArgsConstructor</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@Data</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Builder</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@NoArgsConstructor</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@AllArgsConstructor</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">XssCleaner</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">safeTags</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">safeAttributes</span><span class="o">;</span>    <span class="c1">// Attributes allowed for all tags
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">safeTagAttributes</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;&gt;</span> <span class="n">enforcedAttributes</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;&gt;</span> <span class="n">safeProtocols</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">clean</span><span class="o">(</span><span class="n">String</span> <span class="n">content</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">(</span><span class="n">content</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">content</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">Safelist</span> <span class="n">safelist</span> <span class="o">=</span> <span class="n">Safelist</span><span class="o">.</span><span class="na">none</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">safelist</span><span class="o">.</span><span class="na">addTags</span><span class="o">(</span><span class="n">toArray</span><span class="o">(</span><span class="n">safeTags</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">safelist</span><span class="o">.</span><span class="na">addAttributes</span><span class="o">(</span><span class="s">&#34;:all&#34;</span><span class="o">,</span> <span class="n">toArray</span><span class="o">(</span><span class="n">safeAttributes</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">        <span class="n">safeTagAttributes</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">entry</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">safelist</span><span class="o">.</span><span class="na">addAttributes</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">(),</span> <span class="n">toArray</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">        <span class="o">});</span>
+</span></span><span class="line"><span class="cl">        <span class="n">enforcedAttributes</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">entry</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">().</span><span class="na">entrySet</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">item</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">safelist</span><span class="o">.</span><span class="na">addEnforcedAttribute</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">(),</span> <span class="n">item</span><span class="o">.</span><span class="na">getKey</span><span class="o">(),</span> <span class="n">item</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">            <span class="o">});</span>
+</span></span><span class="line"><span class="cl">        <span class="o">});</span>
+</span></span><span class="line"><span class="cl">        <span class="n">safeProtocols</span><span class="o">.</span><span class="na">entrySet</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">entry</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">().</span><span class="na">entrySet</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">item</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">safelist</span><span class="o">.</span><span class="na">addProtocols</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">(),</span> <span class="n">item</span><span class="o">.</span><span class="na">getKey</span><span class="o">(),</span> <span class="n">toArray</span><span class="o">(</span><span class="n">item</span><span class="o">.</span><span class="na">getValue</span><span class="o">()));</span>
+</span></span><span class="line"><span class="cl">            <span class="o">});</span>
+</span></span><span class="line"><span class="cl">        <span class="o">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">Jsoup</span><span class="o">.</span><span class="na">clean</span><span class="o">(</span><span class="n">content</span><span class="o">,</span> <span class="s">&#34;&#34;</span><span class="o">,</span> <span class="n">safelist</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                <span class="k">new</span> <span class="n">Document</span><span class="o">.</span><span class="na">OutputSettings</span><span class="o">().</span><span class="na">prettyPrint</span><span class="o">(</span><span class="kc">false</span><span class="o">).</span><span class="na">charset</span><span class="o">(</span><span class="n">StandardCharsets</span><span class="o">.</span><span class="na">UTF_8</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span><span class="o">[]</span> <span class="nf">toArray</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">list</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="k">new</span> <span class="n">String</span><span class="o">[</span><span class="n">0</span><span class="o">]</span> <span class="o">:</span> <span class="n">list</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">toArray</span><span class="o">(</span><span class="n">String</span><span class="o">[]::</span><span class="k">new</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">String</span> <span class="nf">json</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">GsonBuilder</span><span class="o">().</span><span class="na">setPrettyPrinting</span><span class="o">().</span><span class="na">create</span><span class="o">().</span><span class="na">toJson</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="n">XssCleaner</span> <span class="nf">fromJson</span><span class="o">(</span><span class="n">String</span> <span class="n">json</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">Gson</span><span class="o">().</span><span class="na">fromJson</span><span class="o">(</span><span class="n">json</span><span class="o">,</span> <span class="n">XssCleaner</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="test">Test</h5>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nn">io.springcloud.test</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">io.springboot.demo.utils.XssCleaner</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MainTest</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">String</span> <span class="n">content</span> <span class="o">=</span> <span class="s">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">                    &lt;DIV class=&#34;</span><span class="n">content</span><span class="s">&#34; style=&#34;</span><span class="n">width</span><span class="o">:</span> <span class="n">100px</span><span class="o">;</span><span class="s">&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">                        &lt;a src=&#34;</span><span class="n">https</span><span class="o">:</span><span class="c1">//springcloud.io&#34;&gt;springcloud&lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">                        <span class="o">&lt;</span><span class="n">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">console</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">&#34;Hi&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                        <span class="o">&lt;/</span><span class="n">script</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                        <span class="o">&lt;</span><span class="n">img</span> <span class="n">src</span><span class="o">=</span><span class="s">&#34;https://springcloud.io/logo.png&#34;</span><span class="o">/&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                        <span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&#34;javascript:alert();&#34;</span><span class="o">&gt;</span><span class="n">click</span> <span class="k">this</span> <span class="n">link</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                        <span class="o">&lt;</span><span class="n">A</span> <span class="n">href</span><span class="o">=</span><span class="s">&#34;mailto:admin@springcloud.io&#34;</span><span class="o">&gt;</span><span class="n">Email</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">                    <span class="o">&lt;/</span><span class="n">DIV</span><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="s">&#34;&#34;&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">        XssCleaner xssCleaner = XssCleaner.builder()
+</span></span></span><span class="line"><span class="cl"><span class="s">                .safeTags(List.of(&#34;</span><span class="n">a</span><span class="s">&#34;, &#34;</span><span class="n">abbr</span><span class="s">&#34;, &#34;</span><span class="n">acronym</span><span class="s">&#34;, &#34;</span><span class="n">address</span><span class="s">&#34;, &#34;</span><span class="n">area</span><span class="s">&#34;, &#34;</span><span class="n">article</span><span class="s">&#34;, &#34;</span><span class="n">aside</span><span class="s">&#34;, &#34;</span><span class="n">audio</span><span class="s">&#34;, &#34;</span><span class="n">b</span><span class="s">&#34;, &#34;</span><span class="n">bdi</span><span class="s">&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">                        &#34;</span><span class="n">big</span><span class="s">&#34;, &#34;</span><span class="n">blockquote</span><span class="s">&#34;, &#34;</span><span class="n">br</span><span class="s">&#34;, &#34;</span><span class="n">caption</span><span class="s">&#34;, &#34;</span><span class="n">cite</span><span class="s">&#34;, &#34;</span><span class="n">code</span><span class="s">&#34;, &#34;</span><span class="n">col</span><span class="s">&#34;, &#34;</span><span class="n">colgroup</span><span class="s">&#34;, &#34;</span><span class="n">datalist</span><span class="s">&#34;, &#34;</span><span class="n">dd</span><span class="s">&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">                        &#34;</span><span class="n">del</span><span class="s">&#34;, &#34;</span><span class="n">details</span><span class="s">&#34;, &#34;</span><span class="n">div</span><span class="s">&#34;, &#34;</span><span class="n">dl</span><span class="s">&#34;, &#34;</span><span class="n">dt</span><span class="s">&#34;, &#34;</span><span class="n">em</span><span class="s">&#34;, &#34;</span><span class="n">fieldset</span><span class="s">&#34;, &#34;</span><span class="n">figcaption</span><span class="s">&#34;, &#34;</span><span class="n">figure</span><span class="s">&#34;, &#34;</span><span class="n">footer</span><span class="s">&#34;, &#34;</span><span class="n">h1</span><span class="s">&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">                        &#34;</span><span class="n">h2</span><span class="s">&#34;, &#34;</span><span class="n">h3</span><span class="s">&#34;, &#34;</span><span class="n">h4</span><span class="s">&#34;, &#34;</span><span class="n">h5</span><span class="s">&#34;, &#34;</span><span class="n">h6</span><span class="s">&#34;, &#34;</span><span class="n">hr</span><span class="s">&#34;, &#34;</span><span class="n">i</span><span class="s">&#34;, &#34;</span><span class="n">img</span><span class="s">&#34;, &#34;</span><span class="n">li</span><span class="s">&#34;, &#34;</span><span class="n">ins</span><span class="s">&#34;, &#34;</span><span class="n">ol</span><span class="s">&#34;, &#34;</span><span class="n">p</span><span class="s">&#34;, &#34;</span><span class="n">pre</span><span class="s">&#34;, &#34;</span><span class="n">q</span><span class="s">&#34;, &#34;</span><span class="n">ul</span><span class="s">&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">                        &#34;</span><span class="n">small</span><span class="s">&#34;, &#34;</span><span class="n">span</span><span class="s">&#34;))
+</span></span></span><span class="line"><span class="cl"><span class="s">                .safeAttributes(List.of(&#34;</span><span class="n">style</span><span class="s">&#34;, &#34;</span><span class="n">title</span><span class="s">&#34;))
+</span></span></span><span class="line"><span class="cl"><span class="s">                .safeTagAttributes(Map.of(&#34;</span><span class="n">a</span><span class="s">&#34;, List.of(&#34;</span><span class="n">href</span><span class="s">&#34;), &#34;</span><span class="n">img</span><span class="s">&#34;, List.of(&#34;</span><span class="n">src</span><span class="s">&#34;)))
+</span></span></span><span class="line"><span class="cl"><span class="s">                .enforcedAttributes(Map.of(&#34;</span><span class="n">a</span><span class="s">&#34;, Map.of(&#34;</span><span class="n">rel</span><span class="s">&#34;, &#34;</span><span class="n">nofollow</span><span class="s">&#34;)))
+</span></span></span><span class="line"><span class="cl"><span class="s">                .safeProtocols(Map.of(&#34;</span><span class="n">a</span><span class="s">&#34;, Map.of(&#34;</span><span class="n">href</span><span class="s">&#34;, List.of(&#34;</span><span class="err">#</span><span class="s">&#34;, &#34;</span><span class="n">http</span><span class="s">&#34;, &#34;</span><span class="n">https</span><span class="s">&#34;, &#34;</span><span class="n">ftp</span><span class="s">&#34;, &#34;</span><span class="n">mailto</span><span class="s">&#34;)), &#34;</span><span class="n">blockquote</span><span class="s">&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">                        Map.of(&#34;</span><span class="n">cite</span><span class="s">&#34;, List.of(&#34;</span><span class="n">http</span><span class="s">&#34;, &#34;</span><span class="n">https</span><span class="s">&#34;)), &#34;</span><span class="n">cite</span><span class="s">&#34;, Map.of(&#34;</span><span class="n">cite</span><span class="s">&#34;, List.of(&#34;</span><span class="n">http</span><span class="s">&#34;, &#34;</span><span class="n">https</span><span class="s">&#34;)), &#34;</span><span class="n">q</span><span class="s">&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s">                        Map.of(&#34;</span><span class="n">cite</span><span class="s">&#34;, List.of(&#34;</span><span class="n">http</span><span class="s">&#34;, &#34;</span><span class="n">https</span><span class="err">&#34;</span><span class="o">))))</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">xssCleaner</span><span class="o">.</span><span class="na">clean</span><span class="o">(</span><span class="n">content</span><span class="o">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">xssCleaner</span><span class="o">.</span><span class="na">json</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Console outputs:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">    &lt;div style=&#34;width: 100px;&#34;&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        &lt;a rel=&#34;nofollow&#34;&gt;springcloud&lt;/a&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        &lt;img src=&#34;https://springcloud.io/logo.png&#34;&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        &lt;a rel=&#34;nofollow&#34;&gt;click this link&lt;/a&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        &lt;a href=&#34;mailto:admin@springcloud.io&#34; rel=&#34;nofollow&#34;&gt;Email&lt;/a&gt;
+</span></span><span class="line"><span class="cl">    &lt;/div&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">  &#34;safeTags&#34;: [
+</span></span><span class="line"><span class="cl">    &#34;a&#34;,
+</span></span><span class="line"><span class="cl">    &#34;abbr&#34;,
+</span></span><span class="line"><span class="cl">    &#34;acronym&#34;,
+</span></span><span class="line"><span class="cl">    &#34;address&#34;,
+</span></span><span class="line"><span class="cl">    &#34;area&#34;,
+</span></span><span class="line"><span class="cl">    &#34;article&#34;,
+</span></span><span class="line"><span class="cl">    &#34;aside&#34;,
+</span></span><span class="line"><span class="cl">    &#34;audio&#34;,
+</span></span><span class="line"><span class="cl">    &#34;b&#34;,
+</span></span><span class="line"><span class="cl">    &#34;bdi&#34;,
+</span></span><span class="line"><span class="cl">    &#34;big&#34;,
+</span></span><span class="line"><span class="cl">    &#34;blockquote&#34;,
+</span></span><span class="line"><span class="cl">    &#34;br&#34;,
+</span></span><span class="line"><span class="cl">    &#34;caption&#34;,
+</span></span><span class="line"><span class="cl">    &#34;cite&#34;,
+</span></span><span class="line"><span class="cl">    &#34;code&#34;,
+</span></span><span class="line"><span class="cl">    &#34;col&#34;,
+</span></span><span class="line"><span class="cl">    &#34;colgroup&#34;,
+</span></span><span class="line"><span class="cl">    &#34;datalist&#34;,
+</span></span><span class="line"><span class="cl">    &#34;dd&#34;,
+</span></span><span class="line"><span class="cl">    &#34;del&#34;,
+</span></span><span class="line"><span class="cl">    &#34;details&#34;,
+</span></span><span class="line"><span class="cl">    &#34;div&#34;,
+</span></span><span class="line"><span class="cl">    &#34;dl&#34;,
+</span></span><span class="line"><span class="cl">    &#34;dt&#34;,
+</span></span><span class="line"><span class="cl">    &#34;em&#34;,
+</span></span><span class="line"><span class="cl">    &#34;fieldset&#34;,
+</span></span><span class="line"><span class="cl">    &#34;figcaption&#34;,
+</span></span><span class="line"><span class="cl">    &#34;figure&#34;,
+</span></span><span class="line"><span class="cl">    &#34;footer&#34;,
+</span></span><span class="line"><span class="cl">    &#34;h1&#34;,
+</span></span><span class="line"><span class="cl">    &#34;h2&#34;,
+</span></span><span class="line"><span class="cl">    &#34;h3&#34;,
+</span></span><span class="line"><span class="cl">    &#34;h4&#34;,
+</span></span><span class="line"><span class="cl">    &#34;h5&#34;,
+</span></span><span class="line"><span class="cl">    &#34;h6&#34;,
+</span></span><span class="line"><span class="cl">    &#34;hr&#34;,
+</span></span><span class="line"><span class="cl">    &#34;i&#34;,
+</span></span><span class="line"><span class="cl">    &#34;img&#34;,
+</span></span><span class="line"><span class="cl">    &#34;li&#34;,
+</span></span><span class="line"><span class="cl">    &#34;ins&#34;,
+</span></span><span class="line"><span class="cl">    &#34;ol&#34;,
+</span></span><span class="line"><span class="cl">    &#34;p&#34;,
+</span></span><span class="line"><span class="cl">    &#34;pre&#34;,
+</span></span><span class="line"><span class="cl">    &#34;q&#34;,
+</span></span><span class="line"><span class="cl">    &#34;ul&#34;,
+</span></span><span class="line"><span class="cl">    &#34;small&#34;,
+</span></span><span class="line"><span class="cl">    &#34;span&#34;
+</span></span><span class="line"><span class="cl">  ],
+</span></span><span class="line"><span class="cl">  &#34;safeAttributes&#34;: [
+</span></span><span class="line"><span class="cl">    &#34;style&#34;,
+</span></span><span class="line"><span class="cl">    &#34;title&#34;
+</span></span><span class="line"><span class="cl">  ],
+</span></span><span class="line"><span class="cl">  &#34;safeTagAttributes&#34;: {
+</span></span><span class="line"><span class="cl">    &#34;a&#34;: [
+</span></span><span class="line"><span class="cl">      &#34;href&#34;
+</span></span><span class="line"><span class="cl">    ],
+</span></span><span class="line"><span class="cl">    &#34;img&#34;: [
+</span></span><span class="line"><span class="cl">      &#34;src&#34;
+</span></span><span class="line"><span class="cl">    ]
+</span></span><span class="line"><span class="cl">  },
+</span></span><span class="line"><span class="cl">  &#34;enforcedAttributes&#34;: {
+</span></span><span class="line"><span class="cl">    &#34;a&#34;: {
+</span></span><span class="line"><span class="cl">      &#34;rel&#34;: &#34;nofollow&#34;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">  },
+</span></span><span class="line"><span class="cl">  &#34;safeProtocols&#34;: {
+</span></span><span class="line"><span class="cl">    &#34;a&#34;: {
+</span></span><span class="line"><span class="cl">      &#34;href&#34;: [
+</span></span><span class="line"><span class="cl">        &#34;#&#34;,
+</span></span><span class="line"><span class="cl">        &#34;http&#34;,
+</span></span><span class="line"><span class="cl">        &#34;https&#34;,
+</span></span><span class="line"><span class="cl">        &#34;ftp&#34;,
+</span></span><span class="line"><span class="cl">        &#34;mailto&#34;
+</span></span><span class="line"><span class="cl">      ]
+</span></span><span class="line"><span class="cl">    },
+</span></span><span class="line"><span class="cl">    &#34;q&#34;: {
+</span></span><span class="line"><span class="cl">      &#34;cite&#34;: [
+</span></span><span class="line"><span class="cl">        &#34;http&#34;,
+</span></span><span class="line"><span class="cl">        &#34;https&#34;
+</span></span><span class="line"><span class="cl">      ]
+</span></span><span class="line"><span class="cl">    },
+</span></span><span class="line"><span class="cl">    &#34;blockquote&#34;: {
+</span></span><span class="line"><span class="cl">      &#34;cite&#34;: [
+</span></span><span class="line"><span class="cl">        &#34;http&#34;,
+</span></span><span class="line"><span class="cl">        &#34;https&#34;
+</span></span><span class="line"><span class="cl">      ]
+</span></span><span class="line"><span class="cl">    },
+</span></span><span class="line"><span class="cl">    &#34;cite&#34;: {
+</span></span><span class="line"><span class="cl">      &#34;cite&#34;: [
+</span></span><span class="line"><span class="cl">        &#34;http&#34;,
+</span></span><span class="line"><span class="cl">        &#34;https&#34;
+</span></span><span class="line"><span class="cl">      ]
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Everything looks normal. The tags and attributes that are not in the safe list are cleaned up.</p>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/jsoup/">jsoup</a>
+          <a href="https://www.springcloud.io/tags/xss/">xss</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2022-04/spring-security-exceptions/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">How to Handle Spring Security Exceptions</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2022-04/spring-for-graphql-1-0-rc1-released/">
+            <span class="next-text nav-default">Spring for GraphQL 1.0 RC1 Released</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>
