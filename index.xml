@@ -6,7 +6,7 @@
     <description>Recent content on Spring Cloud</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 27 May 2022 19:13:07 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 30 May 2022 09:07:52 +0800</lastBuildDate>
     
         <atom:link href="https://www.springcloud.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -38,6 +38,187 @@
 &lt;p&gt;&lt;a href=&#34;http://forum.springcloud.io/&#34;&gt;http://forum.springcloud.io/&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;contact&#34;&gt;Contact&lt;/h2&gt;
 &lt;p&gt;Email: TODO&lt;/p&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>The core knowledge of OIDC certification authorization</title>
+      <link>https://www.springcloud.io/post/2022-05/oidc-core/</link>
+      <pubDate>Mon, 30 May 2022 09:07:52 +0800</pubDate>
+      
+      <guid>https://www.springcloud.io/post/2022-05/oidc-core/</guid>
+      
+        <description>&lt;p&gt;&lt;strong&gt;OIDC&lt;/strong&gt; is an authentication layer based on &lt;strong&gt;OAuth2&lt;/strong&gt;, so that the client knows the authorized &lt;strong&gt;End User&lt;/strong&gt;, and provides a user&amp;rsquo;s authentication information &lt;strong&gt;Id Token&lt;/strong&gt; while the client gets &lt;code&gt;access_token&lt;/code&gt;. Widely used in microservices, open platforms, SSO, three-party login authorization and other scenarios.&lt;/p&gt;
+&lt;h2 id=&#34;oidc-key-terms&#34;&gt;OIDC key terms&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;EU&lt;/strong&gt; Abbreviation for End User, which refers to an end user.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RP&lt;/strong&gt; Abbreviation for Relying Party, which refers to the trusted client in OAuth2, the consumer of authentication and authorization information.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;OP&lt;/strong&gt; Abbreviation for OpenID Provider, which refers to a service that has the ability to provide EU authentication (such as the authorization service in &lt;strong&gt;OAuth2&lt;/strong&gt;) and is used to provide EU authentication information to the RP.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;For other terms, see the list of &lt;a href=&#34;http://openid.net/specs/openid-connect-core-1_0.html#Terminology&#34;&gt;OIDC terms&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;oidc-protocol-cluster&#34;&gt;OIDC Protocol Cluster&lt;/h2&gt;
+&lt;p&gt;OIDC contains a number of specifications, the smallest of which is &lt;strong&gt;OIDC Core&lt;/strong&gt;, the diagram below is an older one and is a bit out of date, but it will help you understand &lt;strong&gt;OIDC&lt;/strong&gt; to some extent.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/05/30/cb5811b937c94816b15c5647f87bb5bd.png&#34; alt=&#34;OIDC Protocol Cluster&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/openid-connect-core-1_0.html&#34;&gt;Core&lt;/a&gt; OIDC Core, defines the core process of OIDC, how to authenticate on OAuth 2.0 and use declarations to communicate information about the end user (EU).&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/openid-connect-discovery-1_0.html&#34;&gt;Discovery&lt;/a&gt; defines how clients can dynamically discover information about OpenID Providers (OPs).&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/openid-connect-registration-1_0.html&#34;&gt;Dynamic Registration&lt;/a&gt; Defines how a client can dynamically register to an OpenID provider.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/oauth-v2-multiple-response-types-1_0.html&#34;&gt;OAuth 2.0 Multiple Response Types&lt;/a&gt; defines several specific new OAuth 2.0 response types.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/oauth-v2-form-post-response-mode-1_0.html&#34;&gt;OAuth 2.0 Form Post Response Mode&lt;/a&gt; defines how OAuth 2.0 authorization response parameters (including OpenID Connect authentication response parameters) are returned via the User Agent using the HTML form values automatically submitted by HTTP POST.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/openid-connect-rpinitiated-1_0.html&#34;&gt;RP-Initiated Logout&lt;/a&gt; Defines how the RP requests to OP to exit an EU.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://openid.net/specs/openid-connect-session-1_0.html&#34;&gt;Session Management&lt;/a&gt; Session management, used to standardize how the OIDC service manages Session information.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://openid.net/specs/openid-connect-frontchannel-1_0.html&#34;&gt;Front-Channel Logout&lt;/a&gt; A front-end based logout mechanism that enables the RP to logout without using the OP&amp;rsquo;s iframe.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://openid.net/specs/openid-connect-backchannel-1_0.html&#34;&gt;Back-Channel Logout&lt;/a&gt; A back-end based logout mechanism that defines how logout is done through interaction between RP and OP.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/openid-connect-federation-1_0.html&#34;&gt;OpenID Connect Federation&lt;/a&gt; Federation authentication, defines how OP and RP sets can establish trust by using a federation operator.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/openid-connect-prompt-create-1_0.html&#34;&gt;Initiating User Registration via OpenID Connect&lt;/a&gt; defines the &lt;code&gt;prompt=create&lt;/code&gt; authentication request parameter.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;two-web-based-rp-implementation-guides&#34;&gt;Two Web-based RP Implementation Guides&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/openid-connect-basic-1_0.html&#34;&gt;Basic Client Implementer&amp;rsquo;s Guide&lt;/a&gt; A simple subset of the core functionality of Web-based RP using OAuth2 authorization code flow.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/openid-connect-implicit-1_0.html&#34;&gt;Implicit Client Implementer&amp;rsquo;s Guide&lt;/a&gt; A simple subset of the core functionality of Web-based RP using OAuth2 steganography.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;migration-specification&#34;&gt;Migration Specification&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://openid.net/specs/openid-connect-migration-1_0.html&#34;&gt;OpenID 2.0 to OpenID Connect Migration 1.0&lt;/a&gt; OpenID Authentication 2.0 is a popular federated authentication protocol, OpenID Connect is a new version of OpenID Authentication and this specification defines how to migrate to the new OpenID Connect is a new version of OpenID Authentication, and the specification defines how to migrate to the new OpenID Connect.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;There are still some drafts in the process of incubation, so I won&amp;rsquo;t go into them here.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;oidc-core-process&#34;&gt;OIDC Core Process&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;OIDC&lt;/strong&gt; is abstracted into the following 5 steps, as shown in the figure.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/05/30/674f20ada27a4a75992f9174880c82f8.png&#34; alt=&#34;OIDC Core Process&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;RP&lt;/strong&gt; (client) sends a request to &lt;strong&gt;OpenID&lt;/strong&gt; provider (&lt;strong&gt;OP&lt;/strong&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;OP&lt;/strong&gt; authenticates the end user and obtains authorization.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;OP&lt;/strong&gt; responds with an &lt;strong&gt;ID&lt;/strong&gt; token, usually an access token.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RP&lt;/strong&gt; can send requests with access tokens to &lt;strong&gt;UserInfo&lt;/strong&gt; endpoints.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;UserInfo&lt;/strong&gt; endpoints return &lt;strong&gt;claims&lt;/strong&gt; about the end user.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;In contrast to &lt;strong&gt;OAuth2&lt;/strong&gt;, &lt;strong&gt;RP&lt;/strong&gt; is the &lt;strong&gt;OAuth2&lt;/strong&gt; client, where the request sent is not an authorization request, but an authentication (&lt;strong&gt;AuthN&lt;/strong&gt;) request; &lt;strong&gt;OP&lt;/strong&gt; is also the &lt;strong&gt;OAuth2&lt;/strong&gt; authorization server, which needs to provide &lt;strong&gt;EU&lt;/strong&gt; (resource owner) &lt;strong&gt;claims&lt;/strong&gt; and an authentication token &lt;strong&gt;Id Token&lt;/strong&gt; on top of the &lt;strong&gt;OAuth2&lt;/strong&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The &lt;strong&gt;OIDC&lt;/strong&gt; authentication authorization process must include the authorization scope &lt;code&gt;openid&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;id-token&#34;&gt;Id Token&lt;/h2&gt;
+&lt;p&gt;An &lt;strong&gt;Id Token&lt;/strong&gt; is a concept specific to &lt;strong&gt;OIDC&lt;/strong&gt;, which is a &lt;strong&gt;JWT&lt;/strong&gt; token containing user information (&lt;strong&gt;claims&lt;/strong&gt;), as follows.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;eyJ4NXQjUzI1NiI6IlN4cXFkV1l4VDdCWnJkSC11VnBnQUhmWDJxMzRxUHl4eDRvblg2bXYtcUkiLCJraWQiOiJqb3NlIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJ1c2VyIiwiYXVkIjoiZTJmYTdlNjQtMjQ5Yi00NmYwLWFlMWQtNzk3NjEwZTg4NjE1IiwiYXpwIjoiZTJmYTdlNjQtMjQ5Yi00NmYwLWFlMWQtNzk3NjEwZTg4NjE1IiwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjkwMDAiLCJleHAiOjE2NTM2MjUxMjgsImlhdCI6MTY1MzYyMzMyOCwibm9uY2UiOiJXNm5LeTlxZnFWMkRvSDN1TDVGVGNVOUVGR2k4dWlqay1lcDIyV3RGQ2NZIn0.VDBOF867LnQIB52XGkSMT6hAu0NpyJsPA3soIAt3WWb4dwDmdiMrq5xpRuewURknmBmhZaJHT2QETEFWGhwB5gnq4kw4yPlvOpUuKxqfPsr9plA0HV_mQF9WFearRmVI12hGBrgj0Htgf4I5K6Nz8c4K0ibrdmcHSwonrb856TVep0Ne1cr21tOcmYmptgGco_vNsKvPsua0Hxff56_ikGDYonY5y7q6leFP5F9LAKUgRjPdhXM6OzdpHfP8XkiiPor9A1WWW0VhxmxCGe7dfQF_0QFYtmWnAymSS1PExUz4KdKGjPKtPanZe6ufym-5-ErSc-kH0mWi6AxvYt_5VQ
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Let&amp;rsquo;s take a look at the decoding of both the header and payload sections.&lt;/p&gt;
+&lt;p&gt;Head:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;x5t#S256&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;SxqqdWYxT7BZrdH-uVpgAHfX2q34qPyxx4onX6mv-qI&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;kid&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;felord.cn&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;alg&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;RS256&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;The header contains the regular &lt;strong&gt;JWT Header&lt;/strong&gt; information and is compliant with the &lt;strong&gt;JOSE&lt;/strong&gt; specification.&lt;/p&gt;
+&lt;p&gt;Payload:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;user&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;aud&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;e2fa7e64-249b-46f0-ae1d-797610e88615&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;azp&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;e2fa7e64-249b-46f0-ae1d-797610e88615&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;iss&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;http://localhost:9000&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;exp&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1653625128&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;iat&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1653623328&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;#34;nonce&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;W6nKy9qfqV2DoH3uL5FTcU9EFGi8uijk-ep22WtFCcY&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;From the above, the payload contains a series of claims, which have the following meanings.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The JWT specification defines seven reserved claims that are not required, but are recommended to allow interoperability with &lt;a href=&#34;https://auth0.com/docs/get-started/applications/confidential-and-public-applications/enable-third-party-applications&#34;&gt;third-party applications&lt;/a&gt;. These are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;iss&lt;/code&gt; (issuer): Issuer of the JWT&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sub&lt;/code&gt; (subject): Subject of the JWT (the user)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;aud&lt;/code&gt; (audience): Recipient for which the JWT is intended&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;exp&lt;/code&gt; (expiration time): Time after which the JWT expires&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;nbf&lt;/code&gt; (not before time): Time before which the JWT must not be accepted for processing&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;iat&lt;/code&gt; (issued at time): Time at which the JWT was issued; can be used to determine age of the JWT&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;jti&lt;/code&gt; (JWT ID): Unique identifier; can be used to prevent the JWT from being replayed (allows a token to be used only once)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You can see a full list of reserved claims at the &lt;a href=&#34;https://www.iana.org/assignments/jwt/jwt.xhtml#claims&#34;&gt;IANA JSON Web Token Claims Registry&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;how-to-perform-oidc-authentication&#34;&gt;How to perform OIDC authentication&lt;/h2&gt;
+&lt;p&gt;The authentication flow of &lt;strong&gt;OIDC&lt;/strong&gt; is mainly extended by several authorization flows of &lt;strong&gt;OAuth2&lt;/strong&gt;, there are three kinds as follows.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Authorization Code Flow&lt;/strong&gt; based on &lt;strong&gt;OAuth2&lt;/strong&gt; authorization code flow for &lt;strong&gt;OIDC&lt;/strong&gt; authentication authorization&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;del&gt;Implicit Flow&lt;/del&gt;&lt;/strong&gt; is based on the &lt;strong&gt;OAuth2&lt;/strong&gt; implicit flow, since &lt;strong&gt;OAuth2.1&lt;/strong&gt; removed the implicit flow, this should be removed as well.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Hybrid Flow&lt;/strong&gt; is based on a hybrid flow of the above two, and should also be removed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The reason why there is no client credentials pattern is that client credentials are designed to be used for interaction between clients and &lt;strong&gt;End User&lt;/strong&gt; has nothing to do with it. So the focus is on &lt;strong&gt;Authorization Code Flow&lt;/strong&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Please note that OIDC must use JWT as the token style.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;user-information-endpoint&#34;&gt;User Information Endpoint&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;OIDC&lt;/strong&gt; also provides the User Information endpoint, which is a resource endpoint. It is requested as follows.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;GET /userinfo HTTP/1.1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Host: localhost:9000
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Authorization: Bearer eyJ4NXQjUzI1NiI6IlN4cXFkV1l4VDdCWnJkSC11VnBnQUhmWDJxMzRxUHl4eDRvblg2bXYtcUkiLCJraWQiOiJqb3NlIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJ1c2VyIiwiYXVkIjoiZTJmYTdlNjQtMjQ5Yi00NmYwLWFlMWQtNzk3NjEwZTg4NjE1IiwibmJmIjoxNjUzNTQ2OTUwLCJzY29wZSI6WyJvcGVuaWQiLCJtZXNzYWdlLnJlYWQiLCJtZXNzYWdlLndyaXRlIl0sImlzcyI6Imh0dHA6XC9cL2xvY2FsaG9zdDo5MDAwIiwiZXhwIjoxNjUzNTQ3MjUwLCJpYXQiOjE2NTM1NDY5NTB9.MxySV9FwP3JVdThc7DkoROfseEPW1fRXRD1ljWN05keCzwaiAwvRap-QyA5gYJewpid7fOFwnD5ETDns3-ia_QHRYp5RIPWnc-cb__9_JITTpLso_AiXpwxCr6TxrKt5Ax_jzkL9_MGrHQl7BqUpCAecc_NccS4WAR6pmIiNexAMrXusn2a5VodFxv18BpgRv_dJ9w_a3tmYXBWAC1apSoXXlpaI96NIprXOUnJWyKGlYS1VsXc6YMYArDBOamvtFD74L9UaTLCj1n5GU1FKlTGE061c07eKFk91O9IgOc5YR0Uzu-VNhea0NB5SlwImhUJSE4Ab11RlJD_eg0Oc9g
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;It can also be a &lt;strong&gt;POST&lt;/strong&gt; request. The basic return values are as follows.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;HTTP/1.1 200 OK
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Content-Type: application/json
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &amp;#34;sub&amp;#34;: &amp;#34;felord.cn&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;If you also want to return user information such as email address, avatar, nickname, real name, etc., you need to carry an additional &lt;code&gt;scope&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;summary&#34;&gt;Summary&lt;/h2&gt;
+&lt;p&gt;There is a lot more to &lt;strong&gt;OIDC&lt;/strong&gt;, beginners can just master the basic functions above, for more features you need to refer to the &lt;a href=&#34;https://openid.net/developers/specs/&#34;&gt;official OIDC documentation&lt;/a&gt;. &lt;strong&gt;OIDC&lt;/strong&gt; is much more versatile than the native &lt;strong&gt;OAuth2&lt;/strong&gt;, it is a completely open standard and is compatible with some other IDP protocols.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Reference &lt;a href=&#34;https://mp.weixin.qq.com/s/9AV8QCG9mzUmmRvO0zBKeg&#34;&gt;https://mp.weixin.qq.com/s/9AV8QCG9mzUmmRvO0zBKeg&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 </description>
       
     </item>
@@ -5368,170 +5549,6 @@ If the spring cloud kubernetes project is configured in the servcie mode, to ach
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;As you can see, the client successfully sent the &lt;code&gt;multipart/form-data&lt;/code&gt; request.&lt;/p&gt;
-</description>
-      
-    </item>
-    
-    <item>
-      <title>How to Handle Spring Security Exceptions</title>
-      <link>https://www.springcloud.io/post/2022-04/spring-security-exceptions/</link>
-      <pubDate>Tue, 26 Apr 2022 16:12:53 +0800</pubDate>
-      
-      <guid>https://www.springcloud.io/post/2022-04/spring-security-exceptions/</guid>
-      
-        <description>&lt;h2 id=&#34;1-overview&#34;&gt;1. Overview&lt;/h2&gt;
-&lt;p&gt;In this article, we&amp;rsquo;ll have a look at &lt;strong&gt;how to handle Spring Security exceptions produced by our Spring Security &lt;a href=&#34;https://www.baeldung.com/spring-security-oauth-resource-server&#34;&gt;Resource Server&lt;/a&gt;&lt;/strong&gt; . To do so, we&amp;rsquo;ll also use a practical example where all the necessary configurations will be explained. First of all, let&amp;rsquo;s make a short introduction to Spring Security.&lt;/p&gt;
-&lt;h2 id=&#34;2-spring-security&#34;&gt;2. Spring Security&lt;/h2&gt;
-&lt;p&gt;Spring Security is a library that&amp;rsquo;s part of the Spring project. &lt;strong&gt;It tries to group all the functionalities of user access control on Spring projects&lt;/strong&gt; . Access control allows limiting the options that can be executed by a given set of users or roles on the application. In this direction, &lt;strong&gt;Spring Security controls invocations to business logic or limits the access of HTTP requests to certain URLs&lt;/strong&gt; . With this in mind, we must configure the application by telling Spring Security how the security layer should behave.&lt;/p&gt;
-&lt;p&gt;In our case, we&amp;rsquo;ll focus on the configuration of exception handlers. &lt;strong&gt;Spring Security offers three different interfaces to accomplish this purpose and to control the events produced:&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Authentication Success Handler&lt;/li&gt;
-&lt;li&gt;Authentication Failure Handler&lt;/li&gt;
-&lt;li&gt;Access Denied Handler&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Firstly, let&amp;rsquo;s take a closer look at the configuration.&lt;/p&gt;
-&lt;h2 id=&#34;3-security-configuration&#34;&gt;3. Security Configuration&lt;/h2&gt;
-&lt;p&gt;First of all, we&amp;rsquo;ve our configuration class that has to extend the &lt;em&gt;WebSecurityConfigurerAdapter&lt;/em&gt; class. &lt;strong&gt;This will be in charge of managing all the security configurations of the application.&lt;/strong&gt; So, it&amp;rsquo;s here where we have to introduce our handlers.&lt;/p&gt;
-&lt;p&gt;On the one hand, we&amp;rsquo;ll define the required configuration:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@Override&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;protected&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;configure&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;HttpSecurity&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;throws&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Exception&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;http&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;csrf&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;disable&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;httpBasic&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;().&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;disable&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;authorizeRequests&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;antMatchers&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/login&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;).&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;permitAll&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;antMatchers&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/customError&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;).&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;permitAll&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;antMatchers&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/access-denied&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;).&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;permitAll&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;antMatchers&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/secured&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;).&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;hasRole&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;ADMIN&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;anyRequest&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;().&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;authenticated&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;formLogin&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;failureHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;authenticationFailureHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;())&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;successHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;authenticationSuccessHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;())&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;exceptionHandling&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;accessDeniedHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;accessDeniedHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;())&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;logout&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;It&amp;rsquo;s interesting to note that redirection URLs, such as &lt;code&gt;&amp;quot;/login&amp;quot;&lt;/code&gt; , &lt;code&gt;&amp;quot;/customError&amp;quot;&lt;/code&gt;, and &lt;code&gt;&amp;quot;/access-denied&amp;quot;&lt;/code&gt; don&amp;rsquo;t have to have any type of restriction to access them. So, we annotate them as &lt;code&gt;permitAll()&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;On the other hand, we&amp;rsquo;ve to define the Beans that define the types of exceptions that we can handle:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@Bean&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;AuthenticationFailureHandler&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;authenticationFailureHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;new&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;CustomAuthenticationFailureHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@Bean&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;AuthenticationSuccessHandler&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;authenticationSuccessHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;new&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;CustomAuthenticationSuccessHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@Bean&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;AccessDeniedHandler&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;accessDeniedHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;new&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;CustomAccessDeniedHandler&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;Since the &lt;a href=&#34;https://www.baeldung.com/spring_redirect_after_login&#34;&gt;AuthenticationSuccessHandler&lt;/a&gt; handles the happy path, we&amp;rsquo;ll define the two remaining beans for the exception cases. &lt;strong&gt;These two handlers&lt;/strong&gt; &lt;strong&gt;are the ones we now have to adapt and implement to our needs&lt;/strong&gt; . So, let&amp;rsquo;s proceed with the implementation of each of them.&lt;/p&gt;
-&lt;h2 id=&#34;4-authentication-failure-handler&#34;&gt;4. Authentication Failure Handler&lt;/h2&gt;
-&lt;p&gt;On the one hand, we&amp;rsquo;ve got the &lt;em&gt;AuthenticationFailureHandler&lt;/em&gt; interface. That&amp;rsquo;s in charge of &lt;strong&gt;managing the exceptions produced when the user fails to log in&lt;/strong&gt; . This interface provides us with the &lt;em&gt;onAuthenticationFailure()&lt;/em&gt; method to customize the handler logic. &lt;strong&gt;It will be invoked by Spring Security upon a failed login attempt&lt;/strong&gt; . With this in mind, let&amp;rsquo;s define our exception handler to redirect us to the error page when a failed login occurs:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;CustomAuthenticationFailureHandler&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;implements&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;AuthenticationFailureHandler&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nd&#34;&gt;@Override&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;onAuthenticationFailure&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;HttpServletRequest&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;request&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;HttpServletResponse&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;response&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;AuthenticationException&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;exception&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;kd&#34;&gt;throws&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IOException&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;response&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;sendRedirect&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/customError&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;5-access-denied-handler&#34;&gt;5. Access Denied Handler&lt;/h2&gt;
-&lt;p&gt;On the other hand, when an unauthorized user tries to access the secure or protected page, &lt;strong&gt;Spring Security will throw an access denied exception&lt;/strong&gt; . There&amp;rsquo;s a default 403 access denied page available with Spring Security which we can customize. This is managed by the &lt;em&gt;AccessDeniedHandler&lt;/em&gt; interface. &lt;strong&gt;In addition, it provides the &lt;em&gt;handle()&lt;/em&gt; method for custom the logic before redirecting the user to the 403 page&lt;/strong&gt; :&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;CustomAccessDeniedHandler&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;implements&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;AccessDeniedHandler&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nd&#34;&gt;@Override&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kd&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;handle&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;HttpServletRequest&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;request&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;HttpServletResponse&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;response&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;AccessDeniedException&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;exc&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;kd&#34;&gt;throws&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;IOException&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;response&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;sendRedirect&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/access-denied&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;h2 id=&#34;6-conclusion&#34;&gt;6. Conclusion&lt;/h2&gt;
-&lt;p&gt;In this quick article, &lt;strong&gt;we&amp;rsquo;ve learned how to handle&lt;/strong&gt; &lt;strong&gt;Spring Security exceptions and how to control them by creating and customizing our classes&lt;/strong&gt; . In addition, we&amp;rsquo;ve created a fully functional example that helps us with understanding the concepts explained.&lt;/p&gt;
-&lt;p&gt;The complete source code of the article is available &lt;a href=&#34;https://github.com/eugenp/tutorials/tree/master/spring-security-modules/spring-security-core&#34;&gt;over on GitHub.&lt;/a&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Reference &lt;a href=&#34;https://www.baeldung.com/spring-security-exceptions&#34;&gt;https://www.baeldung.com/spring-security-exceptions&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
 </description>
       
     </item>
