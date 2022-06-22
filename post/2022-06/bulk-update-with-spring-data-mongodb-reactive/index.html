@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Bulk Update With Spring Data MongoDB Reactive - Spring Cloud</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="description" content="Learn how to do bulk updates with Spring Data MongoDB Reactive." />
+<meta name="keywords" content="Spring Data MongoDB Reactive, Bulk Update" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.96.0" />
+
+
+<link rel="canonical" href="https://www.springcloud.io/post/2022-06/bulk-update-with-spring-data-mongodb-reactive/" />
+
+
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.fa4b2b9f31b5c6d0b683db81157a9226e17b06e61911791ab547242a4a0556f2.css" integrity="sha256-&#43;ksrnzG1xtC2g9uBFXqSJuF7BuYZEXkatUckKkoFVvI=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Bulk Update With Spring Data MongoDB Reactive" />
+<meta property="og:description" content="Learn how to do bulk updates with Spring Data MongoDB Reactive." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.springcloud.io/post/2022-06/bulk-update-with-spring-data-mongodb-reactive/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2022-06-22T22:55:50+08:00" />
+<meta property="article:modified_time" content="2022-06-22T22:55:50+08:00" />
+
+<meta itemprop="name" content="Bulk Update With Spring Data MongoDB Reactive">
+<meta itemprop="description" content="Learn how to do bulk updates with Spring Data MongoDB Reactive."><meta itemprop="datePublished" content="2022-06-22T22:55:50+08:00" />
+<meta itemprop="dateModified" content="2022-06-22T22:55:50+08:00" />
+<meta itemprop="wordCount" content="2156">
+<meta itemprop="keywords" content="spring-data-mongodb," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Bulk Update With Spring Data MongoDB Reactive"/>
+<meta name="twitter:description" content="Learn how to do bulk updates with Spring Data MongoDB Reactive."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-N9WSHEG9H6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-N9WSHEG9H6');
+</script>
+
+
+
+ 
+ <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6356451834813761"
+     crossorigin="anonymous"></script>
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Spring Cloud</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://forum.springcloud.io" rel="noopener" target="_blank">
+              Forum
+              
+              <i class="iconfont">
+                <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M623.36 272.96 473.216 423.04C467.2 429.056 467.072 438.656 472.896 444.416c0 0-6.72-6.656 1.6 1.6C496.064 467.648 528.64 500.224 528.64 500.224 534.464 506.048 544 505.856 550.016 499.904l150.08-150.144 67.328 66.432c9.024 8.96 27.456 4.544 30.4-8.96 19.968-92.608 46.656-227.52 46.656-227.52 6.848-34.496-16.192-56.704-49.92-49.92 0 0-134.656 26.816-227.328 46.784C560.32 178.048 556.352 182.272 554.752 187.136c-3.2 6.208-3.008 14.208 3.776 20.992L623.36 272.96z"></path>
+  <path d="M841.152 457.152c-30.528 0-54.784 24.512-54.784 54.656l0 274.752L237.696 786.56 237.696 237.696l206.016 0c6.656 0 10.752 0 13.248 0C487.68 237.696 512 213.184 512 182.848 512 152.32 487.36 128 456.96 128L183.04 128C153.216 128 128 152.576 128 182.848c0 3.136 0.256 6.272 0.768 9.28C128.256 195.136 128 198.272 128 201.408l0 639.488c0 0.064 0 0.192 0 0.256 0 0.128 0 0.192 0 0.32 0 30.528 24.512 54.784 54.784 54.784l646.976 0c6.592 0 9.728 0 11.712 0 28.736 0 52.928-22.976 54.464-51.968C896 843.264 896 842.304 896 841.344l0-20.352L896 561.408 896 512.128C896 481.792 871.424 457.152 841.152 457.152z"></path>
+</svg>
+
+              </i>
+            </a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+        
+      </li>
+    
+
+    
+      <li class="mobile-menu-item">
+        <a id="openSearchMobile" class="mobile-menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+    
+<div class="modal-dialog">
+    
+    <div class="modal-content">
+      <div id="closeSearch" title="Close" class="close">X</div>
+      <div class="modal-header">
+        <div class="modal-title">Search</div>
+      </div>
+      <div class="modal-body">
+          <script>
+            (function() {
+              var cx = 'b3ac69fdeaebb32a4';
+              var gcse = document.createElement('script');
+              gcse.type = 'text/javascript';
+              gcse.async = true;
+              gcse.src = (document.location.protocol == 'https:' ? 'https:' :
+                  'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+      </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Spring Cloud
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://forum.springcloud.io" rel="noopener" target="_blank">
+              Forum
+              
+              <i class="iconfont">
+                <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M623.36 272.96 473.216 423.04C467.2 429.056 467.072 438.656 472.896 444.416c0 0-6.72-6.656 1.6 1.6C496.064 467.648 528.64 500.224 528.64 500.224 534.464 506.048 544 505.856 550.016 499.904l150.08-150.144 67.328 66.432c9.024 8.96 27.456 4.544 30.4-8.96 19.968-92.608 46.656-227.52 46.656-227.52 6.848-34.496-16.192-56.704-49.92-49.92 0 0-134.656 26.816-227.328 46.784C560.32 178.048 556.352 182.272 554.752 187.136c-3.2 6.208-3.008 14.208 3.776 20.992L623.36 272.96z"></path>
+  <path d="M841.152 457.152c-30.528 0-54.784 24.512-54.784 54.656l0 274.752L237.696 786.56 237.696 237.696l206.016 0c6.656 0 10.752 0 13.248 0C487.68 237.696 512 213.184 512 182.848 512 152.32 487.36 128 456.96 128L183.04 128C153.216 128 128 152.576 128 182.848c0 3.136 0.256 6.272 0.768 9.28C128.256 195.136 128 198.272 128 201.408l0 639.488c0 0.064 0 0.192 0 0.256 0 0.128 0 0.192 0 0.32 0 30.528 24.512 54.784 54.784 54.784l646.976 0c6.592 0 9.728 0 11.712 0 28.736 0 52.928-22.976 54.464-51.968C896 843.264 896 842.304 896 841.344l0-20.352L896 561.408 896 512.128C896 481.792 871.424 457.152 841.152 457.152z"></path>
+</svg>
+
+              </i>
+            </a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://www.springcloud.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+      <li class="menu-item">
+        <a id="openSearch" class="menu-item-link menu-item-search" href="#">
+          <i class="iconfont">
+            <svg version="1.1" viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M973.81454219 973.81454219a91.78207815 91.78207815 0 0 1-129.80999631 0l-161.97482118-161.97482118a425.48527711 425.48527711 0 0 1-230.35931791 68.16531768 428.3346319 428.3346319 0 1 1 428.3346319-428.3346319 425.48527711 425.48527711 0 0 1-68.16531768 230.35931791l162.02961656 161.97482118a91.83687354 91.83687354 0 0 1-0.05479538 129.80999631zM451.67040679 145.69361559a305.97679241 305.97679241 0 1 0 0 611.95358361 305.97679241 305.97679241 0 0 0 0-611.95358361z">
+  </path>
+</svg>
+
+          </i>
+        </a>
+      </li>
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Bulk Update With Spring Data MongoDB Reactive</h1>
+      
+      <div class="post-meta">
+        <time datetime="2022-06-22" class="post-time">
+          2022-06-22
+        </time>
+        <div class="post-category">
+            <a href="https://www.springcloud.io/categories/tutorials/"> tutorials </a>
+            
+          </div>
+        <span class="more-meta"> 2156 words </span>
+          <span class="more-meta"> 11 min read </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-eip-content-enricher">1. EIP content enricher</a>
+      <ul>
+        <li><a href="#11-integration-flow">1.1. Integration flow</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-project-setup">2. Project setup</a>
+      <ul>
+        <li><a href="#21-requirements">2.1. Requirements</a></li>
+        <li><a href="#22-generation">2.2. Generation</a></li>
+        <li><a href="#23-structure">2.3. Structure</a></li>
+        <li><a href="#24-containers">2.4. Containers</a></li>
+        <li><a href="#25-data-initialization">2.5. Data initialization</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-application">3. Application</a>
+      <ul>
+        <li><a href="#31-configuration">3.1. Configuration</a></li>
+        <li><a href="#32-implementation">3.2. Implementation</a></li>
+        <li><a href="#33-demo">3.3. Demo</a></li>
+        <li><a href="#34-visuelvm-report">3.4. VisuelVM report</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-integration-tests">4. Integration tests</a></li>
+    <li><a href="#5-conclusion">5. Conclusion</a></li>
+    <li><a href="#6-resources">6. Resources</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>In order to update documents in a MongoDB collection, we often use update requests, if the volume of data is too large, it could lead to performance issues and overconsumption of hardware resources.</p>
+<p>We will implement a solution to enrich and update efficiently a large amount of data using Spring Data MongoDB Reactive.</p>
+<p>Before continuing the reading, if you are not familiar with Spring reactive stack and MongoDB, I suggest you to check the <strong><a href="#6-resources">resources</a></strong> section.</p>
+<h2 id="1-eip-content-enricher">1. EIP content enricher</h2>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/06/22/8b91f8dcbb1744da9640dcfa50b3db4f.png" alt="EIP content enricher"></p>
+<p>Enterprise Integration Pattern <em>Content Enricher</em> appends information to an existing message from an external source. It uses information inside the incoming message to perform the enrichment operation.</p>
+<p>We will implement a simplified version of the EIP:</p>
+<ol>
+<li>Input message : represented by a MongoDB document.</li>
+<li>Enricher : our application.</li>
+<li>Resource : call to a RESTful API.</li>
+<li>Output message : we will keep only the enriched document.</li>
+</ol>
+<h3 id="11-integration-flow">1.1. Integration flow</h3>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/06/22/bdee8c0cb1814341af55e0df7930b00f.png" alt="Integration flow"></p>
+<p>The application will read the address documents, add the product and save the enriched documents to the MongoDB database.</p>
+<h2 id="2-project-setup">2. Project setup</h2>
+<h3 id="21-requirements">2.1. Requirements</h3>
+<ul>
+<li>Java 1.8+</li>
+<li>Maven 3+</li>
+<li>Docker Compose</li>
+<li>MongoDB Database Tools</li>
+</ul>
+<h3 id="22-generation">2.2. Generation</h3>
+<p>We generate the project skeleton from <a href="https://start.spring.io/#!type=maven-project&amp;language=java&amp;platformVersion=2.7.0&amp;packaging=jar&amp;jvmVersion=1.8&amp;groupId=com.maoudia&amp;artifactId=bulk-update-with-spring-data-mongodb&amp;name=Bulk%20Update%20with%20Spring%20Data%20MongoDB%20Reactive&amp;description=Bulk%20Update%20with%20Spring%20data%20MongoDB%20reactive&amp;packageName=com.maoudia.tutorial&amp;dependencies=data-mongodb-reactive,webflux,testcontainers"><code>Spring Initializr</code></a>.</p>
+<h3 id="23-structure">2.3. Structure</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">│  .gitignore
+</span></span><span class="line"><span class="cl">│  docker-compose.yml
+</span></span><span class="line"><span class="cl">│  pom.xml
+</span></span><span class="line"><span class="cl">│  README.adoc
+</span></span><span class="line"><span class="cl">├───data
+</span></span><span class="line"><span class="cl">│  ├───mongodb
+</span></span><span class="line"><span class="cl">│  │     address.ndjson
+</span></span><span class="line"><span class="cl">│  └───product
+</span></span><span class="line"><span class="cl">│        db.json
+</span></span><span class="line"><span class="cl">└───src
+</span></span><span class="line"><span class="cl">   ├───main
+</span></span><span class="line"><span class="cl">   │  ├───java
+</span></span><span class="line"><span class="cl">   │  │  └───com
+</span></span><span class="line"><span class="cl">   │  │     └───maoudia
+</span></span><span class="line"><span class="cl">   │  │        └───tutorial
+</span></span><span class="line"><span class="cl">   │  │             Application.java
+</span></span><span class="line"><span class="cl">   │  │             AppProperties.java
+</span></span><span class="line"><span class="cl">   │  │             CollectionService.java
+</span></span><span class="line"><span class="cl">   │  │             NetworkConfig.java
+</span></span><span class="line"><span class="cl">   │  └───resources
+</span></span><span class="line"><span class="cl">   │        application.yml
+</span></span><span class="line"><span class="cl">   └───test
+</span></span><span class="line"><span class="cl">      └───java
+</span></span><span class="line"><span class="cl">        └───com
+</span></span><span class="line"><span class="cl">           └───maoudia
+</span></span><span class="line"><span class="cl">              └───tutorial
+</span></span><span class="line"><span class="cl">                   CollectionServiceTest.java
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="24-containers">2.4. Containers</h3>
+<p>Download <a href="https://github.com/maoudia/code.maoudia.com/tree/main/bulk-update-with-spring-data-mongodb-reactive/data"><code>data</code></a> directory to the root of the project.</p>
+<p>We use <code>docker-compose</code> to create the needed containers for this tutorial.</p>
+<p>docker-compose.yml</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yml" data-lang="yml"><span class="line"><span class="cl"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mongodb</span><span class="p">:</span><span class="w">  </span><span class="c">#1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">maoudia-mongodb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">mongo:5.0.8</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">MONGO_INITDB_DATABASE=test</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">MONGO_INITDB_ROOT_USERNAME=admin</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">MONGO_INITDB_ROOT_PASSWORD=password</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">mongodb-network</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="m">15015</span><span class="p">:</span><span class="m">27017</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">./data/mongodb:/data/mongodb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mongo-express</span><span class="p">:</span><span class="w">  </span><span class="c">#2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">maoudia-mongo-express</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">mongo-express:0.54.0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">mongodb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">mongodb-network</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">ME_CONFIG_MONGODB_SERVER=maoudia-mongodb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">ME_CONFIG_MONGODB_ADMINUSERNAME=admin</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">ME_CONFIG_MONGODB_ADMINPASSWORD=password</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="m">1515</span><span class="p">:</span><span class="m">8081</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">./data/mongodb:/data/mongodb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">product-api</span><span class="p">:</span><span class="w"> </span><span class="c">#3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">maoudia-product-api</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">clue/json-server:latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="m">1519</span><span class="p">:</span><span class="m">80</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">./data/product/db.json:/data/db.json</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">networks</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mongodb-network</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l">bridge</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li><code>#1</code>: MongoDB initialized with the <code>test</code> database.</li>
+<li><code>#2</code>: MongoExpress is a MongoDB administration interface.</li>
+<li><code>#3</code>: Product API which is configured from <code>db.json</code> file.</li>
+</ol>
+<p>We start up the services:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">docker-compose up -d
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="25-data-initialization">2.5. Data initialization</h3>
+<p>We use a JSON document from the French address database.</p>
+<p>Address</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="s2">&#34;59350&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;municipality&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Lille&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;postcode&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;59000&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;59800&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;59260&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;59777&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;59160&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">],</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;citycode&#34;</span><span class="p">:</span> <span class="s2">&#34;59350&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;x&#34;</span><span class="p">:</span> <span class="mf">703219.96</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;y&#34;</span><span class="p">:</span> <span class="mf">7059335.72</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;lon&#34;</span><span class="p">:</span> <span class="mf">3.045433</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;lat&#34;</span><span class="p">:</span> <span class="mf">50.630992</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;population&#34;</span><span class="p">:</span> <span class="mi">234475</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;city&#34;</span><span class="p">:</span> <span class="s2">&#34;Lille&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;context&#34;</span><span class="p">:</span> <span class="s2">&#34;59, Nord, Hauts-de-France&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;importance&#34;</span><span class="p">:</span> <span class="mf">0.56333</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Import address collection :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">mongoimport --uri <span class="s2">&#34;mongodb://admin:password@localhost:15015&#34;</span> --authenticationDatabase<span class="o">=</span>admin --db <span class="nb">test</span> --collection address ./data/mongodb/address.ndjson
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Ou :</p>
+<p>We use <strong>MongoExpress</strong> which is available at <code>http://localhost:1515</code>.</p>
+<p>Product represents a satellite internet offer.</p>
+<p>Product</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;id&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;available&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;company&#34;</span><span class="p">:</span> <span class="s2">&#34;SPACEX&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;provider&#34;</span><span class="p">:</span> <span class="s2">&#34;STARLINK&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;SATELLITE&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Product API is available at <code>http://localhost:1519</code>.</p>
+<h2 id="3-application">3. Application</h2>
+<h3 id="31-configuration">3.1. Configuration</h3>
+<p>We change file extension from <code>application.properties</code> to <code>application.yml</code>.</p>
+<p>application.yml</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yml" data-lang="yml"><span class="line"><span class="cl"><span class="nt">app</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">buffer-max-size</span><span class="p">:</span><span class="w"> </span><span class="m">500</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">bulk-size</span><span class="p">:</span><span class="w"> </span><span class="m">100</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">collection-name</span><span class="p">:</span><span class="w"> </span><span class="l">address</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">enriching-key</span><span class="p">:</span><span class="w"> </span><span class="l">product</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">enriching-uri</span><span class="p">:</span><span class="w"> </span><span class="l">http://localhost:1519/products/1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">main</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">web-application-type</span><span class="p">:</span><span class="w"> </span><span class="l">none</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">data</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">mongodb</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l">test</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">mongodb://admin:password@localhost:15015</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nn">---</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spring.config.activate.on-profile</span><span class="p">:</span><span class="w"> </span><span class="l">dev</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">logging</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">level</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">org.mongodb.driver</span><span class="p">:</span><span class="w"> </span><span class="l">debug</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nn">---</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spring.config.activate.on-profile</span><span class="p">:</span><span class="w"> </span><span class="l">test</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">app</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">bulk-size</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>We declare a class which contains application configuration properties.</p>
+<p>AppProperties.java</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@ConfigurationProperties</span><span class="o">(</span><span class="n">prefix</span> <span class="o">=</span> <span class="s">&#34;app&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AppProperties</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">int</span> <span class="n">bulkSize</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">int</span> <span class="n">bufferMaxSize</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">collectionName</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">enrichingKey</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">String</span> <span class="n">enrichingUri</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Getter and Setter are omitted
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>We create a <code>@Bean</code> of Spring non-blocking HTTP client.</p>
+<p>NetworkConfig.java</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">NetworkConfig</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Bean</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">WebClient</span> <span class="nf">client</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">WebClient</span><span class="o">.</span><span class="na">create</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="32-implementation">3.2. Implementation</h3>
+<p>We create a <code>@Service</code> which contains application business logic.</p>
+<p>CollectionService.java</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span>
+</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CollectionService</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">AppProperties</span> <span class="n">properties</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">ReactiveMongoTemplate</span> <span class="n">template</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">WebClient</span> <span class="n">client</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">CollectionService</span><span class="o">(</span><span class="n">AppProperties</span> <span class="n">properties</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                             <span class="n">ReactiveMongoTemplate</span> <span class="n">template</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">                             <span class="n">WebClient</span> <span class="n">client</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">properties</span> <span class="o">=</span> <span class="n">properties</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">template</span> <span class="o">=</span> <span class="n">template</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">client</span> <span class="o">=</span> <span class="n">client</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Flux</span><span class="o">&lt;</span><span class="n">BulkWriteResult</span><span class="o">&gt;</span> <span class="nf">enrichAll</span><span class="o">(</span><span class="n">String</span> <span class="n">collectionName</span><span class="o">,</span> <span class="n">String</span> <span class="n">enrichingKey</span><span class="o">,</span> <span class="n">String</span> <span class="n">enrichingUri</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="na">findAll</span><span class="o">(</span><span class="n">Document</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">collectionName</span><span class="o">)</span> <span class="c1">// #1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="o">.</span><span class="na">onBackpressureBuffer</span><span class="o">(</span><span class="n">properties</span><span class="o">.</span><span class="na">getBufferMaxSize</span><span class="o">())</span>  <span class="c1">//#2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="o">.</span><span class="na">flatMap</span><span class="o">(</span><span class="n">document</span> <span class="o">-&gt;</span> <span class="n">enrich</span><span class="o">(</span><span class="n">document</span><span class="o">,</span>  <span class="n">enrichingKey</span><span class="o">,</span> <span class="n">enrichingUri</span><span class="o">))</span>  <span class="c1">//#3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">CollectionService</span><span class="o">::</span><span class="n">toReplaceOneModel</span><span class="o">)</span>  <span class="c1">//#4
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="o">.</span><span class="na">window</span><span class="o">(</span><span class="n">properties</span><span class="o">.</span><span class="na">getBulkSize</span><span class="o">())</span>  <span class="c1">//#5
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="o">.</span><span class="na">flatMap</span><span class="o">(</span><span class="n">replaceOneModelFlux</span> <span class="o">-&gt;</span> <span class="n">bulkWrite</span><span class="o">(</span><span class="n">replaceOneModelFlux</span><span class="o">,</span> <span class="n">collectionName</span><span class="o">));</span>  <span class="c1">// #6
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li><code>#1</code>: Creates a stream of documents from the collection.</li>
+<li><code>#2</code>:Limits the maximum number of loaded documents in the <em>RAM</em> in case of consumption process is slower than production. If the maximum buffer size is exceeded, an <code>IllegalStateException</code> is thrown.</li>
+<li><code>#3</code>:Enriches document asynchronously with the external one.</li>
+<li><code>#4</code>:Creates a <code>ReplaceOneModel</code> from document.</li>
+<li><code>#5</code>:Group documents into streams of fixed size. The last stream can be smaller.</li>
+<li><code>#6</code>:Calls bulk write function.</li>
+</ol>
+<blockquote>
+<p>Configuration property app.bulk-size can be adjusted according to the project needs and available hardware resources. The larger the value of the maximum size, the higher the memory consumption and the size of the requests.</p>
+</blockquote>
+<p>We create document enrichment functions.</p>
+<p>CollectionService.java</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">Publisher</span><span class="o">&lt;</span><span class="n">Document</span><span class="o">&gt;</span> <span class="nf">enrich</span><span class="o">(</span><span class="n">Document</span> <span class="n">document</span><span class="o">,</span> <span class="n">String</span> <span class="n">enrichingKey</span><span class="o">,</span> <span class="n">String</span> <span class="n">enrichingUri</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// #1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="n">getEnrichingDocument</span><span class="o">(</span><span class="n">enrichingUri</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="n">enrichingDocument</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">document</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">enrichingKey</span><span class="o">,</span> <span class="n">enrichingDocument</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">document</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;updatedAt&#34;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Date</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">document</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">            <span class="o">});</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">private</span> <span class="n">Mono</span><span class="o">&lt;</span><span class="n">Document</span><span class="o">&gt;</span> <span class="nf">getEnrichingDocument</span><span class="o">(</span><span class="n">String</span> <span class="n">enrichingUri</span><span class="o">)</span> <span class="o">{</span>  <span class="c1">//#2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="na">get</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">uri</span><span class="o">(</span><span class="n">URI</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">enrichingUri</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">retrieve</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">            <span class="o">.</span><span class="na">bodyToMono</span><span class="o">(</span><span class="n">Document</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li><code>#1</code>: Adds the retrieved document from HTTP call to root of document to be enriched with the key passed in parameter.</li>
+<li><code>#2</code>: Retrieves a document from an URI.</li>
+</ol>
+<blockquote>
+<p>MongoDB converts and stores dates in UTC by default.</p>
+</blockquote>
+<p>CollectionService.java</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">ReplaceOptions</span> <span class="n">REPLACE_OPTIONS</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReplaceOptions</span><span class="o">();</span>   <span class="c1">//#1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">private</span> <span class="kd">static</span> <span class="n">ReplaceOneModel</span><span class="o">&lt;</span><span class="n">Document</span><span class="o">&gt;</span> <span class="nf">toReplaceOneModel</span> <span class="o">(</span><span class="n">Document</span> <span class="n">document</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="n">ReplaceOneModel</span><span class="o">&lt;&gt;(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Filters</span><span class="o">.</span><span class="na">eq</span><span class="o">(</span><span class="s">&#34;_id&#34;</span><span class="o">,</span> <span class="n">document</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;_id&#34;</span><span class="o">)),</span>  <span class="c1">//#1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">document</span><span class="o">,</span>  <span class="c1">// #3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">REPLACE_OPTIONS</span>
+</span></span><span class="line"><span class="cl">    <span class="o">);</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li><code>#1</code>: Instantiates default replacement configuration.</li>
+<li><code>#2</code>: Filter that allows matching by document identifier.</li>
+<li><code>#3</code>: Content to be replaced, represents the complete enriched document.</li>
+</ol>
+<p>CollectionService.java</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">BulkWriteOptions</span> <span class="n">BULK_WRITE_OPTIONS</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BulkWriteOptions</span><span class="o">().</span><span class="na">ordered</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>  <span class="c1">// #1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">private</span> <span class="n">Flux</span><span class="o">&lt;</span><span class="n">BulkWriteResult</span><span class="o">&gt;</span> <span class="nf">bulkWrite</span><span class="o">(</span><span class="n">Flux</span><span class="o">&lt;</span><span class="n">ReplaceOneModel</span><span class="o">&lt;</span><span class="n">Document</span><span class="o">&gt;&gt;</span> <span class="n">updateOneModelFlux</span><span class="o">,</span> <span class="n">String</span> <span class="n">collectionName</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">updateOneModelFlux</span><span class="o">.</span><span class="na">collectList</span><span class="o">()</span>  <span class="c1">// #2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="o">.</span><span class="na">flatMapMany</span><span class="o">(</span><span class="n">unused</span> <span class="o">-&gt;</span> <span class="n">template</span><span class="o">.</span><span class="na">getCollection</span><span class="o">(</span><span class="n">collectionName</span><span class="o">)</span>  <span class="c1">//#3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                    <span class="o">.</span><span class="na">flatMapMany</span><span class="o">(</span><span class="n">collection</span> <span class="o">-&gt;</span> <span class="n">collection</span><span class="o">.</span><span class="na">bulkWrite</span><span class="o">(</span><span class="n">updateOneModels</span><span class="o">,</span> <span class="n">BULK_WRITE_OPTIONS</span><span class="o">)));</span>  <span class="c1">// #4
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li><code>#1</code>: Instantiates writing options with disabling operations order.</li>
+<li><code>#2</code>: Collects the stream into a list.</li>
+<li><code>#3</code>: Retrieves the collection passed as a parameter.</li>
+<li><code>#4</code>: Bulk writes documents into MongoDB collection.</li>
+</ol>
+<blockquote>
+<p>Transactions are supported on Replicaset since MongoDB 4.2. If transactions are enabled, we can use <code>@Transactional</code> or <code>TransactionalOperator</code> to make a method transactional.</p>
+</blockquote>
+<p>We implement the following interfaces:</p>
+<ul>
+<li><code>CommandLineRunner</code> : runs enrichment command at application startup.</li>
+<li><code>ExitCodeGenerator</code> : manages application system exit code.</li>
+</ul>
+<p>Application.java</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@SpringBootApplication</span><span class="o">(</span><span class="n">exclude</span> <span class="o">=</span> <span class="n">MongoReactiveRepositoriesAutoConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>  <span class="c1">// #1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nd">@ConfigurationPropertiesScan</span><span class="o">(</span><span class="s">&#34;com.maoudia.tutorial&#34;</span><span class="o">)</span> <span class="c1">// #2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Application</span> <span class="kd">implements</span> <span class="n">CommandLineRunner</span><span class="o">,</span> <span class="n">ExitCodeGenerator</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">Application</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">AppProperties</span> <span class="n">properties</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">final</span> <span class="n">CollectionService</span> <span class="n">service</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">int</span> <span class="n">exitCode</span> <span class="o">=</span> <span class="n">255</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="n">SpringApplication</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="n">SpringApplication</span><span class="o">.</span><span class="na">run</span><span class="o">(</span><span class="n">Application</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">args</span><span class="o">)));</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="nf">Application</span><span class="o">(</span><span class="n">AppProperties</span> <span class="n">properties</span><span class="o">,</span> <span class="n">CollectionService</span> <span class="n">service</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">properties</span> <span class="o">=</span> <span class="n">properties</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="o">.</span><span class="na">service</span> <span class="o">=</span> <span class="n">service</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">service</span><span class="o">.</span><span class="na">enrichAll</span><span class="o">(</span><span class="n">properties</span><span class="o">.</span><span class="na">getCollectionName</span><span class="o">(),</span> <span class="n">properties</span><span class="o">.</span><span class="na">getEnrichingKey</span><span class="o">(),</span> <span class="n">properties</span><span class="o">.</span><span class="na">getEnrichingUri</span><span class="o">())</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">doOnSubscribe</span><span class="o">(</span><span class="n">unused</span> <span class="o">-&gt;</span> <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;------------------&lt; Staring Collection Enriching Command &gt;-------------------&#34;</span><span class="o">))</span>  <span class="c1">//#3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="o">.</span><span class="na">doOnNext</span><span class="o">(</span><span class="n">bulkWriteResult</span> <span class="o">-&gt;</span> <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;Bulk write result with {} modified document(s)&#34;</span><span class="o">,</span> <span class="n">bulkWriteResult</span><span class="o">.</span><span class="na">getModifiedCount</span><span class="o">()))</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">doOnError</span><span class="o">(</span><span class="n">throwable</span> <span class="o">-&gt;</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">exitCode</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">LOGGER</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">&#34;Collection enriching failed due to : {}&#34;</span><span class="o">,</span> <span class="n">throwable</span><span class="o">.</span><span class="na">getMessage</span><span class="o">(),</span> <span class="n">throwable</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">                <span class="o">})</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">doOnComplete</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">exitCode</span> <span class="o">=</span> <span class="n">0</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">doOnTerminate</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">LOGGER</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">&#34;------------------&lt; Collection Enriching Command Finished &gt;------------------&#34;</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">blockLast</span><span class="o">();</span>  <span class="c1">// #4
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Override</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getExitCode</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">exitCode</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li><code>#1</code>: Disables auto-configuration of repositories, as we use <code>MongoReactiveTemplate</code> only.</li>
+<li><code>#2</code>: Allows scanning and detecting beans that carry the <code>@ConfigProperties</code> annotation.</li>
+<li><code>#3</code>: Subscribing to stream triggers the processing.</li>
+<li><code>#4</code>: Without a running web server, we have to subscribe indefinitely to the <code>Publisher</code> in order to trigger and wait until the end of the execution.</li>
+</ol>
+<h3 id="33-demo">3.3. Demo</h3>
+<p>We launch the application :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">mvn spring-boot:run
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Output :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:45.152  INFO 7036 --- [           main] com.maoudia.tutorial.Application         : Started Application in 2.755 seconds (JVM running for 3.251)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:45.227  INFO 7036 --- [           main] com.maoudia.tutorial.Application         : ------------------&lt; Staring Collection Enriching Command &gt;-------------------
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:45.297  INFO 7036 --- [           main] org.mongodb.driver.cluster               : No server chosen by com.mongodb.reactivestreams.client.internal.ClientSessionHelper$$Lambda$543/543409470@4647881c from cluster description ClusterDescription{type=UNKNOWN, connectionMode=SINGLE, serverDescriptions=[ServerDescription{address=localhost:15015, type=UNKNOWN, state=CONNECTING}]}. Waiting for 30000 ms before timing out
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:46.527  INFO 7036 --- [localhost:15015] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:39}] to localhost:15015
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:46.527  INFO 7036 --- [localhost:15015] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:40}] to localhost:15015
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:46.527  INFO 7036 --- [localhost:15015] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:15015, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=13, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=61576400}
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:46.692  INFO 7036 --- [ntLoopGroup-2-3] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:3, serverValue:41}] to localhost:15015
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:48.355  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:48.482  INFO 7036 --- [ntLoopGroup-2-4] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:4, serverValue:42}] to localhost:15015
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:48.562  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:48.742  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:48.982  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:49.222  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:49.488  INFO 7036 --- [ntLoopGroup-2-4] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:49.701  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:49.852  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:50.031  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:50.105  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : Bulk write result with 100 modified document(s)
+</span></span><span class="line"><span class="cl">2022-06-10 00:36:50.106  INFO 7036 --- [ntLoopGroup-2-3] com.maoudia.tutorial.Application         : ------------------&lt; Collection Enriching Command Finished &gt;------------------
+</span></span><span class="line"><span class="cl">[INFO] ------------------------------------------------------------------------
+</span></span><span class="line"><span class="cl">[INFO] BUILD SUCCESS
+</span></span><span class="line"><span class="cl">[INFO] ------------------------------------------------------------------------
+</span></span><span class="line"><span class="cl">[INFO] Total time:  17.315 s
+</span></span><span class="line"><span class="cl">[INFO] Finished at: 2022-06-10T00:36:54+02:00
+</span></span><span class="line"><span class="cl">[INFO] ------------------------------------------------------------------------
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Process finished with exit code 0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="34-visuelvm-report">3.4. VisuelVM report</h3>
+<p><strong>VisualVM</strong> is a lightweight profiling tool. It is used to have an overview of the threads which are launched by the application.</p>
+<p><img src="https://cdn.jsdelivr.net/gh/springcloud-community/image-bucket/2022/06/22/0bc9847e1f6d4f58978e6c1ceb1d5a74.png" alt="VisuelVM report"></p>
+<p>There are two groups of threads that execute operations in parallel, each group forms an <em>event loop</em>.</p>
+<ul>
+<li>MongoDB requests are executed by <code>nioEventLoopGroup</code>.</li>
+<li>HTTP requests are executed by <code>reactor-http-nio</code>.</li>
+</ul>
+<h2 id="4-integration-tests">4. Integration tests</h2>
+<p>We use <strong>JUnit 5</strong> and the <strong>Testcontainers MongoDB</strong> module for the integration tests. It allows to have a feedback close to the real behaviour of the application which essentially do read/write operations.</p>
+<p>To keep this tutorial short, we will only write one test.</p>
+<p>CollectionServiceTest.java</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Profile</span><span class="o">(</span><span class="s">&#34;test&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@SpringBootTest</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@Testcontainers</span>  <span class="c1">// #1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">class</span> <span class="nc">CollectionServiceTest</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Container</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">MongoDBContainer</span> <span class="n">mongoDBContainer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MongoDBContainer</span><span class="o">(</span><span class="s">&#34;mongo:5.0.8&#34;</span><span class="o">)</span>  <span class="c1">// #2
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="o">.</span><span class="na">withReuse</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@DynamicPropertySource</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">setProperties</span><span class="o">(</span><span class="n">DynamicPropertyRegistry</span> <span class="n">registry</span><span class="o">)</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">registry</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">&#34;spring.data.mongodb.uri&#34;</span><span class="o">,</span> <span class="n">mongoDBContainer</span><span class="o">::</span><span class="n">getReplicaSetUrl</span><span class="o">);</span> <span class="c1">// #3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">AppProperties</span> <span class="n">properties</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">CollectionService</span> <span class="n">command</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nd">@Autowired</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">ReactiveMongoTemplate</span> <span class="n">template</span><span class="o">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nd">@Test</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">multipleBulkWriteResultsAreReturned</span><span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Document</span> <span class="n">givenDocument1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Document</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">givenDocument1</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;_id&#34;</span><span class="o">,</span> <span class="s">&#34;628ea3edb5110304e5e814f6&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">givenDocument1</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;type&#34;</span><span class="o">,</span> <span class="s">&#34;municipality&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Document</span> <span class="n">givenDocument2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Document</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">givenDocument2</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;_id&#34;</span><span class="o">,</span> <span class="s">&#34;628ea3edb5110304e5e814f7&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">givenDocument2</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;type&#34;</span><span class="o">,</span> <span class="s">&#34;street&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Document</span> <span class="n">givenDocument3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Document</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">        <span class="n">givenDocument3</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;_id&#34;</span><span class="o">,</span> <span class="s">&#34;628ea3edb5110304e5e814f8&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">givenDocument3</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&#34;type&#34;</span><span class="o">,</span> <span class="s">&#34;housenumber&#34;</span><span class="o">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">template</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">givenDocument1</span><span class="o">,</span> <span class="n">givenDocument2</span><span class="o">,</span> <span class="n">givenDocument3</span><span class="o">),</span> <span class="n">properties</span><span class="o">.</span><span class="na">getCollectionName</span><span class="o">()).</span><span class="na">blockLast</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">BulkWriteResult</span> <span class="n">expectedBulkWriteResult1</span> <span class="o">=</span> <span class="n">BulkWriteResult</span><span class="o">.</span><span class="na">acknowledged</span><span class="o">(</span><span class="n">WriteRequest</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">REPLACE</span><span class="o">,</span> <span class="n">2</span><span class="o">,</span> <span class="n">2</span><span class="o">,</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">(),</span>
+</span></span><span class="line"><span class="cl">                <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">        <span class="n">BulkWriteResult</span> <span class="n">expectedBulkWriteResult2</span> <span class="o">=</span> <span class="n">BulkWriteResult</span><span class="o">.</span><span class="na">acknowledged</span><span class="o">(</span><span class="n">WriteRequest</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">REPLACE</span><span class="o">,</span> <span class="n">1</span><span class="o">,</span> <span class="n">1</span><span class="o">,</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">(),</span>
+</span></span><span class="line"><span class="cl">                <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">command</span><span class="o">.</span><span class="na">enrichAll</span><span class="o">(</span> <span class="n">properties</span><span class="o">.</span><span class="na">getCollectionName</span><span class="o">(),</span> <span class="n">properties</span><span class="o">.</span><span class="na">getEnrichingKey</span><span class="o">()</span> <span class="o">,</span> <span class="n">properties</span><span class="o">.</span><span class="na">getEnrichingUri</span><span class="o">())</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="n">StepVerifier</span><span class="o">::</span><span class="n">create</span><span class="o">)</span> <span class="c1">// #4
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="o">.</span><span class="na">expectNext</span><span class="o">(</span><span class="n">expectedBulkWriteResult1</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">expectNext</span><span class="o">(</span><span class="n">expectedBulkWriteResult2</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">                <span class="o">.</span><span class="na">verifyComplete</span><span class="o">();</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li><code>#1</code>: Adds TestContainers Junit 5 extension.</li>
+<li><code>#2</code>: Starts a MongoDB container.</li>
+<li><code>#3</code>: Sets up application with container&rsquo;s URI.</li>
+<li><code>#4</code>: Uses <code>StepVerifier</code> from <strong>Reactor Test</strong> to assert output stream.</li>
+</ol>
+<p>We launch the integration tests :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">mvn <span class="nb">test</span> -Dspring.profiles.active<span class="o">=</span><span class="nb">test</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Test results :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.563 s - in com.maoudia.tutorial.CollectionServiceTest
+</span></span><span class="line"><span class="cl">[INFO]
+</span></span><span class="line"><span class="cl">[INFO] Results:
+</span></span><span class="line"><span class="cl">[INFO]
+</span></span><span class="line"><span class="cl">[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+</span></span><span class="line"><span class="cl">[INFO]
+</span></span><span class="line"><span class="cl">[INFO] ------------------------------------------------------------------------
+</span></span><span class="line"><span class="cl">[INFO] BUILD SUCCESS
+</span></span><span class="line"><span class="cl">[INFO] ------------------------------------------------------------------------
+</span></span><span class="line"><span class="cl">[INFO] Total time:  32.100 s
+</span></span><span class="line"><span class="cl">[INFO] Finished at: 2022-06-10T01:02:17+02:00
+</span></span><span class="line"><span class="cl">[INFO] ------------------------------------------------------------------------
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="5-conclusion">5. Conclusion</h2>
+<p>In this tutorial, we managed to implement a complete solution to enrich and update efficiently a MongoDB collection. Moreover, we have seen how to write integration tests with JUnit 5 and Testcontainers.</p>
+<p>The complete source code is available on <a href="https://github.com/maoudia/code.maoudia.com/tree/main/bulk-update-with-spring-data-mongodb-reactive">Github</a>.</p>
+<p>In the next chapter of <strong>MongoDB Reactive CLI</strong> series, we will add new features and use <a href="https://picocli.info/">Picocli</a> to facilitate interactions with the application.</p>
+<h2 id="6-resources">6. Resources</h2>
+<ul>
+<li><a href="https://www.enterpriseintegrationpatterns.com/DataEnricher.html">EIP Data enricher</a></li>
+<li><a href="https://www.mongodb.com/try/download/database-tools">MongoDB Database Tools</a></li>
+<li><a href="https://adresse.data.gouv.fr/data/ban/adresses/latest/addok/">French Adresses Data</a></li>
+<li><a href="https://mongodb.github.io/mongo-java-driver/4.6/driver-reactive/tutorials/bulk-writes/">MongoDB Java Driver Bulk operations</a></li>
+<li><a href="https://projectreactor.io/docs/core/release/reference/">Reactor 3 Reference Guide</a></li>
+<li><a href="https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/">Spring Data MongoDB Reference</a></li>
+<li><a href="https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html">Web on Reactive Stack</a></li>
+<li><a href="https://visualvm.github.io/">VisualVM</a></li>
+<li><a href="https://www.testcontainers.org/modules/databases/mongodb/">Testcontainers MongoDB</a></li>
+</ul>
+<blockquote>
+<p>Reference <a href="https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/">https://www.maoudia.com/blog/bulk-update-with-spring-data-mongodb-reactive/</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://www.springcloud.io/tags/spring-data-mongodb/">spring-data-mongodb</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/2022-06/spring-transaction-best-practices/">
+            <span class="next-text nav-default">Spring Transaction Best Practices</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="https://twitter.com/springcloud_io" rel="me noopener" class="iconfont"
+      title="twitter"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1264 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M1229.8616 18.043658c0 0-117.852626 63.135335-164.151872 67.344358-105.225559-164.151872-505.082682-92.598492-437.738325 223.078185C278.622548 312.675223 89.216542 47.506814 89.216542 47.506814s-117.852626 189.406006 75.762402 345.139833C127.097743 396.85567 55.544363 371.601535 55.544363 371.601535S26.081207 535.753407 253.368414 615.724832c-21.045112 29.463156-113.643603 8.418045-113.643603 8.418045s25.254134 143.10676 231.496229 180.987961c-143.10676 130.479693-387.230056 92.598492-370.393967 105.225559 206.242095 189.406006 1119.599946 231.496229 1128.01799-643.98042C1179.353331 249.539887 1263.533778 123.269217 1263.533778 123.269217s-130.479693 37.881201-138.897738 33.672179C1225.652577 98.015083 1229.8616 18.043658 1229.8616 18.043658"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://www.springcloud.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2021 -
+    2022
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.dee43230127a73d039a734510fa896c89c3c7ce0cf0be0c7a7433f8fd69b76dc.js" integrity="sha256-3uQyMBJ6c9A5pzRRD6iWyJw8fODPC&#43;DHp0M/j9abdtw=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    $("#openSearch, #openSearchMobile").click(function(){
+      $(".modal-dialog").addClass("visible");
+    });
+
+    $("#closeSearch").click(function(){
+      $(".modal-dialog").removeClass("visible");
+    });
+
+    $(document).click(function(event) {
+    
+      if (!$(event.target).closest(".modal-content, #openSearch, #openSearchMobile").length) {
+        $("body").find(".modal-dialog").removeClass("visible");
+      }
+    });
+  </script>
+
+
+
+
+
+</body>
+</html>
